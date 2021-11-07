@@ -1,0 +1,75 @@
+<?
+  /**
+   * Clase que se encarga de mostrar la lista de usuarios del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowUsers
+	{	 	 
+     // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_userslist.str";
+	 	 // Variable que guarda el error
+	 	 var $error;
+	 	 // Variable que guarda la acción realizada
+	 	 var $act;	 	 
+					
+		 // Constructor de la clase			
+	   function ShowUsers() {	
+		 }
+		 
+		 // Función que ejecuta la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+		 	   $pagina = $_GET["pagina"];
+		 	   if (!empty($pagina))
+		 	   {
+		 	       // Si la página tiene valor
+		 	       // Asignamos el valor de la página a la vista
+		 	       $this->vista = $pagina.".str";
+				 }
+		 	  
+				 if ($gesBD->selectUsers())
+				 {
+				     // Si hay usuarios que mostrar
+				     // Guardamos la lista de usuarios en el modelo
+				     $this->modelo = $gesBD->getObj();
+				     // Y indicamos que la acción se ha ejecutado con éxito
+						 $val = true;		
+				 }
+				 else
+				 {
+				     // Si no hay usuarios
+				     // Redirigimos al usuario a la página de error
+				     header("Location: error.php");				     
+				 }
+				   
+				 // Devolvemos una indicación del estado del proceso realizado  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

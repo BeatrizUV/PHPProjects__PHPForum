@@ -1,0 +1,122 @@
+<?
+  /**
+   * Clase que se encarga de crear temas dentro de una categoría en el foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class CreateTheme
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_createTheme.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function CreateTheme(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	 	
+				     // Si hay sesión de administrador
+						 // Se recogen los datos enviados			     				     
+				     $id_cat = $_POST["cat"];
+				     $title = $_POST["ttitle"];
+				     $comment = $_POST["comment"];
+				     $visibility = $_POST["rank"];
+				     
+				     // Se validan los datos obligatorios
+				     $this->error = valFormCreateTheme($id_cat, $title);
+				     
+				     if ($this->error == null)
+				     {
+				         // Si se validan correctamente
+				         // Se comprueba que el título para este tema está libre en esta categoría
+				         $query = "SELECT id_theme FROM phpforum_themes WHERE title LIKE '".$title."' AND id_cat LIKE ".$id_cat;
+				         if (!$gesBD->selectOne($query, "id_theme"))
+				         {
+				             // Si está libre
+				             // Se establece su posición
+				             $query = "SELECT MAX(position) FROM phpforum_themes WHERE id_cat LIKE ".$id_cat;
+				             if ($gesBD->selectOne($query, "MAX(position)"))
+				             {
+				                 $position = $gesBD->getObj();
+												 $position += 1;
+				             }
+										 else
+										 {
+										     if ($gesBD->getError() == null)
+										     {
+												     $position = 0;
+												 }
+												 else
+												 {
+												     header("Location: error.php");	
+												 }    
+										 }    
+				                 
+				             // Se crea el tema    
+		                 $query = "INSERT INTO phpforum_themes (title, description, position, visibility, id_cat) VALUES ('".$title."', '".$comment."', ".$position.", ".$visibility.", ".$id_cat.")";
+										 if ($gesBD->insert($query))
+										 {
+										     // Se eliminan de la sesión los datos relacionados con este nuevo tema
+										     unset($_SESSION["categorias"]);
+										     // Se indica el éxito mediante una ventana emergente y se redirige al usuario a la página de crear temas
+										     echo "<SCRIPT>";
+										     echo "alert('Tema \"".$title."\" creado correctamente.');";
+										     echo "location.href='index.php?accion=ShowForum&pagina=admin_createTheme';";
+										     echo "</SCRIPT>";
+										 }
+										 else
+										 {
+										     // Si no se crea correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");	
+										 }
+								 }
+								 else
+								 {
+								     // Si el título no está libre
+								     // Se indica mediante un mensaje de error
+								 		 $this->error = "El t&iacute;tulo que ha indicado para el nuevo tema ya existe en esta categor&iacute;a.<BR>Elija otro t&iacute;tulo, por favor.";
+								 }	
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista 
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

@@ -1,0 +1,173 @@
+<?
+  /**
+   * Clase que se encarga de mandar un e-mail a los usuarios del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class SendMail
+	{	 	 
+	   // Variable que guarda el modelo 
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_mail.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 
+					
+		 // Constructor de la clase			
+	   function SendMail() {	 
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		     // Se recogen los datos enviados
+		 	   $mensaje = $_POST["body"];
+				 $send = $_POST["tipoEnvio"];		
+		 	  	
+		 	   if (isset($_SESSION["haySesionAdmin"]))
+				 {
+				     // Si hay sesión de administrador
+				     // Se valida el mensaje
+				     $this->error = valFormSendEmail($mensaje);
+				 
+						 if ($this->error == null)
+						 {
+						     // Si se valida correctamente
+						     // Se monta el query según el tipo de envío que sea (a algunos grupos o a todos)
+						     if ($send == "all")
+						     {
+						         $query = "SELECT email FROM phpforum_users WHERE id_user NOT LIKE -1";
+								 }
+								 else if ($send == "some")
+								 {
+								     $query = "SELECT email FROM phpforum_users WHERE";
+								     $query2 = "SELECT id_rank FROM phpforum_ranks";
+								     $variables[0] = "id_rank";
+								     if ($gesBD->selectMore($query2, $variables))
+										 {											    
+										     $filas = $gesBD->getObj();
+										     $sizef = count($filas);											   
+										     $contf = 0;
+										    
+						    				 for ($contf = 0; $contf < $sizef; $contf++)
+										     {
+										         $fila = $filas[$contf];																								        
+										         if (isset($_POST[$fila[0]]))
+										         {								            
+										             $query .= " rank LIKE ".$fila[0]." OR";
+													   }
+												 }
+												
+												 if ($contf > 0)
+												 {
+		  										   $query = substr($query, 0, (strlen($query) - 3));
+												 }								
+								     }
+								     else
+								     {
+								         header("Location: error.php");
+										 }
+								 }
+								 
+								 // Se ejecuta el SELECT
+								 $variables[0] = "email";								 										 						 
+								 if ($gesBD->selectMore($query, $variables))
+								 {
+								     // Si se ejecuta correctamente
+								     // Se recogen los usuarios
+								     $filas = $gesBD->getObj();
+								     $cont = 0;
+								     $size = count($filas);
+								     $flag = true;
+								     
+								     while (($cont < $size) && ($flag))
+								     {
+								         // Y se envía un email a cada usuario
+								         $fila = $filas[$cont];
+								         $email = $fila[0];
+								         global $forum_title;								     
+										     global $admin_email;			 			
+									       global $forum_path;
+									      
+								 	 	 		 // Se manda un email con sus datos al usuario creado por defecto																						 	 	 		
+		 										 $from = $forum_title." <".$admin_email.">";					 	 	 		
+												 $subject = "Mensaje de \"".$forum_title."\""; 										 
+												 
+												 ########################################
+												 ##### Se forma el cuerpo del email #####
+												 ########################################
+												 if (eregi("gmail", $email))
+												 {
+												     include("includes/mailNoHTML.inc");
+												 }
+												 else
+												 {
+												     include("includes/mail.inc");
+												 }	
+		                     ########################################           
+		                     ########################################
+																 				      
+									       // Se manda el email									       
+									       $flag = sendMail($email, $from, $subject, $body);	
+									       $cont++;
+										 }
+										 
+										 if ($flag)
+									   {	 	
+										     // Si todo hay ido bien
+												 // Se eliminan de la sesión los datos relacionados con el envío de emails		
+										     unset($_SESSION["grupos"]);	     									  
+										     // Se muestra un mensaje de éxito en una ventana emergente y se redirecciona al usuario a la página de envío de emails
+										     echo "<SCRIPT>";
+					     				   echo "alert('E-mails enviados correctamente.');";
+												 echo "location.href='index.php?accion=ShowGroups&pagina=admin_mail';";						     				       
+												 echo "</SCRIPT>";												 
+										 }
+										 else
+										 {
+										     // Si ha ocurrido algún error
+										     // Se indica mediante un mensaje de error
+										     $this->error = "Ha ocurrido un error durante el env&iacute;o y no se han enviado los e-mails.<BR>Int&eacute;ntelo de nuevo m&aacute;s tarde.";
+										 }
+								 }
+								 else
+								 {
+								     // Si no se ejecuta correctamente
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");
+								 }
+						 }
+				 }
+				 else
+				 {
+				     // Si no hay sesión de adminisrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

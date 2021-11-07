@@ -1,0 +1,134 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<HTML>
+			<HEAD>
+						<TITLE>:: <?=$forum_title?> Foros ::</TITLE>			
+						<META content="www.proyecto-final-beatrizuv.es.kz" name="Title" />
+						<META content="ryokojoe@yahoo.es" name="Author" />
+						<META content="Spanish" name="Language" />		
+						<LINK rel="stylesheet" type="text/css" href="../templates/Default/stylesheet/style.css" />	
+						<LINK rel="stylesheet" type="text/css" href="../includes/errores.css" />		
+						<SCRIPT type="text/javascript" src="../includes/js/valForms.js"></SCRIPT>
+						<SCRIPT type="text/javascript" src="../includes/js/actions.js"></SCRIPT>						
+						<SCRIPT language="JavaScript">
+						        // Función de reloj
+										var reloj=0;
+										var frecuencia=1000;
+              			function relojfechahora()
+										{
+												var ahora= new Date();
+												
+												var dia = ahora.getDate();
+												if (dia < 10)
+												{
+												 	 dia = "0" + dia;
+												}
+												
+												var mes = ahora.getMonth();
+												mes += 1;
+												if (mes < 10)
+												{
+												 	 mes = "0" + mes;
+												}
+												
+												var anio = ahora.getFullYear();
+												
+												var hora = ahora.getHours();
+												if (hora < 10)
+												{
+												 	 hora = "0" + hora;
+												}
+												
+												var minutos = ahora.getMinutes();
+												if (minutos < 10)
+												{
+												 	 minutos = "0" + minutos;
+												}
+												
+												var segundos = ahora.getSeconds();
+												if (segundos < 10)
+												{
+												 	 segundos = "0" + segundos;
+												}
+												
+												var fecha = dia + "/" + mes + "/" + anio + " - " + hora + ":" + minutos + ":" + segundos + "&nbsp;";												
+												var posicion = document.getElementById('capa_reloj');
+												posicion.innerHTML = fecha;
+												reloj = setTimeout("relojfechahora()",frecuencia);
+                    }
+						</SCRIPT>	
+						<SCRIPT>
+						        // Función para mostrar submenús
+										function showMenu(menu)
+										{
+										    var secciones;
+										    
+										    if (menu == "1")
+										    {
+										        secciones = ": : <A HREF='index.php?accion=ShowTemplates&pagina=admin_info' class='link_menu_admin_panel'>&nbsp;&nbsp;General&nbsp;&nbsp;</A> : : "
+										        secciones += "<A HREF='index.php?accion=ShowTemplates&pagina=admin_templates' class='link_menu_admin_panel'>&nbsp;&nbsp;Estilos&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;";
+														secciones += "<A HREF='index.php?accion=ShowGroups&pagina=admin_mail' class='link_menu_admin_panel'>&nbsp;&nbsp;Enviar Correo Masivo&nbsp;&nbsp;</A> : :";														
+														document.getElementById("loc").innerHTML = "<SPAN class='flechitas_path'>&gt;&gt;</SPAN> <A HREF='index.php' class='link_path'>Inicio</A> / Configuraci&oacute;n";
+														document.getElementById("submenu").style.backgroundColor = "#DDDDDD";
+										        document.getElementById("submenu").innerHTML = "<B>" + secciones + "</B>&nbsp;";										        
+												}
+												else if (menu == "2")
+												{
+												    secciones = ": :&nbsp;&nbsp;<A HREF='index.php?accion=ShowGroups&pagina=admin_createCat' class='link_menu_admin_panel'>&nbsp;&nbsp;Crear&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;"
+														secciones += "<A HREF='index.php?accion=ShowForum&pagina=admin_editCat' class='link_menu_admin_panel'>&nbsp;&nbsp;Editar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;";
+														secciones += "<A HREF='index.php?accion=ShowForum&pagina=admin_orderCat' class='link_menu_admin_panel'>&nbsp;&nbsp;Ordenar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;";
+														secciones += "<A HREF='index.php?accion=ShowForum&pagina=admin_deleteCat' class='link_menu_admin_panel'>&nbsp;&nbsp;Eliminar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :";
+														document.getElementById("loc").innerHTML = "<SPAN class='flechitas_path'>&gt;&gt;</SPAN> <A HREF='index.php' class='link_path'>Inicio</A> / Categor&iacute;as";
+														document.getElementById("submenu").style.backgroundColor = "#DDDDDD";
+												    document.getElementById("submenu").innerHTML = "<B>" + secciones + "</B>&nbsp;";
+												}
+												else if (menu == "3")
+												{
+												    secciones = ": :&nbsp;&nbsp;<A HREF='index.php?accion=ShowForum&pagina=admin_createTheme' class='link_menu_admin_panel'>&nbsp;&nbsp;Crear&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;"
+														secciones += "<A HREF='index.php?accion=ShowForum&pagina=admin_editTheme' class='link_menu_admin_panel'>&nbsp;&nbsp;Editar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;";
+														secciones += "<A HREF='index.php?accion=ShowForum&pagina=admin_orderTheme' class='link_menu_admin_panel'>&nbsp;&nbsp;Ordenar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;";
+														secciones += "<A HREF='index.php?accion=ShowForum&pagina=admin_deleteTheme' class='link_menu_admin_panel'>&nbsp;&nbsp;Eliminar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :";														
+														document.getElementById("loc").innerHTML = "<SPAN class='flechitas_path'>&gt;&gt;</SPAN> <A HREF='index.php' class='link_path'>Inicio</A> / Temas";
+														document.getElementById("submenu").style.backgroundColor = "#DDDDDD";
+												    document.getElementById("submenu").innerHTML = "<B>" + secciones + "</B>&nbsp;";
+												}
+												else if (menu == "4")
+												{
+												    secciones = ": :&nbsp;&nbsp;<A HREF='index.php?accion=ShowGroups&pagina=admin_createUser' class='link_menu_admin_panel'>&nbsp;&nbsp;Crear&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;"
+														secciones += "<A HREF='index.php?accion=ShowUsers&pagina=admin_editUser' class='link_menu_admin_panel'>&nbsp;&nbsp;Editar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;";														
+														secciones += "<A HREF='index.php?accion=ShowUsers&pagina=admin_deleteUser' class='link_menu_admin_panel'>&nbsp;&nbsp;Eliminar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :";
+														document.getElementById("loc").innerHTML = "<SPAN class='flechitas_path'>&gt;&gt;</SPAN> <A HREF='index.php' class='link_path'>Inicio</A> / Usuarios";
+														document.getElementById("submenu").style.backgroundColor = "#DDDDDD";
+												    document.getElementById("submenu").innerHTML = "<B>" + secciones + "</B>&nbsp;";
+												}
+												else if (menu == "5")
+												{
+												    secciones = ": :&nbsp;&nbsp;<A HREF='index.php?accion=Navigate&destino=admin_createGroup' class='link_menu_admin_panel'>&nbsp;&nbsp;Crear&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;"
+														secciones += "<A HREF='index.php?accion=ShowGroups&pagina=admin_editGroup' class='link_menu_admin_panel'>&nbsp;&nbsp;Editar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :&nbsp;&nbsp;";														
+														secciones += "<A HREF='index.php?accion=ShowGroups&pagina=admin_deleteGroup' class='link_menu_admin_panel'>&nbsp;&nbsp;Eliminar&nbsp;&nbsp;</A>&nbsp;&nbsp;: :";
+														document.getElementById("loc").innerHTML = "<SPAN class='flechitas_path'>&gt;&gt;</SPAN> <A HREF='index.php' class='link_path'>Inicio</A> / Grupos";
+														document.getElementById("submenu").style.backgroundColor = "#DDDDDD";
+												    document.getElementById("submenu").innerHTML = "<B>" + secciones + "</B>&nbsp;";
+												}												
+										}
+						</SCRIPT>														
+			</HEAD>
+
+			<BODY onLoad="relojfechahora()">
+<?
+  // Cabecera de las páginas de administración
+	session_start();
+?>			
+						<CENTER>												       
+										<TABLE class="tabla_principal" cellpadding="0" cellspacing="0">		
+										       <TR>
+										       		 <TD height="10"></TD>
+													 </TR>											 
+													 <TR>
+													 		 <TD class="celda_header_top">&nbsp;&nbsp;<SPAN style="font-size: 11px;">&gt;&gt;</SPAN>&nbsp;<A HREF="../index.php" class="link_cuerpo"><?=$forum_title?> Foros</A></TD>
+													 </TR>													 
+<?
+	include("../templates/Default/str/admin_panels.str");
+	// pegar html del panel y llamar a $login y a $menu
+?>												 
+													 <TR>

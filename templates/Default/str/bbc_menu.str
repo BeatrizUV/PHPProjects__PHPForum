@@ -1,0 +1,61 @@
+<INPUT class="button" style="width: 27px; font-weight: bold;" type="button" name="bold" id="bold" value="N" onClick="editFontStyle('<?=$field?>', 'B')" />
+<INPUT class="button" style="width: 27px; font-style: italic;" type="button" name="italic" id="italic" value="C" onClick="editFontStyle('<?=$field?>', 'I')" />
+<INPUT class="button" style="width: 27px; text-decoration: underline;" type="button" id="underline" name="underline" value="S" onClick="editFontStyle('<?=$field?>', 'U')" />
+<INPUT class="button" style="width: 35px;" type="button" name="cita" id="cita" value="CITA" onClick="insertQuote('<?=$field?>')" />
+<INPUT class="button" style="width: 35px;" type="button" name="link" id="link" value="URL" onClick="insertLink('<?=$field?>')" />
+<INPUT class="button" style="width: 35px;" type="button" name="img" id="img" value="IMG" onClick="insertImg('<?=$field?>')" />
+<BR><BR>
+<SELECT class="input" name="fontcolor" id="fontcolor" onChange="editFontColor('<?=$field?>')">
+				<OPTION value="">- - -&nbsp;&nbsp;Color&nbsp;&nbsp;- - -</OPTION>
+				<OPTION style="color: black;" value="black">Negro</OPTION>
+				<OPTION style="color: gray;" value="gray">Gris</OPTION>
+				<OPTION style="color: silver;" value="silver">Plata</OPTION>	
+				<OPTION style="color: white;" value="white">Blanco</OPTION>			
+				<OPTION style="color: saddlebrown;" value="saddlebrown">Marr&oacute;n</OPTION>
+				<OPTION style="color: peru;" value="peru">Arena</OPTION>
+				<OPTION style="color: darkblue;" value="darkblue">Azul oscuro</OPTION>
+				<OPTION style="color: blue;" value="blue">Azul</OPTION>
+				<OPTION style="color: deepskyblue;" value="deepskyblue">Celeste</OPTION>				
+				<OPTION style="color: cyan;" value="cyan">Hielo</OPTION>				
+				<OPTION style="color: mediumspringgreen;" value="mediumspringgreen">Turquesa</OPTION>
+				<OPTION style="color: teal;" value="teal">Verde agua</OPTION>
+				<OPTION style="color: darkgreen;" value="darkgreen">Verde oscuro</OPTION>
+				<OPTION style="color: green;" value="green">Verde</OPTION>						
+				<OPTION style="color: lime;" value="lime">Lima</OPTION>
+				<OPTION style="color: yellow;" value="yellow">Amarillo</OPTION>
+				<OPTION style="color: gold;" value="gold">Oro</OPTION>
+				<OPTION style="color: orange;" value="orange">Naranja</OPTION>
+				<OPTION style="color: red;" value="red">Rojo</OPTION>
+				<OPTION style="color: darkred;" value="darkred">Rojo oscuro</OPTION>
+				<OPTION style="color: pink;" value="pink">Rosa</OPTION>
+				<OPTION style="color: fuchsia;" value="fuchsia">Fucsia</OPTION>
+				<OPTION style="color: purple;" value="purple">Violeta</OPTION>
+				<OPTION style="color: darkviolet;" value="darkviolet">Morado</OPTION>				
+</SELECT>
+
+<SELECT class="input" name="fontsize" id="fontsize" onChange="editFontSize('<?=$field?>')">
+        <OPTION value="">- - - Tama&ntilde;o - - -</OPTION>
+				<OPTION value="6">Pequeña</OPTION>				
+				<OPTION value="10">Normal</OPTION>
+				<OPTION value="18">Grande</OPTION>
+				<OPTION value="32">Enorme</OPTION>
+				<OPTION value="45">Gigante</OPTION>				
+</SELECT>
+<BR><BR>
+<IMG src='includes/img/emoticonos/icon_bigsmile.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[:D]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_smile.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[:)]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_sad.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[:(]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_surprised.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[:o]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_shock.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[O.oUu]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_confused.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[:?]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_cool.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[8)]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_XD.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[XD]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_mad.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[:x]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_tongue.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[:P]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_redface.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[¬///¬]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_cry.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[T.T]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_evil.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[):(]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_twisted.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[):D]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_rolleyes.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[._.Uu]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />&nbsp;
+<IMG src='includes/img/emoticonos/icon_wink.gif' width='15px' height='15px' onClick="insertEmoticon('<?=$field?>', '[;)]')" onMouseOver="mano('in')" onMouseOut="mano('out')" />
+<BR><BR>

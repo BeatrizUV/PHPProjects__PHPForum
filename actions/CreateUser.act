@@ -1,0 +1,367 @@
+<?  
+  /**
+   * Clase que se encarga de borrar posts.
+   * By Beatriz Urbano Vega [Masane].
+   */  
+	class CreateUser
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_register.str";
+			// Variable que guarda el error
+			var $error;		
+			// Variable que guarda el email de contacto del foro
+			var $a_email;
+			// Variable que guarda el título del foro
+			var $f_title;
+			// Variable que guarda el path del foro
+			var $f_path;
+			
+			// Constructor de la clase
+			function CreateUser($a_email, $f_title, $f_path)
+			{
+			    // Se asigna valor al email de contacto del foro
+				  $this->a_email = $a_email;
+				  // Se asigna valor el título del foro
+				  $this->f_title = $f_title;
+				  // Se asigna valor al path del foro
+				  $this->f_path = $f_path;
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{
+			    // Se incluyen los códigos de seguridad del foro
+			    include("includes/securityCodes.inc");
+			    // Se recogen los valores enviados
+			    $secCode = $_POST["seccode"];
+			    $randSecCodeNumber = $_POST["randcodenum"];
+					$login = $_POST["login"];
+					$passwd = $_POST["passwd"];
+					$passwd2 = $_POST["passwd2"];
+					$name = $_POST["name"];
+					$email = $_POST["email"];
+					$msn = $_POST["msn"];
+					$web = $_POST["web"];					
+					$avatarFile = $_FILES["avyfile"];
+					$avatarUrl = $_POST["avyurl"];
+					$sex = $_POST["sex"];		
+					$site = $_POST["site"];																
+					$flag = true;		
+					$avy = "-1";
+					$cont = 0;					
+					
+					/***** Se chequean los datos opcionales del usuario *****/
+					// Se chequea el nombre
+					if (empty($name))
+					{
+					    $name = "";
+					}
+					
+					// Se chequea la situación
+					if (empty($site))
+					{
+					    $site = "";
+					}					
+					
+					// Se chequea el msn
+					if (empty($msn))
+					{
+					    $msn = "";
+					}				
+					
+					// Se chequea el sexo
+					if ($sex == "NoSex")
+					{
+					    $sex = "";
+					}	
+					
+					// Se chequea la web
+					if (empty($web))
+					{
+					    $web = "";
+					}
+					else
+					{
+					    if (substr($web, 0, 7) != "http://")
+					    {
+					        $web = "http://".$web;
+							}
+					}
+					/*********************************************/
+					
+					if (!isset($_SESSION["haySesion"]))
+					{		
+					    // Si no hay sesión
+							// Se validan los datos obligatorios			    
+					    $this->error = valFormCreateUser($login, $passwd, $passwd2, $email, $secCode);				    
+					
+							if ($this->error == null)
+							{
+							    // Si los datos tienen algún valor
+							    // Se chequea el código de seguridad del foro
+							    if ($secCode == $sec_codes[$randSecCodeNumber])
+							    {
+							        // Se chequea el avatar desde el pc
+							        if (!empty($avatarFile["name"]))
+		  								{      
+									        if (is_uploaded_file($avatarFile["tmp_name"]))
+											    {							   
+											        $this->error = checkAvatar($avatarFile);
+											        if ($this->error == null)
+											        {		               
+									                $formato = substr($avatarFile["type"],6,strlen($avatarFile["type"]));
+									                
+									                if ($formato == "pjpeg")
+															    {
+															        $formato = "jpg";
+																	}																	
+																	if ($formato == "x-png")
+															    {
+															        $formato = "png";
+																	}
+																	
+									                $avyPath = "users/avatars/";
+									                $avyName = "av_".time().".".$formato;							                
+									            		if (move_uploaded_file($avatarFile["tmp_name"], $avyPath.$avyName))
+									            		{	            		    
+									            		    $query = "INSERT INTO phpforum_avatars (name) VALUES ('".$avyPath.$avyName."')";
+									            		    if ($gesBD->insert($query))
+									            		    {		
+																					$query = "SELECT id_avatar FROM phpforum_avatars WHERE name LIKE '".$avyPath.$avyName."'";
+													            		$gesBD->selectOne($query, "id_avatar");											            		
+																					$avy = $gesBD->getObj();
+									            		        $tipo = "file";
+									            		        $cont++;
+																			}
+																			else
+																			{
+																			    header("Location: error.php");
+																			}
+																	}
+																	else
+																	{
+																	    $flag = false;
+																	    $this->error = "No se ha podido copiar la imagen del avatar en el servidor.";
+																	}						            
+															}
+															else
+															{
+															    $flag = false;
+															}
+													}
+											}		
+											
+											// Se chequea el avatar desde la url													    
+									    if (!empty($avatarUrl))
+									    {			
+											    if ($cont == 0)
+													{
+													    $query = "INSERT INTO phpforum_avatars (name) VALUES ('".$avatarUrl."')";											        
+											        if ($gesBD->insert($query))
+											        {							            
+											            $query = "SELECT id_avatar FROM phpforum_avatars WHERE name LIKE '".$avatarUrl."'";
+									            		$gesBD->selectOne($query, "id_avatar");
+									            		$tipo = "url";
+																	$avy = $gesBD->getObj();
+															}
+															else
+															{		
+															    header("Location: error.php");
+															}
+													}		
+													else
+													{
+													    $flag = false;
+													    $this->error = "No puede ingresar dos avatares.<BR>Debe elegir entre usar uno de su PC o de Internet.";
+													    if (unlink($avyPath.$avyName))
+													    {
+													        $query = "DELETE FROM phpforum_avatars WHERE id_avatar LIKE ".$avy;
+																	$gesBD->delete($query);													    
+															}															
+													}	
+											}				    					    							       
+											 
+											if ($flag)
+											{
+											    $flag = false;
+											    // Si no ha habido ningún error al validar los datos											    
+											    // Se comprueba que no exista otro usuario con el mismo login
+											    $query = "SELECT login FROM phpforum_users WHERE login LIKE '".$login."'";
+											    if (!$gesBD->selectOne($query, "login"))
+											    {
+											        // Si el login está libre
+											        // Se comprueba que no exista ningún usuario con el mismo email
+											        $query = "SELECT email FROM phpforum_users WHERE email LIKE '".$email."'";
+											        if (!$gesBD->selectOne($query, "email"))
+											        {
+											            // Si el email está libre
+											            // Se registra el usuario
+											            $query = "INSERT INTO phpforum_users (login, passwd, name, email, fecha, msn, web, sex, avatar, site) VALUES ('".$login."', '".md5($passwd)."', '".$name."', '".$email."', (SELECT NOW()), '".$msn."', '".$web."', '".$sex."', ".$avy.", '".$site."')";
+															    if ($gesBD->insert($query))
+															    {
+															        // Si se registra correctamente
+															        // Se selecciona su id
+                                      $query = "SELECT id_user FROM phpforum_users WHERE login LIKE '".$login."'";
+																			if ($gesBD->selectOne($query, "id_user"))
+																			{										   
+																			    // Si existe el usuario
+																					// Se recoge su id									
+																					$id_user = $gesBD->getObj();					   
+																	        
+																	        // Insertar registros con status = 0 en phpforum_reads_control
+																	        $query = "SELECT id_post FROM phpforum_posts";
+		                                      $variables[0] = "id_post";															        
+																	        if ($gesBD->selectMore($query, $variables))
+																	        {
+																	            $listaPosts = $gesBD->getObj();
+																	            $size = count($listaPosts);
+																	            $cont = 0;
+																	            
+																	            for ($cont = 0; $cont < $size; $cont++)
+																	            {
+																	                $post = $listaPosts[$cont];
+																	                $id_post = $post[0];
+																	                $query = "INSERT INTO phpforum_reads_control (id_user, id_post, status) VALUES (".$id_user.", ".$id_post.", 0)";																	                
+																	                $gesBD->insert($query);
+													                    }
+		                                       }       
+		                                       
+		                                      // Mandamos un mail con sus datos de conexión 
+                                          // url del host														 			
+    																      $forum_path = $this->f_path."index.php?accion=ShowUser&id=".$id_user;
+    																      
+    															 	 	 		// Se manda un email con sus datos al usuario creado por defecto																						 	 	 		
+    																			$from = $this->f_title." <".$this->a_email.">";					 	 	 		
+    																			$subject = "Bienvenido a \"".$this->f_title."\""; 
+    																			$clave = $passwd;
+    																			$admin_email = $this->a_email;
+    																			$forum_title = $this->f_title;
+    																			$link = "<A HREF='".$forum_path."' class='link_texto' target='_blank'>perfil</A>";
+    																			########################################
+    																			##### Se forma el cuerpo del email #####
+    																			########################################
+    																			if (eregi("gmail", $email))
+    																			{
+    																			    include("includes/mailToNewRegisteredUserNoHTML.inc");
+    																			}
+    																			else
+    																			{
+    																			    include("includes/mailToNewRegisteredUser.inc");
+    																			}																			
+    									                    ########################################           
+    									                    ########################################
+    																							 				      
+    																      // Se manda el email
+    																      if (sendMail($email, $from, $subject, $body))
+    																      {				
+																					    // Si se manda el email	
+																							// Se loguea al usuario		
+																							$flag = true;							       	  
+    																          $_SESSION["loginRegister"] = $login;
+																							$_SESSION["passwdRegister"] =  $passwd;
+    				    															header("Location: index.php?accion=SessionLogin");
+    																			}
+    																			else
+    																			{				
+																					    // Si no se manda el email
+																							// Se indica mediante un mensaje de error											 		
+    																	 		 		$this->error = "No se ha podido completar el registro.<BR>Int&eacute;ntelo m&aacute;s tarde.";
+    																			}
+																			}																	    								    
+																	}
+																	
+																	if (!$flag)
+																	{			
+																	    // Si ha habido algún error al registrarse
+																			// Se eliminan todos los datos relacionados con el usuario												    
+																	    if ($tipo == "file")
+																	    {
+																	        if (unlink($avyPath.$avyName))
+																			    {
+																			        $query = "DELETE FROM phpforum_avatars WHERE id_avatar LIKE ".$avy;
+																							if (!$gesBD->delete($query))
+																							{
+																							    header("Location: error.php");
+																							}													    
+																					}	
+																			}
+																	    if (!$gesBD->delete($query))
+																	    {																			    
+																			    header("Location: error.php");
+																			}   
+																			
+																			$query = "DELETE FROM phpforum_reads_control WHERE id_user LIKE ".$id_user;
+																			if (!$gesBD->delete($query))
+																			{
+																			    header("Location: error.php");
+																			} 
+																	}
+															}		
+															else
+															{
+															    // Si el email no está libre
+															    // Se indica mediante un mensaje de error
+															    $this->error = "El <B>E-MAIL</B> indicado ya existe.<BR>Ingrese otro e-mail distinto para registrarse.";	
+																	$flag = false;		
+															}
+													}		
+													else
+													{
+													    // Si el login no está libre
+													    // Se indica mediante un mensaje de error
+													    $this->error = "El <B>LOGIN</B> indicado ya existe.<BR>Ingrese otro login distinto para registrarse.";	
+															$flag = false;
+													}																				    									    
+											}
+									}
+									else
+									{
+									    // Si el código de seguridad no es correcto
+									    // Se indica mediante un mensaje de error
+									    $this->error = "El <B>C&Oacute;DIGO DE SEGURIDAD</B> que ha introducido es err&oacute;neo.<BR>Si no puede visualizarlo correctamente, contacte con el administrador del foro.";
+									    $flag = false;
+									}							    																    
+							}
+							else
+							{
+							    // Si los datos validados no tienen ningún valor
+							    // Se indica
+							    $flag = false;
+							}
+					}
+					else
+					{
+					    // Si hay sesión
+					    // Se indica mediante un mensaje de error
+					    $this->error = "No puede registrarse sin haberse desconectado previamente.";	
+							$flag = false;						
+					}
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}
+?>

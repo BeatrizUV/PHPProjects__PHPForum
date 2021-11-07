@@ -1,0 +1,112 @@
+<HTML>
+			<HEAD>
+			     <LINK rel="stylesheet" type="text/css" href="templates/Default/stylesheet/style.css" />					 
+					 <STYLE>
+					        BODY {
+					            font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+											color: #4F4F4F;
+											text-align: center;
+											font-size: 10px;
+											vertical-align: middle;
+											text-align: center;
+											scrollbar-face-color: #999999;
+									    scrollbar-shadow-color: #999999;
+									    scrollbar-highlight-color: #999999;
+									    scrollbar-3dlight-color: #FFFFFF;
+									    scrollbar-darkshadow-color: #000000;
+									    scrollbar-track-color: #C0C0C0;
+									    scrollbar-arrow-color: #C0C0C0; 
+									    cursor: default;
+									}
+									.tabla_cita {
+									    width: 350px; padding: 5px; border-spacing: 0px; text-align: left; height: 50px; 
+											vertical-align: bottom; font-size: 10px;
+									}
+					 </STYLE>
+			     <SCRIPT>
+						function resizeImg(imgname)
+						{
+						    var w = document.getElementById(imgname).width;
+						    var h = document.getElementById(imgname).height;
+						    if (w > 375)
+						    {
+						        document.getElementById(imgname).width = "375";
+								} 
+								else if (h > 200)
+								{
+								    document.getElementById(imgname).height = "200";
+								}  	
+						}
+						</SCRIPT>
+			</HEAD>
+			<BODY>
+<?
+   $accion = "ShowPost";
+   // Se recoge la categoría
+   $cat = $modelo["modelo"];
+	 // Se extrae el tema	 
+	 $theme = $cat->getThemes();
+	 // Se extrae el post	 
+	 $post = $theme->getPosts();
+	 // Se extrae la id del post
+	 $id_post = $post->getId_post();
+	 // Y el título
+	 $postTitle = $post->getTitle();
+	 $id = $id_post;	 
+?>					
+      			<CENTER>
+								  <TABLE class="tabla_marco_foro" style="width: 480px; height: 130px; font-size: 10px;"valign="top">
+					 							<TR>
+					 							    <TD width="10px"></TD>
+					 							    <TD class="align_center" valign="top">
+					 							    		<TABLE class="tabla_foro" style="width: 460px; height: 130px; font-size: 10px;" cellpadding="0" cellspacing="0">																			 							 							    					 
+							 					              <TR>
+			                                   <TD colspan="2" class="celda_nombre_cat" style="width: 470px;">
+			                                   		 <SPAN class="flechitas_cat">&gt;&gt;</SPAN> <?=$postTitle?>
+			                                   </TD>
+			                                </TR> 																																								                                                                    				
+<? 
+    // Se extrae la lista de mensajes
+    $listaMsgs = $post->getMsgs();
+		$contlm = 0;
+		$sizelm = count($listaMsgs);	
+		
+		for($contlm = 0; $contlm < ($sizelm); $contlm++)
+		{
+		    // Se extraen los datos de cada mensaje
+		    $msg = $listaMsgs[$contlm];
+				$id_msg = $msg->getId_msg();			
+				$date = $msg->getDate();				
+				$body = $msg->getBody();	
+				$body = replaceBBCodeToHTML(replaceCharsToHTML($body));				
+				$author = $msg->getAuthor();			
+				$login_author = $author->getLogin();	
+				// Y se muestran					
+?>
+					 	 													<TR>																 										 	 													    
+																					<TD class="celda_profile_oscura" style="width: 230px; height: 20px;" style="font-size: 10px; text-align: left;">
+																							&nbsp;<?=$login_author?>																																					
+																					</TD>
+																					<TD class="celda_profile_oscura" style="width: 230px; height: 20px;" style="font-size: 10px; text-align: right;">
+																							<?=$date?>&nbsp;																																				
+																					</TD>																																																
+																			</TR>
+																			<TR>			
+															 		        <TD colspan="2" class="celda_profile" style="width: 460px; height: 133px; padding: 5px; text-align: left; vertical-align: top; font-size: 10px; ">
+															 		             <?=$body?>
+																					</TD>	
+																			</TR>	
+																			<TR>
+																					<TD colspan="2" style="height: 1px; background-color: #FFFFFF;"></TD>
+																			</TR>
+<?						
+	}
+?>																																																																														
+												        </TABLE>
+											      </TD>
+											      <TD width="10px"></TD>
+											  </TR>																							
+                  </TABLE>													 		
+						</CENTER>							 		 
+		  </BODY>			
+</HTML>																													 		 

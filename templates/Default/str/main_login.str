@@ -1,0 +1,124 @@
+<? include("templates/Default/str/header.str"); ?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>																														
+																											   <TD width="25px"></TD>
+ 	 																										   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR>
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Conectar
+																																			</TD>																																			
+																																	</TR>																																										                	   	   
+<?
+  // Página para el login de los usuarios 
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+?>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>				
+																																	<TR>	
+																																     <TD class="align_center" colspan="3">
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>
+<?	  	    	    	
+	}	
+?>																																
+																																	<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">												                			       
+																										                			       <TR>
+																														                	   	   <TD>
+																														                	   	   		 <FORM action="index.php?accion=SessionLogin&destino=<?=$_GET["ac"]?>&pagina=<?=$_GET["dest"]?>&act=<?=$_GET["act"]?>" method="POST" name="formLogin">																								
+																				                                             </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>Para poder acceder al foro, debe rellenar el siguiente formulario:
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="10"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="192px">Login&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="text" name="login" value="" maxlength="15" size="25" /></TD>
+																														                	   	   	   		  </TR>
+																														    								  						<TR>
+																														                	   	   	   		  	  <TD class="align_right" width="192px">Clave&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="password" name="passwd" value="" maxlength="32" size="25" /></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_center" colspan="2"><INPUT type="checkbox" name="usecookie" />&nbsp;Conectar autom&aacute;ticamente</TD>
+																														                	   	   	   		  </TR>
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2"><INPUT class="button" type="button" name="aceptar" value="Aceptar" onClick="valFormLogin()" /></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>																																						   	   	   		    
+																																						   	   	   		    <TR>
+																																                	   	            <TD class="align_center" colspan="2">&iquest;No recuerda su clave? Pinche <A HREF="index.php?accion=Navigate&destino=main_newpass" class="link_cuerpo" target="popup" onClick="window.open(this.href, this.target, 'width=500px,height=225px,resizable=no,scrollbars=no,directories=no,location=no,menubar=no,status=no,toolbar=no'); return false;">aqu&iacute;</A>.</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		    <TR>
+																																                	   	            <TD class="align_center" colspan="2">&iquest;A&uacute;n no se ha registrador? <A HREF="index.php?accion=Navigate&destino=main_register" class="link_cuerpo">Reg&iacute;strese aqu&iacute;</A>.</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		</TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																								 <TR>
+																																								     <TD>
+																																												 </FORM>
+																																										 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																				 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>										
+																										 <TR>
+								       		 													 		 <TD height="10" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>

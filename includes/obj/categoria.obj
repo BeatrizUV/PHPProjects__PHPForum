@@ -1,0 +1,111 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de las categorías.
+     * By Beatriz Urbano Vega [Masane].
+     */
+	class Categoria
+	{		
+		var $title;
+		var $visibility;		
+		var $id_cat;	
+		var $themes;
+		var $position;			
+		var $content;		
+		
+		/**
+		 * Metodo constructor de la clase.		 
+		 */
+		function Tema($id_cat, $title, $themes, $visibility, $position, $content){			
+			$this->id_cat = $id_cat;
+			$this->title = $title;
+			$this->themes = $themes;
+			$this->visibility = $visibility; 			
+			$this->position = $position;			
+			$this->content = $content;			
+		}		
+		
+		/**
+		 * Metodo que se encarga de asignar la lista de temas que pertenecen a la categoría.		 
+		 */
+		function setThemes($themes){
+			$this->themes = $themes;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar el title del theme.		 
+		 */
+		function setTitle($title){
+			$this->title = $title;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar el visibility del theme.		 
+		 */
+		function setVisibility($visibility){
+			$this->visibility = $visibility;
+		}  	
+		
+		/**
+		 * Metodo que se encarga de asignar el numero de identificacion de la categoría padre del theme.		 
+		 */
+		function setId_cat($id_cat){
+			$this->id_cat = $id_cat;
+		} 	
+		
+		/**
+		 * Metodo que se encarga de asignar la posición del theme.		 
+		 */
+		function setPosition($position){
+			$this->position = $position;
+		}	
+		
+		/**
+		 * Metodo que se encarga de asignar la existencia de contenido en el theme.		 
+		 */
+		function setContent($content){
+			$this->content = $content;
+		}	
+		
+		/**
+		 * Metodo que se encarga de devolver la lista de temas que pertenecen a la categoría.		 
+		 */
+		function getThemes(){
+			return $this->themes;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el title del theme.		 
+		 */
+		function getTitle(){
+			return $this->title;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el visibility del theme.		 
+		 */
+		function getVisibility(){
+			return $this->visibility;
+		}		
+		
+		/**
+		 * Metodo que se encarga de devolver la posición del theme.		 
+		 */
+		function getPosition(){
+			return $this->position;
+		}
+				
+		/**
+		 * Metodo que se encarga de devolver la existencia de contenido en el theme.		 
+		 */
+		function getContent(){
+			return $this->content;
+		}	
+		
+		/**
+		 * Metodo que se encarga de devolver el numero de identificacion de la categoría padre del theme.		 
+		 */
+		function getId_cat(){
+			return $this->id_cat;
+		} 	
+	}
+?>

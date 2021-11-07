@@ -1,0 +1,111 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de los logs.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class Log {
+    
+        var $id_log;        
+        var $date;
+        var $ip;
+        var $id_user;
+        var $user;
+        var $action;        
+        
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function Log($id_log, $date, $ip, $id_user, $user, $action){
+            $this->id_log = $id_log;
+            $this->date = $date;
+			      $this->ip = $ip;
+            $this->id_user = $id_user;
+            $this->user = $user; 
+            $this->action = $action;						         
+        }
+		        
+        /**
+         * Metodo que se encarga de asignar el id del log.         
+         */
+        function setId_log($id_log){
+            $this->id_log = $id_log;
+        }                
+        
+         /**
+         * Metodo que se encarga de devolver el id del log.         
+         */
+        function getId_log(){
+            return $this->id_log;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la fecha del log.         
+         */
+        function setDate($date){
+            $this->date = $date;
+        }                
+        
+         /**
+         * Metodo que se encarga de devolver la fecha del log.         
+         */
+        function getDate(){
+            return $this->date;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la ip del log.         
+         */
+        function setIp($ip){
+            $this->ip = $ip;
+        }                
+        
+         /**
+         * Metodo que se encarga de devolver la ip log.         
+         */
+        function getIp(){
+            return $this->ip;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el id del user del log.         
+         */
+        function setId_user($id_user){
+            $this->id_user = $id_user;
+        }                
+        
+         /**
+         * Metodo que se encarga de devolver el id del user del log.         
+         */
+        function getId_user(){
+            return $this->id_user;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el user del log.         
+         */
+        function setUser($user){
+            $this->user = $user;
+        }                
+        
+         /**
+         * Metodo que se encarga de devolver el user del log.         
+         */
+        function getUser(){
+            return $this->user;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la acción del log.         
+         */
+        function setAction($action){
+            $this->action = $action;
+        }                
+        
+         /**
+         * Metodo que se encarga de devolver la acción del log.         
+         */
+        function getAction(){
+            return $this->action;
+        }
+    }
+?>

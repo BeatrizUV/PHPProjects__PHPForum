@@ -1,0 +1,94 @@
+<?
+  /**
+   * Clase que se encarga de mostrar todos los mensajes privados.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowMP
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_readMP.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+			
+		 // Constructor de la clase			
+	   function ShowMP(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     // Se recogen los valores enviados
+		     $val = false;		 	   
+		 	   $id_mp = $_GET["id"];
+		 	   $box = $_GET["box"];
+		 	   $pagina = $_GET["pagina"];
+		 	   if (isset($pagina))
+		 	   {
+		 	       // Si la página tiene algún valor
+		 	       // Se establece la vista  con la página indicada
+		 	       $this->vista = $pagina.".str";
+				 }
+		 	   
+		 	   if (isset($id_mp))
+		 	   {
+		 	       // Si la id del mensaje privado tiene algún valor
+		 	       if (isset($_SESSION["haySesion"]))
+						 {								
+						     // Si hay sesión
+								 if ($gesBD->selectMP($id_mp, $box))
+								 {
+								     // Si existe el mensaje privado
+								     // Se recoge el mensaje privado
+								     $mp = $gesBD->getObj();
+										 // Se actualiza dicho mensaje privado como mensaje leído	
+										 $query = "UPDATE phpforum_mps SET is_read = 1 WHERE id_mp LIKE ".$mp->getId_mp();
+										 $gesBD->update($query);										 
+										 // Se guarda el mensaje privado en el modelo
+										 $this->modelo = $mp;
+										 // Y se indica que todo ha ido bien
+										 $val = true;	 
+								 }			    						 				 
+						 }
+						 else
+						 {
+						     // Si no hay sesión
+						     // Se redirige al usuario a la página de inicio
+						     header("Location: index.php");
+						 }		 
+				 }
+				 
+				 if (!$val)
+				 {
+				     // Si ha ocurrido algún error de acceso a la base de datos
+				     // Se redirige al usuario a la página de error
+				     header("Location: error.php");
+				 }		 		 	   
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

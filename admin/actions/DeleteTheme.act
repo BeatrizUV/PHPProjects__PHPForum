@@ -1,0 +1,145 @@
+<?
+  /**
+   * Clase que se encarga de eliminar un tema de una categoría del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class DeleteTheme
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_deleteTheme.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function DeleteTheme(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	
+				     // Si hay sesión de administrador
+						 $id_theme = $_GET["idt"];
+						 if (isset($id_theme))
+						 {
+		             // Si el id del tema tiene algún valor
+		             // Se recoge su título
+						     $query = "SELECT title, position FROM phpforum_themes WHERE id_theme LIKE ".$id_theme;
+						     $variables[0] = "title";
+						     $variables[1] = "position"; 
+						     if ($gesBD->selectMore($query, $variables))
+						     {
+						         // Si existe el tema
+						         // Se recoge el título y la posición
+						         $filas = $gesBD->getObj();
+						         $fila = $filas[0];
+						         $title = $fila[0];
+						         $position = $fila[1];
+						         // Se elimina el tema
+						         $query = "DELETE FROM phpforum_themes WHERE id_theme LIKE ".$id_theme;
+						         if ($gesBD->delete($query))
+						         {
+						             // Si se elimina correctamente
+						             // Se seleccionan los posts hijos del tema
+						             $query = "SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme;
+				                 $variables[0] = "id_post";
+				                 // Se ejecuta el SELECT
+				                 if ($gesBD->selectMore($query, $variables))
+				                 {
+				                     // Si se ejecuta correctamente
+				                     $filas = $gesBD->getObj();
+				                     $cont = 0;
+				                     $size = count($filas);
+				                     
+				                     for ($cont = 0; $cont < $size; $cont++)
+				                     {
+				                         $fila = $filas[$cont];
+				                         // Se elimina cada post 
+				                         $query = "DELETE FROM phpforum_msgs WHERE id_post LIKE ".$fila[0];
+				                         $gesBD->delete($query);
+				                         // Se eliminan los registros de cada post en la tabla de control de lecturas
+				                         $queryReads = "DELETE FROM phpforum_reads_control WHERE id_post LIKE ".$fila[0];
+								                 $gesBD->delete($queryReads);
+														 }
+														 
+														 // Se elimina el tema
+														 $query = "DELETE FROM phpforum_posts WHERE id_theme LIKE ".$id_theme[0];
+														 $gesBD->delete($query);
+												 }
+								         
+								         // Se actualizan todos los temas con una posición superior al eliminado y se reposicionan a una posición menos
+								         $query = "UPDATE phpforum_themes SET position = (position - 1) WHERE position > ".$position;
+								         if ($gesBD->update($query))
+								         {
+								             // Se eliminan de la sesión todos los datos relacionados con la eliminación del teman
+										         unset($_SESSION["categorias"]);
+										         // Se indica el éxito de la operación mediante un mensaje emergente y se redirige al usuario a la página de eliminar temas
+										         echo "<SCRIPT>";
+										         echo "alert('Tema \"".$title."\" eliminado correctamente.');";
+										         echo "location.href='index.php?accion=ShowForum&pagina=admin_deleteTheme';";
+										         echo "</SCRIPT>";
+								         }
+								         else
+								         {
+								             header("Location: error.php");
+												 }
+										 }
+										 else
+										 {
+										     // Si no se elimina correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");	
+										 }
+						     }
+								 else
+								 {
+								     // Si no existe el tema
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");	
+								 }    
+						 }
+						 else
+						 {
+						     // Si la id del tema no tiene ningún valor
+						     // Se redirige al ususario a la página de inicio del panel del administración
+						     header("Location: index.php");
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+						 // Se redirige al usuario a la página de inicio del foro
+						 header("Location: ../index.php"); 
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

@@ -1,0 +1,80 @@
+<HTML>
+		<HEAD>
+		      <TITLE>Usuarios</TITLE>
+					<STYLE>
+						  BODY {
+						       background-color: #C0C0C0;
+									 color: #4F4F4F;
+				           font-size: 11px;
+				           font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+				           padding: 5px;				           
+								 	 scrollbar-arrow-color: #FFFFFF;
+									 scrollbar-3dlight-color: #FFFFFF;
+									 scrollbar-darkshadow-color: #FFFFFF;
+									 scrollbar-face-color: #C0C0C0;
+									 scrollbar-highlight-color: #C0C0C0;
+									 scrollbar-shadow-color: #C0C0C0;
+									 scrollbar-track-color: #C0C0C0;
+									 CURSOR: default;
+				      }
+				      .tabla_cita {
+							    width: 350px; padding: 5px; border-spacing: 0px; text-align: left; height: 50px; 
+									vertical-align: bottom; font-size: 10px;
+							}
+							.celda_cita {
+							    background-color: #D0D0D0; border: #FFFFFF 1px double; padding: 5px; 
+									text-align: left; vertical-align: top; font-size: 10px; color: #787878;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+							} 
+							.button {
+									border: #000000 1px solid; font-size: 11px; background-color: #666666;
+									color: #CCCCCC; width: 100px;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;	
+							}							
+							.input {
+									border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+									border-left: #000000 1px solid; color: #EEEEEE; border-bottom: #FFFFFF 1px solid;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #999999; padding-left: 3px; 
+							}							
+					</STYLE>		
+					<SCRIPT>
+							function selectUser()
+							{
+							 		window.opener.document.formCreateMP.to.value	= document.formFindUser.userTo.value;
+									window.close(); 	 
+							}		
+					</SCRIPT>			
+		</HEAD>
+		<BODY leftmargin="0" rightmargin="0">
+<?
+  // Se recoge la lista de usuarios
+	$listaUsers = $modelo["modelo"];
+	$cont = 0;
+	$size = count($listaUsers);
+?>		
+				<CENTER>	
+				      Seleccione un destinatario:
+				      <BR>	
+	              <FORM name="formFindUser" name="formFindUser">						
+										<SELECT name="userTo" id="userTo" size="30" class="input" style="width: 250px;">
+<?
+	for ($cont = 0; $cont < $size; $cont++)
+	{
+	    // Se extrae cada usuario
+	    // Y se muestra cada login
+	 		$user = $listaUsers[$cont];
+			$login = $user->getLogin();
+			$login = replaceCharsToHTML($login);
+?>
+						 	 					<OPTION value="<?=$login?>"><?=$login?></OPTION>				 
+<?			 	
+	}
+?>										
+										</SELECT>
+										<BR><BR>
+										<INPUT type="button" class="button" name="Aceptar" value="Aceptar" onClick="selectUser()" />
+								</FORM>							
+				</CENTER>			
+	  </BODY>
+</HTML>

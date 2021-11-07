@@ -1,0 +1,103 @@
+<?
+  /**
+   * Clase que se encarga de mostrar la lista de usuarios del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowUsers
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_editUser.str";
+	 	 // Variable que guarda el error
+	 	 var $error;
+	 	 // Variable que guarda la acción realizada
+	 	 var $act;	 	 
+					
+		 // Constructor de la clase			
+	   function ShowUsers() {	
+		 }
+		 
+		 // Función que ejecuta el códido de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+		 	   // Se recoge la página 
+		 	   $pagina = $_GET["pagina"];
+		 	   if (isset($_SESSION["haySesionAdmin"]))
+		 	   {
+		 	       // Si la página tiene algún valor
+		 	       if (!empty($pagina))
+		 	       {
+		 	           // Si hay sesión de administrador
+		 	           // Se recogen los usuarios
+		 	           if ($gesBD->selectUsers())
+								 {
+								     // Si se ejecuta correctamente
+								     // Se guardan los usuarios en el modelo
+								     $this->modelo = $gesBD->getObj();
+								     // Se establece la vista a partir de la página
+								     $this->vista = $pagina.".str";
+								     // Y se indica que todo ha ido bien
+										 $val = true;		
+								 }
+								 else
+								 {
+								     // Si no se ejecuta correctamente
+								     // Se recoge el error
+								     $this->error = $gesBD->getError();
+								     if (empty($this->error))
+								     {
+								         // Si el error no es de acceso a base de datos
+								         // Se establece el error
+								         $this->error = "No hay Usuarios para mostrar.";
+										 }				     
+										 else
+										 {
+										     // Si el error sí es de acceso a base de datos
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");
+										 }
+								 }	 	       
+						 }
+						 else
+						 {
+						     // Si no hay sesión de administrador
+						     // Se redirige al usuario a la página de inicio del panel de administración
+						     header("Location: index.php");
+						 }						 
+				 }
+				 else
+				 {
+				     // Si la página no tiene ningún valor
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

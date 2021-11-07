@@ -1,0 +1,177 @@
+<? include("../templates/Default/str/admin_header.str"); ?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3" id="loc">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Configuraci&oacute;n
+																																			</TD>																																			
+																																	</TR>
+																																	<TR> 
+																																	    <TD class="celda_path" style="text-align: right; height: 15px;" colspan="3" id="submenu"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página de administración que edita la configuración del foro
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>																																	
+<?	  	    	    	
+	}	
+	else
+	{
+	    $listaTemplates = $modelo["modelo"];	  
+			$_SESSION["templates"] = serialize($listaTemplates); 
+	}  	     
+?>
+	 																																<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">												                			       
+																										                			       <TR>
+																														                	   	   <TD>
+																														                	   	   		 <FORM action="index.php?accion=EditForumInfo" method="POST" name="formEditForumInfo" id="formEditForumInfo">																																						             																																																																						
+																				                                             </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>A continuaci&oacute;n se muestran los par&aacute;metros de configuraci&oacute;n del foro:
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="10"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">
+																														                	   	   	        <TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Este ser&aacute; el t&iacute;tulo que se mostrar&aacute; en la cabecera del foro.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="182px">T&iacute;tulo del foro&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="text" name="f_title" id="f_title" value="<?=$forum_title?>" maxlength="25" size="34"/></TD>
+																														                	   	   	   		  </TR>	
+																																															<TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 												
+																																															<TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Este ser&aacute; el e-mail al que aparecer&aacute; como e-mail de contacto del foro.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 																	    								  						
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">E-mail&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="text" name="a_email" id="a_email" value="<?=$admin_email?>" maxlength="100" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 												
+																																															<TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Este ser&aacute; estilo que se le asignar&aacute; al foro.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 	
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">Estilo del foro&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> 
+																														                	   	   	   		  	  		<SELECT name="newTemplate" id="newTemplate" class="input" style="width: 200px;">
+<?
+	    $cont = 0;
+	    $size = count($listaTemplates);
+	    
+	    for ($cont = 0; $cont < $size; $cont++)
+	    {
+	        $temp = $listaTemplates[$cont];
+			 		if ($temp["is_active"] == 1)
+					{
+?>
+																														                	   	   	   		  	  				<OPTION value="<?=$temp["name"]?>" selected><?=$temp["name"]?></OPTION>
+<?					
+					}	    
+					else
+					{
+?>
+																														                	   	   	   		  	  				<OPTION value="<?=$temp["name"]?>"><?=$temp["name"]?></OPTION>
+<?					
+					}
+			}
+?>																																																						 																																																						 		
+																														                	   	   	   		  	  		</SELECT>
+																																																	</TD>
+																														                	   	   	   		  </TR>																														                	   	   	   		  
+																																															<TR>
+																																                	   	            <TD colspan="2" height="25px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>																													                	   	   	   		  
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2">																																                	   	            		
+																																																			<INPUT class="button" type="button" name="Editar" value="Editar" onClick="valFormEditForumInfo()" />
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		</TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																								 <TR>
+																																								     <TD>
+																																												 </FORM>
+																																										 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																				 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="15px"></TD>
+																																	</TR>																										
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																											 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("../templates/Default/str/admin_footer.str"); ?>														 		 

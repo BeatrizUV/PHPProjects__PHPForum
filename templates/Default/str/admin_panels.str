@@ -1,0 +1,44 @@
+<?  
+  // Panel de secciones del panel de administración
+  if (isset($_SESSION["haySesionAdmin"]))
+	{	   
+	   $userLog = unserialize($_SESSION["userlog"]);
+		 $login = $userLog->getLogin();
+?>
+													 <TR>
+													 		 <TD class="celda_header_middle1">
+													 		     <TABLE class="tabla_acoplada">
+													 		         <TR>
+													 		         		 <TD width="100" height="100" valign="bottom"></TD>
+													 		         		 <TD id="capa_reloj" valign="bottom" align="right"></TD>
+													 		         </TR>
+													 		     </TABLE>
+															 </TD>
+													 </TR>
+													 <TR>
+													 		 <TD class="celda_header_middle2"></TD>
+													 </TR>
+													 <TR>
+													 		 <TD class="celda_header_bottom"> 
+																	 <!-- TABLA PATH + PANEL -->
+																	 <TABLE class="tabla_acoplada" align="right" xborder="1">
+																			<TR> 
+																		      <TD class="celda_usuario">
+																		          Hola,&nbsp;<B><I><?=replaceCharsToHTML($login)?></I></B></TD>																																											
+<?
+	}
+	else
+	{
+	    echo "<SCRIPT>";
+	    echo "window.close();";
+	    echo "</SCRIPT>";
+	}
+	
+	include("../templates/Default/str/admin_menu.inc");	
+?>
+                                              </UL>
+                                          </TD>	
+																			</TR>
+                                   </TABLE>
+                               </TD>  
+                           </TR>

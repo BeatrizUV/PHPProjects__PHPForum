@@ -1,0 +1,101 @@
+<?
+  /**
+   * Clase que se encarga de editar los parámtetros de configuración del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class EditForumInfo
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_info.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function EditForumInfo(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {			 	
+				     // Si hay sesión de administrador
+				     // Se recogen los datos enviados
+				     global $forum_path;				     
+				     global $forum_date;				     
+				     				     
+				     $title = $_POST["f_title"];
+				     $email = $_POST["a_email"];
+				     $temp = $_POST["newTemplate"];
+				     
+				     // Se validan los datos
+				     $this->error = valFormEditForumInfo($title, $email);
+				     
+				     if ($this->error == null)
+				     {
+				         // Si se validan correctamente
+				         // Se crea un nuevo archivo de configuración del foro
+				         createConfigFileForum($title, $email, $forum_path, $forum_date, $temp);
+				         $query = "UPDATE phpforum_templates SET is_active = 0";
+				         if ($gesBD->update($query))
+				         {
+				             $query = "UPDATE phpforum_templates SET is_active = 1 WHERE name LIKE '".$temp."'";
+				             if ($gesBD->update($query))
+				             {
+				                 $query = "UPDATE phpforum_avatars SET name = 'templates/".$temp."/img/default_avatar.jpg' WHERE id_avatar LIKE -1";
+				                 if (!$gesBD->update($query))
+				                 {
+				                     header("Location: error.php");
+												 }
+										 }
+										 else
+										 {
+										     header("Location: error.php");
+										 }
+								 }
+				         // Se eliminan de la sesión los datos relacionados con la edición de la configuración del foro
+								 unset($_SESSION["templates"]);	
+								 // Se indica el éxito de la operación mediante un mensaje emergente y se redirecciona al usuario a la página de edición de la configuración del foro
+						 		 echo "<SCRIPT>";
+								 echo "alert('Opciones de configuración del foro editadas correctamente.');";
+								 echo "location.href='index.php?accion=ShowTemplates&pagina=admin_info';";
+								 echo "</SCRIPT>";
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+						 // Se redirecciona al usuario a la página de inicio del foro
+						 header("Location: ../index.php");	
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

@@ -1,0 +1,322 @@
+<HTML>
+		<HEAD>
+		      <TITLE>Perfil de usuario</TITLE>
+					<STYLE>
+							BODY {
+							    background-color: #C0C0C0;
+			            font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									color: #4F4F4F;
+									text-align: center;
+									font-size: 10px;
+									vertical-align: middle;
+									text-align: center;
+									scrollbar-face-color: #999999;
+							    scrollbar-shadow-color: #999999;
+							    scrollbar-highlight-color: #999999;
+							    scrollbar-3dlight-color: #FFFFFF;
+							    scrollbar-darkshadow-color: #000000;
+							    scrollbar-track-color: #C0C0C0;
+							    scrollbar-arrow-color: #C0C0C0; 
+							    cursor: default;
+							}
+							.tabla_marco_foro {
+							    width: 550px; border: 1px #FFFFFF solid; text-align: center;
+									vertical-align: middle;	background-color: #C0C0C0; height: 200px;
+									font-size: 10px;
+							}
+							.tabla_foro {
+							    width: 530px; border: 2px #D0D0D0 solid; text-align: center;
+									vertical-align: middle;	background-color: #ACACAC; padding: 0px;
+									border-spacing: 0px; font-size: 10px;
+							}
+							.tabla_acoplada {
+							    width: 100%; height: 100%; border-spacing: 0px; border: 0 solid; font-size: 10px;
+									border-collapse: collapse; text-align: center; padding: 0px; border-spacing: 0px;
+							}
+							.celda_acoplada {
+							    width: 100%; height: 100%; border: 0 solid; text-align: center;
+									vertical-align: middle; border-spacing: 0px; padding: 0px;
+									font-size: 10px;
+							}
+							.celda_foro {
+							    width: 315px; height: 15px; text-align: center; vertical-align: middle;
+							    background-image: url(../img/bg_celda_foro.jpg); color: #FFFFFF; 
+									border: 1px #777777 solid; font-size: 10px;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+							}
+							/* tabla y celdas y links del path + panel*/
+							.celda_cuerpo {
+							    width: 600px; height: 400px; font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									color: #4F4F4F; text-align: center; font-size: 10px; vertical-align: middle;
+									background-image: url("../img/bg_body.jpg"); padding: 0px;
+							}
+							.button {
+								border: #000000 1px solid; font-size: 11px; background-color: #666666;
+								color: #CCCCCC; width: 100px;
+								font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;	
+							}
+							.input_textarea {
+								border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+								border-left: #000000 1px solid; color: #EEEEEE; border-bottom: #FFFFFF 1px solid;
+								font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+								background-color: #999999; padding-left: 3px; CURSOR: default;
+							}
+							.input {
+								border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+								border-left: #000000 1px solid; color: #EEEEEE; border-bottom: #FFFFFF 1px solid;
+								font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+								background-color: #999999; padding-left: 3px; 
+							}
+							.input:hover {
+								border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+								border-left: #000000 1px solid; color: #555555; border-bottom: #FFFFFF 1px solid;
+								font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+								background-color: #CCCCCC; padding-left: 3px;
+							}
+							.inputError {
+							    border: #FF0000 1px solid; font-size: 11px; color: #EEEEEE;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #999999; padding-left: 3px;
+							}
+							.align_right {
+							    text-align: right; font-size: 10px;
+							}
+							.align_left {
+							    text-align: left; font-size: 10px;
+							}
+							.align_center {
+							    text-align: center; font-size: 10px;
+							}
+					</STYLE>	
+					<SCRIPT type="text/javascript" src="../includes/js/valForms.js"></SCRIPT>							
+					<SCRIPT type="text/javascript" src="../includes/js/editorWysiwyg.js">
+					    // Variable para la selección de texto del textarea
+					    var sel;
+					    var campo = "sign";
+					</SCRIPT>
+					<SCRIPT>
+					// Función que chequea el maxlength de un textarea
+					function checkMaxLength()
+					{
+					    // funcion para chequear el tamaño máximo del textarea de la firma
+							var mLength = document.getElementById('sign').maxlength;
+							if (document.getElementById('sign').value.length > mLength)
+							{
+							    document.getElementById('sign').value = document.getElementById('sign').value.substring(0,mLength);
+							}		
+					}
+					</SCRIPT>
+		</HEAD>
+		<BODY leftmargin="0" rightmargin="0" onLoad="checkAdmin('<?=$id_user?>')">	
+		Usuario:
+<?
+  // Popup de administración en la que se edita el perfil de un usuario 
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+	    $user = unserialize($_SESSION["usuario"]);	
+?> 	 
+			    <TABLE class="tabla_errores">
+			        <TR>
+			        		<TD>
+			        		    <?=$error?>
+			        		</TD>
+			        </TR>																																         						        
+			    </TABLE>																				
+<?	  	    	    	
+	}
+	else
+	{
+	    $user = $modelo["modelo"];
+			$_SESSION["usuario"] = serialize($user); 
+	} 
+	
+	$login = $user->getLogin();	
+	$id_user = $user->getId_user();
+	$alerts = $user->getAlerts();
+	$votes = $user->getVotes();
+	$is_banned = $user->getIs_banned();
+	$urlAvatar = $user->getUrlAvatar();
+	$rank = $user->getRank();
+	$email = $user->getEmail();
+	$name = $user->getName();	
+	$msn = $user->getMsn();
+	$site = $user->getSite();	
+	$web = $user->getWeb();
+	$sex = $user->getSex();
+	if (empty($sex))
+	{
+	    $sex = "NoSex";
+	}			
+	$num_msgs = $user->getNum_msgs();	
+	$date = $user->getDate();
+	$lastClick = $user->getLastClick();
+	$sign = $user->getSign();		 
+?>
+				   <TABLE>												                			       
+					       <TR>
+		        	   	   <TD>
+		        	   	   		 <FORM action="index.php?accion=EditUser" method="POST" name="formEditUserAdmin" id="formEditUserAdmin">
+												 <INPUT type="hidden" id="id" name="id" value="<?=$id_user?>" onLoad="checkAdmin()" />	 																																						             																																																																						
+		                 </TD>
+		        	   </TR>
+		        	   <TR>
+		        	   	   <TD>													                	   	   	   							   
+		        	   	   	   <TABLE>
+					 			 				      <TR>
+													 		    <TD class="align_right" width="125px">Login&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+		        	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="login" id="login" value="<?=$login?>" maxlength="15" size="34"/></TD>
+		        	   	   	   		  </TR>
+								  						<TR>
+		        	   	   	   		  	  <TD class="align_right" width="125px">Clave Nueva&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+		        	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="password" name="new_passwd" id="new_passwd" value="" maxlength="20" size="34"/></TD>
+		        	   	   	   		  </TR>
+		        	   	   	   		  <TR>
+		        	   	   	   		  	  <TD class="align_right" width="125px">(Repita Clave Nueva)&nbsp;&nbsp;</TD>
+		        	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="password" name="new_passwd2" id="new_passwd2" value="" maxlength="20" size="34"/></TD>
+		        	   	   	   		  </TR>
+		        	   	   	   		  <TR>
+		        	   	   	   		  	  <TD class="align_right" width="125px">E-mail&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+		        	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="email" id="email" value="<?=$email?>" maxlength="40" size="34"/></TD>
+		        	   	   	   		  </TR>
+		        	   	   	   		  <TR>
+		            	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+						   	   	   		    </TR>	 
+		        	   	   	   		  <TR>
+		        	   	   	   		  	  <TD class="align_right" width="125px">Grupo&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+		        	   	   	   		  	  <TD class="align_left">																					                	   	   	   		  	  		    
+<?
+      if ($id_user != "-2")
+      {
+?>
+                                      <SELECT name="rank" id="rank" class="input" style="width: 200px;">
+<?      
+          if ($gesBD->selectGroups())
+		      {
+		          $listaGrupos = $gesBD->getObj();
+					}
+			    $cont = 0;
+			    $size = count($listaGrupos);
+			    
+			    for ($cont = 0; $cont < $size; $cont++)
+			    {
+			        $group = $listaGrupos[$cont];
+							$g = $group["group"];	 
+							if ($g->getId_group() == $rank)
+							{
+?>
+																 			 		<OPTION value="<?=$g->getId_group()?>" selected><?=replaceCharsToHTML($g->getName())?></OPTION>
+<?					
+							}
+							else
+							{
+?>
+																 			 		<OPTION value="<?=$g->getId_group()?>"><?=replaceCharsToHTML($g->getName())?></OPTION>																														                	   	   	   		  	  				
+<?			
+		          }
+					}
+?>
+                                      </SELECT>
+<?					
+			}
+			else
+			{
+?>
+			 		 		 												<?=replaceCharsToHTML($user->getRankName())?>		
+<?			
+			}		
+?>																	
+																</TD>
+				  	   	   	   		  </TR>	
+<?
+	   if ($id_user != "-2")
+	   {
+?>				  	   	   	   		  
+														<TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">Alertas&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="alerts" id="alerts" value="<?=$alerts?>" maxlength="2" size="34"/></TD>
+				  	   	   	   		  </TR>
+														<TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">Baneado&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"><INPUT xclass="input" type="radio" name="ban" id="ban" value="0" <?if($is_banned == "0"){?>checked<?}?> /> No&nbsp;&nbsp;&nbsp;<INPUT xclass="input" type="radio" name="ban" id="ban" value="1" <?if($is_banned == "1"){?>checked<?}?> /> S&iacute;</TD>
+				  	   	   	   		  </TR>
+<?
+     }
+?>				  	   	   	   		  
+														<TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">Votos&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="votes" id="votes" value="<?=$votes?>" maxlength="40" size="34"/></TD>
+				  	   	   	   		  </TR>	 	 	 	
+				  	   	   	   		  <TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">Nombre&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="name" id="name" value="<?=$name?>" maxlength="20" size="34"/></TD>
+				  	   	   	   		  </TR>
+				  	   	   	   		  <TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">Ubicaci&oacute;n&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="site" id="site" value="<?=$site?>" maxlength="30" size="34"/></TD>
+				  	   	   	   		  </TR>
+				  	   	   	   		  <TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">MSN&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="msn" id="msn" value="<?=$msn?>" maxlength="100" size="34"/></TD>
+				  	   	   	   		  </TR>
+				  	   	   	   		  <TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">Web&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"> <INPUT class="input" type="text" name="web" id="web" value="<?=$web?>" maxlength="20" size="34"/></TD>
+				  	   	   	   		  </TR>
+				  	   	   	   		  <TR>
+				  	   	   	   		  	  <TD class="align_right" width="125px">Sexo&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+				  	   	   	   		  	  <TD class="align_left" width="275px"><INPUT xclass="input" type="radio" name="sex" id="sex" value="NoSex" <?if($sex == "NoSex"){?>checked<?}?> /> Indefinido&nbsp;&nbsp;&nbsp;<INPUT xclass="input" type="radio" name="sex" value="M" <?if($sex == "M"){?>checked<?}?> /> Hombre&nbsp;&nbsp;&nbsp;<INPUT xclass="input" type="radio" name="sex" value="F" <?if($sex == "F"){?>checked<?}?> /> Mujer<BR></TD>
+				  	   	   	   		  </TR>
+				  	   	   	   		  <TR>																																																
+																<TD valign="top" colspan="2"><HR width="80%" color="#AAAAAA" size="1"></TD>																                	   																							
+														</TR>	
+				  	   	   	   		  <TR>
+				  	   	   	   		      <TD class="align_right" width="125px">Avatar&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																<TD class="align_left" width="275px">
+																		<IMG src="../<?=$urlAvatar?>" width="95px" height="95px" />
+																		<BR><INPUT type="checkbox" id="avatar" name="avatar" value="" /> Eliminar avatar.
+																</TD>																                	   	   	   		  	  
+				  	   	   	   		  </TR>	
+				  	   	   	   		  <TR>																																																
+																<TD valign="top" colspan="2"><HR width="80%" color="#AAAAAA" size="1"></TD>																                	   																							
+														</TR>	
+														<TR>
+														    <TD colspan="2" class="align_center">
+																    Firma&nbsp;&nbsp;:<BR>	
+										    				    <TABLE style="width: 100%">	
+			                	   	   	   		  <TR>																														                	   	   	   		  	  
+			                	   	   	   		  	  <TD style="width: 100%">
+			                	   	   	   		  	     <TABLE style="width: 100%">
+              	   	   	   		  	     				     <TR>
+              	   	   	   		  	     				     		 <TD class="align_center">																																																								 		
+																													 <? $field = "sign";?>																									                	   	   	   		  	     				     		     
+																											     <? include("../templates/Default/str/bbc_menuAdmin.str"); ?>																										                	   	   	   		  	     				     		 
+              	   	   	   		  	     				     		 </TD>
+              	   	   	   		  	     				     </TR>
+																									 <TR>	 
+              	   	   	   		  	     				     		 <TD class="align_center">																										                	   	   	   		  	     				     		     
+              	   	   	   		  	     				     		     <TEXTAREA class="input_textarea" name="sign" id="sign" maxlength="250" onkeyup="checkMaxLength()" rows="5" cols="25" style="width: 100%" wrap="virtual"><?=$sign?></TEXTAREA></FORM>																																						                	   	   	   		  	     				     		     
+              	   	   	   		  	     				     		     <INPUT type="button" class="button" name="reset" id="reset" value="Borrar Firma" onClick="document.getElementById('sign').value=''">
+              	   	   	   		  	     				     		 </TD>
+              	   	   	   		  	     				     </TR>
+			                	   	   	   		  	     </TABLE>																																																		 
+																						</TD>	 
+			                	   	   	   		  </TR>
+																    </TABLE>
+																</TD>
+														</TR>	
+														<TR>																																																
+																<TD valign="top" colspan="2"><HR width="80%" color="#AAAAAA" size="1"></TD>																                	   																							
+														</TR>																	                	   	   	   		  
+				                	  <TR>
+				      	   	            <TD class="align_center" colspan="2"> 	            		
+																		<INPUT class="button" type="button" name="Editar" value="Editar Usuario" onClick="valFormEditUserAdmin()" />
+																</TD>            	   	   	   		  	  
+					   	   	   		    </TR>
+					   	   	   	 </TABLE>    
+							 		 </TD>
+							 </TR>
+			   </TABLE>	  
+	  </BODY>
+</HTML>

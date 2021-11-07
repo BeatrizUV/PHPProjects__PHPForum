@@ -1,0 +1,107 @@
+<?
+  /**
+   * Clase que se encarga de mostrar todos los mensajes privados.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowMPs
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_mps_boxes.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function ShowMPs(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     // Recogemos los valores enviados
+		     $val = false;
+				 $box = $_GET["box"];
+				 if (!isset($box))
+				 {
+				     // Si la bandeja (entrada o salida) no tiene ningún valor
+				     // Se establece la bandeja como bandeja de entrada
+				     $box = "in";
+				 }
+		 	   
+		 	   if (isset($_SESSION["haySesion"]))
+				 {
+				     // Si hay sesión
+				     // Se envía la bandeja
+				     $_GET["box"] = $box;
+						 $msgOk = $_GET["msgOk"];
+						 if (isset($msgOk))
+						 {
+						     // Si el mensaje tiene algún valor
+						     // Se envía el mensaje
+						     $_GET["msgOk"] = $msgOk;
+						 }
+						 
+						 // Se recoge al usuario conectado de la sesión
+				 		 $user = unserialize($_SESSION["userlog"]);
+				 		 // Se extrae su id
+				 		 $id_user = $user->getId_user();
+							
+						 if ($gesBD->selectMPs($id_user, $box))
+						 {						 
+						     // Si hay mensajes privados del usuario para la bandeja establecida
+						     // Se guardan los mensajes en el modelo
+						     $this->modelo = $gesBD->getObj();			
+								 // Y se indica que todo ha ido bien			    
+						     $val = true;
+						 } 		
+						 else
+						 {
+						     // Si no no hay mensajes privados
+						     if ($gesBD->getError() == null)
+						     {
+						         // Si no ha sido por un error de acceso a la base de datos
+						         // Se indica que la bandeja establecida está vacía
+						         $this->error = "Bandeja vac&iacute;a.";
+								 }						     
+								 else
+								 {
+								     // Si ha sido por un error de acceso a la base de datos
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");
+								 }
+						 }			    						 				 
+				 }	
+				 else
+				 {
+				     // Si no hay sesión
+				     // Se redirige al usuario a la página de inicio
+				     header("Location: index.php");
+				 }			 
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

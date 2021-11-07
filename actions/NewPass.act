@@ -1,0 +1,162 @@
+<?
+  /**
+   * Clase que se encarga de crear una nueva clave aleatoria a partir del mail.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class NewPass
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_newpass.str";
+	 	 // Variable que guarda el error
+	 	 var $error;
+	 	 // Variable que guarda el email de contacto del foro
+		 var $a_email;
+		 // Variable que guarda el título del foro
+		 var $f_title;
+		 // Variable que guarda el path del foro
+		 var $f_path; 	 	 
+					
+		 // Constructor de la clase			
+	   function NewPass($a_email, $f_title, $f_path)
+	   {	 
+	       // Se le asigna valor al email de contacto del foro
+	       $this->a_email = $a_email;
+	       // Se le asigna valor al título del foro
+	       $this->f_title = $f_title;
+	       // Se le asigna valor al path del foro
+	       $this->f_path = $f_path;
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		     
+		     // Se recoge el email enviado 
+		     $email = $_POST["email"];
+		     
+		     // Se valida el email
+		     $this->error = valFormNewPass($email);
+		     
+		     if ($this->error == null)		     
+		     {
+		         // Si el email tiene algún valor
+		         // Se busca el usuario que tenga ese email (que debe ser único para cada usuario)
+		         $query = "SELECT * FROM phpforum_users WHERE email LIKE '".$email."'";
+		         if ($gesBD->selectUser($query))
+		         {
+		             // Si existe el usuario
+		             // Se recoge el usuario
+		             $user = $gesBD->getObj();
+		             // Se extrae su login
+		             $login = $user->getLogin();
+		             // Y se extrae su id
+		             $id_user = $user->getId_user();
+								 		   
+								 // Se crea la nueva contraseña a partir de codificar en md5 el email				          
+						     $newpassmd5 = md5($email);
+						     // Y se genera a partir de un trozo del resultado de la codificación que puede tener entre 10 y 32 carácteres
+								 $newpass = substr($newpassmd5,0,rand(10,32));
+								 
+								 // se actualiza el usuario con la nueva clave
+								 $query = "UPDATE phpforum_users SET passwd = '".md5($newpass)."' WHERE id_user LIKE ".$id_user;
+								 if ($gesBD->update($query))
+								 {
+								     // Si el usuario se ha actualizado correctamente
+								     // Se crea el email que se le va a enviar al usuario con su nueva clave
+								     $forum_title = $this->f_title;								     
+								     $admin_email = $this->a_email;
+								     $clave = $newpass;
+								     
+								     // url del host														 			
+							       $forum_path = $this->f_path."index.php?accion=ShowUser&id=".$id_user;
+							      
+						 	 	 		 // Se manda un email con sus datos al usuario creado por defecto																						 	 	 		
+ 										 $from = $forum_title." <".$admin_email.">";					 	 	 		
+										 $subject = "Bienvenido a \"".$forum_title."\"";
+										 $link = "<A HREF='".$forum_path."' class='link_texto' target='_blank'>perfil</A>"; 										 
+										 
+										 ########################################
+										 ##### Se forma el cuerpo del email #####
+										 ########################################
+										 if (eregi("gmail", $email))
+										 {
+										     include("includes/mailToNewRegisteredUserNoHTML.inc");
+										 }
+										 else
+										 {
+										     include("includes/mailToNewRegisteredUser.inc");
+										 }	
+                     ########################################           
+                     ########################################
+														 				      
+							       // Se manda el email
+							       if (sendMail($email, $from, $subject, $body))
+							       {								
+										     // Si se manda el email
+												 // Se indica al usuario que se le ha enviado un email y se cierra el popup		    			
+?>										 				     									  
+										     <SCRIPT languaje="JavaScript">
+					     				       alert("Le hemos mandado un e-mail con sus datos.\nRevise su e-mail.");
+					     				       window.close();
+												 </SCRIPT>
+<?											
+										 }
+										 else
+										 {					
+										     // Si no se manda un email
+												 // Se indica al usuario que no se ha podido recuperar su clave y se cierra el popup
+?>										 				     									  
+										     <SCRIPT languaje="JavaScript">
+					     				       alert("No se ha podido recuperar su clave.\nInténtelo de nuevo más tarde.\nDisculpe las molestias");
+					     				       window.close();
+												 </SCRIPT>
+<?
+										 }	
+								 }
+								 else
+								 {
+								     // Si no se ha podido actualizar la clave del usuario
+								     // Se redirige al usuario a la página de error y se cierra el popup
+								     echo "<SCRIPT>";																	    
+										 echo "window.opener.location.href='error.php';";
+										 echo "window.close();";																			
+										 echo "</SCRIPT>";
+								 }								 
+						 }
+						 else
+						 {
+						     // Si no existe el usuario
+						     // Se indica al usuario que no se ha encontrado ningún usuario con ese email
+						     $this->error = "El e-mail que ha ingresado no concuerda con el de ning&uacute;n usuario registrado en este foro.";
+						 }
+				 }
+		 	  				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

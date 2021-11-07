@@ -1,0 +1,482 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de los usuarios.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class Usuario {
+        
+        var $id_user;
+				var $login;
+				var $passwd;
+				var $rank;
+				var $name;
+				var $email;
+				var $date;
+				var $msn;
+				var $avatar;
+				var $urlAvatar;
+				var $sign;
+				var $sex;
+				var $num_msgs;
+				var $web;
+				var $ip;
+				var $alerts;
+				var $is_banned;
+				var $ban_type;				
+				//var $points;
+				var $country;				
+				var $votes;  
+				var $mpsUnread;	
+				var $useCookie;
+				var $randCookieCode;	
+				var $rankName;		 
+				var $lastClick;
+        
+        /**
+         * Metodo constructor de la clase.
+         */
+        function Usuario($id_user, $login, $passwd, $rank, $name, $email, $date, $msn, $avatar, $sign, $sex, $num_msgs, $web, $ip, $alerts, $is_banned, /*$ban_type, $points, */$site, $votes, $mpsUnread, $useCookie, $randCookieCode)
+				{
+            $this->id_user = $id_user;
+						$this->login = $login;
+						$this->passwd = $passwd;
+						$this->rank = $rank;
+						$this->name = $name;
+						$this->email = $email;
+						$this->date = $date;
+						$this->msn = $msn;
+						$this->avatar = $avatar;
+						$this->sign = $sign;
+						$this->sex = $sex;
+						$this->num_msgs = $num_msgs;
+						$this->web = $web;
+						$this->ip = $ip;
+						$this->alerts = $alerts;
+						$this->is_banned = $is_banned;
+						//$this->ban_type = $ban_type;
+						$this->last_click = $last_click;
+						//$this->points = $points;
+						$this->site = $site;						
+						$this->votes = $votes;  
+						$this->mpsUnread = $mpsUnread;
+						$this->useCookie = $useCookie;
+						$this->randCookieCode = $randCookieCode; 
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el id del usuario.         
+         */
+        function setId_user($id_user)
+				{
+            $this->id_user = $id_user;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el login del usuario.         
+         */
+        function setLogin($login)
+				{
+            $this->login = $login;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la clave del usuario.         
+         */
+        function setPasswd($passwd)
+				{
+            $this->passwd = $passwd;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el rango del usuario.
+         */
+        function setRank($rank)
+				{
+            $this->rank = $rank;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el nombre del rango del usuario.
+         */
+        function setRankName($rankName)
+				{
+            $this->rankName = $rankName;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el e-mail del usuario.         
+         */
+        function setEmail($email)
+				{
+            $this->email = $email;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el avatar del usuario.         
+         */
+        function setAvatar($avatar)
+				{
+            $this->avatar = $avatar;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la url avatar del usuario.         
+         */
+        function setUrlAvatar($urlAvatar)
+				{
+            $this->urlAvatar = $urlAvatar;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la firma del usuario.         
+         */
+        function setSign($sign)
+				{
+            $this->sign = $sign;
+        }       
+        
+        /**
+         * Metodo que se encarga de asignar el nombre del usuario.         
+         */
+        function setName($name)
+				{
+            $this->name = $name;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar la fecha de registro del usuario.         
+         */
+        function setDate($date)
+				{
+            $this->date = $date;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar el msn del usuario.         
+         */
+        function setMsn($msn)
+				{
+            $this->msn = $msn;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar el sexo del usuario.         
+         */
+        function setSex($sex)
+				{
+            $this->sex = $sex;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar el numero total de mensajes del usuario.         
+         */
+        function setNum_msgs($num_msgs)
+				{
+            $this->num_msgs = $num_msgs;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar la web del usuario.         
+         */
+        function setWeb($web)
+				{
+            $this->web = $web;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar la ip del usuario.         
+         */
+        function setIp($ip)
+				{
+            $this->ip = $ip;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar las alertas del usuario.         
+         */
+        function setAlerts($alerts)
+				{
+            $this->alerts = $alerts;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar si el baneo del usuario.         
+         */
+        function setIs_banned($is_banned)
+				{
+            $this->is_banned = $is_banned;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar el tipo de baneo del usuario.         
+         *//*
+        function setBan_type($ban_type)
+				{
+            $this->ban_type = $ban_type;
+        }   */      
+        
+        /**
+         * Metodo que se encarga de asignar los puntos del usuario.         
+         *//*
+        function setPoints($points)
+				{
+            $this->points = $points;
+        } */        
+        
+        /**
+         * Metodo que se encarga de asignar el pais del usuario.         
+         */
+        function setSite($site)
+				{
+            $this->site = $site;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar los votos del usuario.         
+         */
+        function setVotes($votes)
+				{
+            $this->votes = $votes;
+        }    
+        
+        /**
+         * Metodo que se encarga de asignar el número de mps sin leer del usuario.         
+         */
+        function setMpsUnread($mpsUnread)
+				{
+            $this->mpsUnread = $mpsUnread;
+        } 
+        
+        /**
+         * Metodo que se encarga de asignar el uso de cookie del usuario.         
+         */
+        function setUseCookie($useCookie)
+				{
+            $this->useCookie = $useCookie;
+        } 
+        
+        /**
+         * Metodo que se encarga de asignar el número random de identificación de la cookie del usuario.         
+         */
+        function setRandCookieCode($randCookieCode)
+				{
+            $this->randCookieCode = $randCookieCode;
+        }
+				
+				/**
+         * Metodo que se encarga de asignar el último acceso del usuario.         
+         */
+        function setLastClick($lastClick)
+				{
+            $this->lastClick = $lastClick;
+        }  
+        
+        /**
+         * Metodo que se encarga de asignar el id del usuario.         
+         */
+        function getId_user()
+				{
+            return $this->id_user;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el login del usuario.         
+         */
+        function getLogin()
+				{
+            return $this->login;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver la clave del usuario.         
+         */
+        function getPasswd()
+				{
+            return $this->passwd;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el rango del usuario.
+         */
+        function getRank()
+				{
+            return $this->rank;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el nombre del rango del usuario.
+         */
+        function getRankName()
+				{
+            return $this->rankName;
+        }
+        
+        /**
+         * Metodo que se encarga devolver el e-mail del usuario.         
+         */
+        function getEmail()
+				{
+            return $this->email;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el avatar del usuario.         
+         */
+        function getAvatar()
+				{
+            return $this->avatar;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver la url del avatar del usuario.         
+         */
+        function getUrlAvatar()
+				{
+            return $this->urlAvatar;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver la firma del usuario.         
+         */
+        function getSign()
+				{
+            return $this->sign;
+        }       
+        
+        /**
+         * Metodo que se encarga de devolver el nombre del usuario.         
+         */
+        function getName()
+				{
+            return $this->name;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver la fecha de registro del usuario.         
+         */
+        function getDate()
+				{
+            return $this->date;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver el msn del usuario.         
+         */
+        function getMsn()
+				{
+            return $this->msn;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver el sexo del usuario.         
+         */
+        function getSex()
+				{
+            return $this->sex;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver el numero total de mensajes del usuario.         
+         */
+        function getNum_msgs()
+				{
+            return $this->num_msgs;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver la web del usuario.         
+         */
+        function getWeb()
+				{
+            return $this->web;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver la ip del usuario.         
+         */
+        function getIp()
+				{
+            return $this->ip;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver las alertas del usuario.         
+         */
+        function getAlerts()
+				{
+            return $this->alerts;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver si el baneo del usuario.         
+         */
+        function getIs_banned()
+				{
+            return $this->is_banned;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver el tipo de baneo del usuario.         
+         *//*
+        function getBan_type()
+				{
+            return $this->ban_type;
+        }*/   
+                  
+        /**
+         * Metodo que se encarga de devolver los puntos del usuario.         
+         *//*
+        function getPoints()
+				{
+            return $this->points;
+        }   */       
+        
+        /**
+         * Metodo que se encarga de devolver el pais del usuario.         
+         */
+        function getSite()
+				{
+            return $this->site;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver los votos del usuario.         
+         */
+        function getVotes()
+				{
+            return $this->votes;
+        }  
+				
+				/**
+         * Metodo que se encarga de devolver el número de mps sin leer del usuario.         
+         */
+        function getMpsUnread()
+				{
+            return $this->mpsUnread;
+        }    
+        
+        /**
+         * Metodo que se encarga de devolver el uso de cookie del usuario.         
+         */
+        function getUseCookie()
+				{
+            return $this->useCookie;
+        } 
+        
+        /**
+         * Metodo que se encarga de devolver el número random de identificación de la cookie del usuario.         
+         */
+        function getRandCookieCode()
+				{
+            return $this->randCookieCode;
+        } 
+        
+        /**
+         * Metodo que se encarga de devolver el último acceso del usuario.         
+         */
+        function getLastClick()
+				{
+            return $this->lastClick;
+        }  
+    }
+?>

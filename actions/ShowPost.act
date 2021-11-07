@@ -1,0 +1,155 @@
+<?
+  /**
+   * Clase que se encarga de mostrar todos los mensajes del post.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowPost
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_post.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function ShowPost(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     // Se recogen los valores enviados
+		     $val = false;
+		 	   $id_post = $_GET["id"];
+		 	   if (!isset($id_post))
+		 	   {
+		 	       // Si id (id del post) no tiene ningún valor
+		 	       // Probamos a recoger el id de otra variable
+		 	       if (!isset($_GET["idp"]))
+		 	       {
+		 	           // Si idp (id del post) no tiene ningún valor
+		 	           // Se recoge el id del post de la sesión
+		 	           $id_post = $_SESSION["idpost"];
+						 }		 	       
+						 else
+						 {
+						     // Si idp (id del post) si tiene algún valor
+						     // Se recoge el valor de idp
+						     $id_post = $_GET["idp"];
+						 }
+				 }
+		 	   
+		 	   if (isset($id_post))
+		 	   {
+		 	       // Si se ha recodigo el id del post
+		 	       if (isset($_SESSION["haySesion"]))
+						 {
+						     // Si hay sesión
+						     // Se recoge el usuario conectado de la sesión
+						 		 $user = unserialize($_SESSION["userlog"]);
+						 		 // Se extrae su id
+						 		 $id_user = $user->getId_user();
+						 		 // Y se extrae su grupo o rango
+						     $rank = $user->getRank();
+						 }
+						 else
+						 {
+						     // Si no hay sesión
+						     // Se establecen un id y un grupo o rango de usuario anónimo
+						     $id_user = -1;
+								 $rank = -3;
+						 }
+						 
+						 if ($gesBD->selectPost($id_post, $id_user, $rank))
+						 {
+						     // Si existe el post
+						     // Se crea un objeto categoría y se establecen sus correspondientes datos
+						     $cat = new Categoria("","","","","","");
+						     $theme = new Tema("","","","","","","","","","","","","");
+						     $post = $gesBD->getObj();
+						     $theme->setPosts($post);
+						     $theme->setId_theme($post->getId_theme());
+						     $query = "SELECT title, id_cat FROM phpforum_themes WHERE id_theme LIKE ".$theme->getId_theme();
+						     $variables[0] = "title";
+						     $variables[1] = "id_cat";
+						     if ($gesBD->selectMore($query, $variables))
+						     {
+						         $filas = $gesBD->getObj();
+						         $fila = $filas[0];
+						         $theme->setTitle($fila[0]);
+						         $theme->setId_cat($fila[1]);
+						         $cat->setThemes($theme);						     
+								     $cat->setId_cat($theme->getId_cat());						         
+				             $query = "SELECT title FROM phpforum_categories WHERE id_cat LIKE ".$cat->getId_cat();
+				             if ($gesBD->selectOne($query, "title"))
+				             {
+				                 $cat->setTitle($gesBD->getObj());
+				                 // Se guarda la categoría en la sesión
+				                 $this->modelo = $cat;			                 
+				                
+				                 if (isset($_GET["pagina"]))
+				                 {
+				                     // Si la página tiene algún valor
+				                     // Se establece la vista a partir de esta página
+				                     $this->vista = $_GET["pagina"].".str";
+												 }
+												 // Si no tiene valor, se deja la vista por defecto
+												 
+												 // Y se indica que todo ha ido bien
+				                 $val = true;
+										 }
+										 else
+										 {
+										     // Si no se encuentra el título de la categoría requerida
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");
+										 }
+								 }
+								 else
+								 {
+								     // Si no se encuentra el título y la id de la categoría padre del tema requerido
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");
+								 }
+						 }
+						 else
+						 {
+						     // Si no se encuentra el post requerido
+						     // Se redirige al usuario a la página de error
+						     header("Location: error.php");	     
+						 }
+				 }	
+				 else
+				 {
+				     // Si no se ha recodigo la id del post
+				     // Se redirige al usuario a la página de inicio
+				     header("Location: index.php");
+				 }			 
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

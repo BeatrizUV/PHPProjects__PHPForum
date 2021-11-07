@@ -1,0 +1,111 @@
+<?
+  /**
+   * Clase que se encarga de mostrar un tema.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowTheme
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_theme.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function ShowTheme(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		     // Se recogen los datos enviados
+		 	   $id_theme = $_GET["id"];
+		 	   
+		 	   if (isset($_SESSION["haySesionAdmin"]))
+		 	   {
+		 	       // Si la id tiene algún valor
+		 	       if (isset($id_theme))
+						 {
+						     // Si hay sesión de administrador
+								 // Se recoge al usuario conectado de la sesión 
+						 		 $user = unserialize($_SESSION["userlog"]);
+						 		 // Se extrae su id
+						 		 $id_user = $user->getId_user();
+						 		 // Se extrae su rango
+						     $rank = $user->getRank();
+						     
+						     // Se recoge el tema
+						     if ($gesBD->selectTheme($id_theme, $id_user, $rank))
+								 {
+								     // Si se ejecuta correctamente
+								     // Se recoge el tema y los datos de su categoría
+								     $cat = new Categoria("","","","","","");
+								     $theme = $gesBD->getObj();							 	     
+								     $cat->setThemes($theme);						     
+								     $cat->setId_cat($theme->getId_cat());						         
+				             $query = "SELECT title FROM phpforum_categories WHERE id_cat LIKE ".$cat->getId_cat();
+				             if ($gesBD->selectOne($query, "title"))
+				             {
+				                 // Si se ejecuta correctamente
+				                 $cat->setTitle($gesBD->getObj());
+				                 // Se guarda la categoría en el modelo
+				                 $this->modelo = $cat;
+				                 // Se indica que todo ha ido bien
+				                 $val = true;
+										 }
+										 else
+										 {
+										     // Si no se ejecuta correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");
+										 }
+								 }
+								 else
+								 {
+								     // Si no se ejecuta correctamente
+								     // Se redirige al usuario a la página de error 
+								     header("Location: error.php");	     
+								 }
+						 }						 	
+						 else
+						 {
+						     // Si la id no tiene valor
+						     // Se redirige al usuario a la página de inicio del panel de administración
+						     header("Location: index.php");
+						 }
+				 }		 	
+				 else
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al ususario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve le modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

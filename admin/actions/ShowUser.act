@@ -1,0 +1,91 @@
+<?
+  /**
+   * Clase que se encarga de mostrar el perfil de un usuario del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowUser
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_userProfile.str";
+	 	 // Variable que guarda el error
+	 	 var $error;
+	 	 // Variable que guarda la acción realizada
+	 	 var $act;	 	 
+					
+		 // Constructor de la clase	 		
+	   function ShowUser() {	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+		 	   if (isset($_SESSION["haySesionAdmin"]))
+		 	   {
+		 	       // Si hay sesión de administrador
+		 	       // Se recoge la id del usuario
+		 	       $id_user = $_GET["id"];
+				 	   if (!empty($id_user))
+				 	   {
+				 	       // Si la id tiene algún valor
+				 	       // Se recoge el usuario
+						     $val = false;
+						     $query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$id_user." AND id_user NOT LIKE -1";				     
+						     if ($gesBD->selectUser($query))
+								 {
+								     // Si existe el usuario
+								     // Se recoge el usuario y se guarda en el modelo
+								     $this->modelo = $gesBD->getObj();
+								     // Se indica que todo ha ido bien
+										 $val = true;
+								 }
+								 else
+								 {
+								     // Si no existe el usuario
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");
+								 }
+						 }
+						 else
+						 {
+						     // Si la id no tiene ningún valor
+						     // Se redirige al usuario a la página de inicio del panel de administración
+						     header("Location: index.php");
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuevle la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción
+		 function getAct() {
+		 }	 
+	}
+?>

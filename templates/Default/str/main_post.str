@@ -1,0 +1,256 @@
+<? include("templates/Default/str/header.str"); ?>
+<SCRIPT>
+// Función que redimensiona imágenes
+function resizeImg(imgname)
+{
+    var w = document.getElementById(imgname).width;
+    var h = document.getElementById(imgname).height;
+    if (w > 375)
+    {
+        document.getElementById(imgname).width = "375";
+		} 
+		else if (h > 200)
+		{
+		    document.getElementById(imgname).height = "200";
+		}  	
+}
+</SCRIPT>
+<?
+   // Código que redirige al usuario al último mensaje creado
+   echo "<SCRIPT>";
+   echo "location.href='#".$_GET["id_mensaje"]."'";
+   echo "</SCRIPT>";
+   // Página que muestra los mensajes de un post
+   $accion = "ShowPost";
+   $cat = $modelo["modelo"];
+	 $catTitle = $cat->getTitle();
+	 $catTitle = replaceCharsToHTML($catTitle);
+	 $id_cat = $cat->getId_cat();
+	 $theme = $cat->getThemes();	 
+	 $id_theme = $theme->getId_theme();
+	 $themeTitle = $theme->getTitle();
+	 $themeTitle = replaceCharsToHTML($themeTitle);
+	 $post = $theme->getPosts();
+	 $id_post = $post->getId_post();
+	 $id = $id_post;
+	 $postTitle = $post->getTitle();
+	 $postTitle = replaceCharsToHTML($postTitle);
+	 $post_status = $post->getStatus();
+?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / <?=$catTitle?> / <A HREF="index.php?accion=ShowTheme&id=<?=$id_theme?>" class="link_path"><?=$themeTitle?></A>
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="20px" colspan="3"></TD>																																			
+																																	</TR>	
+<?
+	$_SESSION["locSesion"] = "<A HREF='index.php?accion=ShowPost&id=".$id_post."' class='link_path'>".$postTitle."</A>";	 
+?>																																	
+																																	<? include("templates/Default/str/actionsInPost.inc"); ?>
+																			 							 							<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">																			 							 							    					 
+										 						 	 											 					              <TR>
+							                                                                     <TD colspan="2" class="celda_nombre_cat">
+							                                                                     		 <SPAN class="flechitas_cat">&gt;&gt;</SPAN> <?=$postTitle?>
+							                                                                     </TD>
+							                                                                  </TR>   
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_autor">
+																																												AUTOR
+																																										</TD>																																	 		
+																																								 		<TD class="celda_mensaje">
+																																										 		MENSAJE
+																																										</TD>																																								 		
+																																								</TR>	                                                                     				
+<?
+    $listaMsgs = $post->getMsgs();
+		$contlm = 0;
+		$sizelm = count($listaMsgs);	
+		
+		for($contlm = 0; $contlm < ($sizelm); $contlm++)
+		{
+		    $msg = $listaMsgs[$contlm];
+				$id_msg = $msg->getId_msg();			
+				$date = $msg->getDate();
+				$is_first = $msg->getIs_first();
+				$is_last = $msg->getIs_last();
+				$body = $msg->getBody();	
+				$body = replaceBBCodeToHTML(replaceCharsToHTML($body));				
+				$author = $msg->getAuthor();
+				$id_author = $author->getId_user();
+				$login_author = $author->getLogin();
+				$login_author = replaceCharsToHTML($login_author);
+				$rank_author = $author->getRank();
+				$rankName_author = $author->getRankName();
+				$rankName_author = replaceCharsToHTML($rankName_author);
+				$avatar_author = $author->getUrlAvatar();
+				$sign_author = $author->getSign();
+				$sign_author = replaceBBCodeToHTML(replaceCharsToHTML($sign_author));
+				$num_msgs_author = $author->getNum_msgs();
+				$email_author = $author->getEmail();
+				$msn_author = $author->getMsn();
+				$site_author = $author->getSite();
+				$site_author = replaceCharsToHTML($site_author);
+				$sex_author = $author->getSex();
+				$votes_author = $author->getVotes();
+				$web_author = $author->getWeb();
+				$alerts_author = $author->getAlerts();
+				$is_banned_author = $author->getIs_banned();					
+?>
+																 										 	 													<TR>
+																 										 	 													    <TD class="celda_autor_msg" style="vertical-align: top; background-color: #D0D0D0;">
+																																												<TABLE class="tabla_acoplada">
+																																														<TR>
+																																																<TD class="celda_profile_oscura" style="height: 23px;">
+<?
+        if ($msg->getExistAuthor() == 0)
+        {
+?>
+				 	 									 																																				<?=$login_author?>
+<?        
+				}
+				else
+				{
+?>
+				 										 																																				<A HREF="index.php?accion=ShowUser&id=<?=$id_author?>" class="link_cuerpo" title="Ver perfil"><?=$login_author?></A>
+<?				
+				}
+?>																																																																																																		
+																																																</TD>	
+																																														</TR>																																																	
+<?
+				if ($is_banned_author == 1)
+				{
+?>
+				 	 											 	 																													<TR>
+				 	 											 	 																															<TD class="celda_profile_oscura" style="background-color: #000000; height: 15px;">
+				 	 											 	 																																	<B>BANEADO</B>
+				 	 											 	 																															</TD>
+		 	 											 	 																															</TR>
+<?				
+				}																																																							
+?>																																															
+																																														<TR>		
+																																																<TD class="celda_profile" style="height: 15px; padding: 3px;"><?=$rankName_author?></TD>
+																																														</TR>
+																																														<TR>		
+																																																<TD class="celda_profile_oscura" style="height: 15px; padding: 3px;"><IMG src="<?=$avatar_author?>" width="95px" height="95px" /></TD>
+																																														</TR>
+																																														<TR>		
+																																																<TD class="celda_profile" style="text-align: left; height: 15px; padding: 3px;">MENSAJES: <?=$num_msgs_author?></TD>
+																																														</TR>																																																
+<?
+	      if (!empty($sex_author))
+	      {
+?>						 	 																																									
+																																														<TR>
+				 	 																																											<TD class="celda_profile_oscura" style="height: 15px; text-align: left; padding: 3px;">SEXO: <IMG src="templates/Default/img/<?=$sex_author?>.jpg" width="10px" height="12px" /></TD>
+				 	 																																									</TR>																																																
+<?	      
+				}
+				
+	      if (!empty($site_author))
+	      {
+?>				 	 											 																														
+																																														<TR>
+				 	 																																											<TD class="celda_profile" style="height: 15px; text-align: left; padding: 3px;">UBICACI&Oacute;N: <?=$site_author?></TD>
+				 	 																																									</TR>		
+<?	      
+				}
+?>																																													
+																																														<TR>		
+																																																<TD class="celda_profile_oscura" style="height: 15px; text-align: left; padding: 3px;">VOTOS: <?=$votes_author?>&nbsp;<? include("includes/votesPanel.inc"); ?></TD>
+																																														</TR>
+																																														<TR>		
+																																																<TD class="celda_profile" style="height: 15px; text-align: left; padding: 3px;">ALERTAS: <?=$alerts_author?>&nbsp;<? include("includes/alertsPanel.inc"); ?></TD>
+																																														</TR>
+<?
+        if ($msg->getExistAuthor() == 1)
+  			{
+?>																																														
+																																														<TR>
+																																																<TD class="celda_profile_oscura" style="height: 23px; text-align: left; padding: 1px; vertical-align: middle;">																																																		
+																																																		<? include("templates/Default/str/panelProfile.inc"); ?>																																																		
+																																																</TD>
+																																														</TR>
+<?
+        }
+?>																																														
+																																												</TABLE>
+																																										</TD>	
+																																				 		        <TD class="celda_msg">
+																																				 		            <TABLE class="tabla_acoplada">
+																																				 		            		<TR>
+																																				 		            		    <TD class="celda_profile_oscura" style="height: 23px;">
+																																				 		            		    		<TABLE class="tabla_acoplada">
+																																				 		            		    		   <TR>
+																																				 		            		    		   		 <TD style="widht: 60%; height: 17px; text-align: left; padding: 3px;">&nbsp;<?=$date?></TD>
+																																				 		            									 <TD style="width: 40%; height: 17px; text-align: right; padding: 3px;">
+																																				 		            									     <? include("templates/Default/str/panelMsg.inc"); ?>
+																																																					 </TD>
+																																				 		            		    		   </TR>
+																																				 		            		    		</TABLE>
+																																				 		            		    </TD>
+																																														</TR>	 
+																																														<TR>
+																																																<TD id="<?=$id_msg?>" class="celda_profile" style="height: 251px; padding: 5px; text-align: left; vertical-align: top;  font-size: 11px;"><?=$body?></TD>
+																																														</TR>
+<?
+      if (!empty($sign_author))
+			{
+?>
+			 	 											 																															<TR>
+																																																<TD class="celda_profile_oscura" style="text-align: left; padding: 3px; height: 50px;"><?=$sign_author?></TD>
+																																														</TR>
+<?			
+			}																																											
+?>																																														
+																																				 		            </TABLE>
+																																										</TD>	
+																																								</TR>	
+																																								<TR>
+																																										<TD colspan="2" style="height: 1px; background-color: #FFFFFF;"></TD>
+																																								</TR>
+<?						
+	}
+?>																																																																														
+																																	        </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>	
+																																	<? include("templates/Default/str/actionsInPost.inc"); ?>																																																											
+																																	<TR>
+   																																    <TD height="30px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																										 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>														 		 

@@ -1,0 +1,86 @@
+<?
+  /**
+   * Clase que se encarga de mostrar todo el principal del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowForum
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function ShowForum(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesion"]))
+				 {
+				     // Si hay sesión
+				     // Se recoge el usuario conectado de la sesión
+				 		 $user = unserialize($_SESSION["userlog"]);
+				 		 // Se extrae su id y su grupo o rango
+				 		 $id_user = $user->getId_user();
+				     $rank = $user->getRank();
+				 }
+				 else
+				 {
+				     // Si no hay sesión
+				     // Se establecen una id y un grupo o rango de usuario anónimo
+				     $id_user = -1;
+						 $rank = -3;
+				 }
+				 
+				 if ($gesBD->selectCats($rank, $id_user))
+				 {
+				     // Si existe contenido para mostrar en el foro
+				     // Se guarda todo el contenido del foro en el modelo
+				     $this->modelo = $gesBD->getObj();				     
+				     // Y se indica que todo ha ido bien
+						 $val = true;		
+				 }
+				 else
+				 {
+				     // Si no existe contenido para mostrar
+				     $this->error = $gesBD->getError();
+				     if (empty($this->error))
+				     {
+				         // Si no ha habido ningún error de acceso a la base de datos
+				         // Se indica que no hay contenidos para mostrar
+				         $this->error = "No hay contenidos para mostrar.";
+						 }    
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

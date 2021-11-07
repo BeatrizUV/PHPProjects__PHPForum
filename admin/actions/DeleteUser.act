@@ -1,0 +1,128 @@
+<?
+  /**
+   * Clase que se encarga de eliminar usuarios para el foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class DeleteUser
+	{	 	 
+	   // Variale que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_deleteUser.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function DeleteUser(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	 				
+				     // Si hay sesión de administrador
+						 // Se recoge el id del usuario     				     
+				     $id_user = $_POST["user"];
+				     		
+				     // Se recoge el login del usuario		
+		         $query = "SELECT login FROM phpforum_users WHERE id_user LIKE ".$id_user;
+		         if ($gesBD->selectOne($query, "login"))
+		         {
+		             // Si se ejecuta correctamente
+		             // Se recoge el login
+		             $login = $gesBD->getObj();
+		             // Se elimina el usuario
+		             $query = "DELETE FROM phpforum_users WHERE id_user LIKE ".$id_user;
+		             if ($gesBD->delete($query))
+		             {
+		                 // Si se elimina correctamente
+		                 // Se actualizan todos sus mensajes y se establece que el autor ahora es el usuario anónimo		                 
+		                 $query = "UPDATE phpforum_msgs SET exist_author = 0 WHERE id_author LIKE ".$id_user;
+		                 if (!$gesBD->update($query))
+		                 {
+		                     // Si no se actualiza correctamente
+		                     // Se redirige al usuario a la página de error
+		                     header("Location: error.php");
+										 }
+										 // Se eliminan todos sus registros en la tabla de control de lecturas
+		                 $query = "DELETE FROM phpforum_reads_control WHERE id_user LIKE ".$id_user;
+	                   if (!$gesBD->delete($query))
+		                 {
+		                     // Si no se elimina correctamente
+		                     // Se redirige al usuario a la página de error
+		                     header("Location: error.php");
+										 }
+										 // Se eliminan todos sus registros en la tabla de control de lecturas
+		                 $query = "DELETE FROM phpforum_logs WHERE id_user LIKE ".$id_user;
+	                   if (!$gesBD->delete($query))
+		                 {
+		                     // Si no se elimina correctamente
+		                     // Se redirige al usuario a la página de error
+		                     header("Location: error.php");
+										 }
+										 
+										 // Se eliminan todos sus registros en la tabla de control de lecturas
+		                 $query = "UPDATE phpforum_logs_backup SET id_user = -1 WHERE id_user LIKE ".$id_user;
+	                   if (!$gesBD->update($query))
+		                 {
+		                     // Si no se elimina correctamente
+		                     // Se redirige al usuario a la página de error
+		                     header("Location: error.php");
+										 }
+										 
+										 // Se muestra un mensaje de éxito mediante una ventana emergente y se redirige al usuario a la página de eliminar usuarios
+		                 echo "<SCRIPT>";
+		                 echo "alert('Usuario \"".$login."\" eliminado correctamente.');";
+		                 echo "location.href='index.php?accion=ShowUsers&pagina=admin_deleteUser';";
+		                 echo "</SCRIPT>";
+								 }
+								 else
+								 {
+								     // Si no se elimina correctamente
+                     // Se redirige al usuario a la página de error
+                     header("Location: error.php");	
+								 }
+						 }
+						 else
+						 {
+						     // Si no se ejecuta correctamente
+                 // Se redirige al usuario a la página de error
+                 header("Location: error.php");
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

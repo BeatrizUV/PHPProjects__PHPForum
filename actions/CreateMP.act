@@ -1,0 +1,189 @@
+<? 
+	/**
+   * Clase que se encarga de crear mensajes privados.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class CreateMP
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_writeMP.str";
+			// Variable que guarda el error
+			var $error;	
+			
+			// Constructor de la clase
+			function CreateMP()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{
+			    // Se recogen los datos enviados
+			   	$login = $_POST["to"];
+					$title = $_POST["mptitle"];
+					$body = $_POST["body"];							
+					$flag = true;						
+					
+					if (isset($_SESSION["haySesion"]))
+					{			
+					    // Si hay sesión
+							// Se validan los datos		    
+					    $this->error = valFormCreateMP($title, $login, $body);				    
+					
+							if ($this->error == null)
+							{				
+							    // Si se validan correctamente
+							    // Se recoge al usuario conectado de la sesión
+							    $user = unserialize($_SESSION["userlog"]);
+									
+									// Se formatea el login para poder leerlo en la base de datos
+									$login = replaceCharsFromHTML($login);			    
+							    
+							    // Primero creamos el mensaje en la bandeja de entrada del destinatario
+							    // Buscamos el destinatario
+							    $query = "SELECT id_user FROM phpforum_users WHERE login LIKE '".$login."'";
+							    if ($gesBD->selectOne($query, "id_user"))
+							    {							        
+							        // Si existe el usuario
+							        // Se recoge la id
+							        $id_userTo = $gesBD->getObj();
+							        // Se hace un recuento de cuátos mps tiene el destinatario en su bandeja de entrada
+											$query = "SELECT id_mp FROM phpforum_mps WHERE box LIKE 'in' AND receptor LIKE ".$id_userTo;
+											if ($gesBD->selectCount($query))
+											{
+											    // Si se ejecuta correctamente
+											    if ($gesBD->getObj() < 75)
+											    {
+											        // Si el usuario tiene menos de 75 mps
+											        // Se le manda el mp
+											        $query = "INSERT INTO phpforum_mps (title, body, fecha, receptor, emisor, box) VALUES ('".$title."', '".$body."', (SELECT NOW()), ".$id_userTo.", ".$user->getId_user().", 'in')";							        
+							        
+													    if ($gesBD->insert($query))
+													    {					
+													        // Si se crea correctamente
+													        // Se recuentan los mps de la bandeja de salida del emisor
+															    $query = "SELECT id_mp FROM phpforum_mps WHERE box LIKE 'out' AND emisor LIKE ".$user->getId_user();
+																	if ($gesBD->selectCount($query))
+																	{
+																	    // Si se ejecura correctamente
+																	    if ($gesBD->getObj() < 75)
+																	    {
+																			    // Si el emisor tiene menos de 75 mp en su bandeja de salida
+																					// Se guarda una copia del mp en su bandeja				    
+										                      $query = "INSERT INTO phpforum_mps (title, body, fecha, receptor, emisor, is_read, box) VALUES ('".$title."', '".$body."', (SELECT NOW()), ".$id_userTo.", ".$user->getId_user().", 1, 'out')";
+																					if ($gesBD->insert($query))
+																	    		{																			    	
+																					    // Si se crea correctamente
+																							// Se eliminan de la sesión los datos relacionados con la creación del mp	    
+																	    		    unset($_SESSION["mpToResponse"]);
+																	    		    // Se establece un mensaje de éxito
+																	    		    $mensajeOk = "Su mensaje privado se ha enviado correctamente al usuario ".$login.".";
+																	    		    // Y se redirige al usuario a su bandeja de entrada
+																	    		    header("Location: index.php?accion=ShowMPs&msgOk=".$mensajeOk);
+																					}
+																					else
+																					{
+																					    // Si no se crea la copia del mp
+																							// Se borra el mp enviado de la bandeja de entrada del receptor 
+																					    $query = "SELECT id_mp FROM phpforum_mps WHERE title LIKE '".$title."' AND body LIKE '".$body."' AND receptor LIKE ".$id_userTo." AND emisor LIKE ".$user->getId_user()." AND box LIKE 'in' ORDER BY fecha DESC LIMIT 1";
+																							if ($gesBD->selectOne($query, "id_mp"))
+																							{
+																							    $query = "DELETE FROM phpforum_mps WHERE id_mp LIKE ".$gesBD->getObj();
+																							    if (!$gesBD->delete($query))
+																							    {
+																							        header("Location: error.php");
+																									}
+																							}
+																							else
+																							{
+																							    header("Location: error.php");
+																							}
+																					}		
+																			}
+																			else
+																			{
+																			    // Si el emisor tiene 75 o mas mp en su bandeja de salida
+																			    // Se indica mediante un mensaje de error
+																			    $flag = false;
+													    						$this->error = "No se ha podido guardar una copia del mensaje privado enviado en su bandeja de salida porque est&aacute; llena.<BR> Vac&iacute;e su bandeja de salida para poder guardar copias de sus mensajes privados enviados.";
+																			}
+																	}
+																	else
+																	{
+																	    // Si el recuento no se ejecuta correctamente
+																	    // Se redirige al usuario a la página de error
+																	    header("Location: error.php");
+																	}												    								    
+															}
+															else
+															{		
+															    // Si no se crea el mp
+															    // Se redirige al usuario a la página de error
+															    header("Location: error.php");
+															}											       
+													}
+													else
+													{
+													    // Si el receptor tiene 75 o más mps en su bandeja de entrada
+													    // Se indica mediante un mensaje de error
+													    $flag = false;
+													    $this->error = "No se ha podido mandar el mensaje privado porque la bandeja de entrada del destinatario del mensaje est&aacute; llena.";
+													}
+											}
+											else
+											{
+											    // Si el recuento no se ejecuta correctamente
+											    // Se redirige al usuario a la página de error
+											    header("Location: error.php");
+											}											
+									}
+									else
+									{
+									    // Si no se encuentra al receptor
+									    // Se indica mediante un mensaje de error
+									    $flag = false;
+											$this->error = "El destinatario que ha indicado no existe.";
+									}
+							}
+							else
+							{
+							    // Si los datos no se validan correctamente
+							    // Se indica
+							    $flag = false;							    
+						  }	
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}
+?>

@@ -1,0 +1,157 @@
+<?
+  // Función que crea el archivo de configuración de la base de datos 
+  function createConfigFileBD($bd_host, $bd_name, $bd_user, $bd_passwd)
+  {
+      // Creamos un archivo de configuración con los datos de conexión
+	  	//de la base de datos.
+	  	$val = true;
+      $fp = fopen("includes/config/bd_config.inc", "w");
+      
+      if (!$fp)
+      {
+       	  $val = false; 
+			}
+			else
+			{			 		
+			 		// Y escribimos los datos de conexión en él.
+		      fputs($fp, "<?\r");
+		      fputs($fp, "$"."bd_host=\"".$bd_host."\";\r");
+		      fputs($fp, "$"."bd_name=\"".$bd_name."\";\r");
+		      fputs($fp, "$"."bd_user=\"".$bd_user."\";\r");
+		      fputs($fp, "$"."bd_passwd=\"".base64_encode($bd_passwd)."\";\r");					
+		      fputs($fp, "?>");	      
+		      
+		      // Cerramos el archivo.
+		      fclose($fp);
+		      
+		      // Cambiamos los permisos del archivo a "solo lectura" para el owner y el resto sin permisos
+		      chmod("includes/config/bd_config.inc", 0500);
+			}
+      
+      return $val;
+  }
+  
+  // Función que crea el archivo de configuración del foro 
+  function createConfigFileForum($forum_title, $admin_email, $forum_path, $forum_date, $template)
+  {
+   		// Creamos un archivo de configuración con los datos de configuración del foro.
+	  	$val = true;
+      $fp = fopen("includes/config/forum_config.inc", "w");
+      
+      if (!$fp)
+      {
+       	  $val = false; 
+			}
+			else
+			{			 		
+			 		// Y escribimos los datos de conexión en él.
+		      fputs($fp, "<?\r");		
+					fputs($fp, "$"."forum_title=\"".$forum_title."\";\r");
+					fputs($fp, "$"."admin_email=\"".$admin_email."\";\r");      
+					fputs($fp, "$"."forum_path=\"".$forum_path."\";\r");      
+					fputs($fp, "$"."forum_date=\"".$forum_date."\";\r");
+					fputs($fp, "$"."template=\"".$template."\";\r");      
+		      fputs($fp, "?>");	      
+		      
+		      // Cerramos el archivo.
+		      fclose($fp);
+		      
+		      // Cambiamos los permisos
+		      chmod("includes/config/forum_config.inc", 0755);
+			}
+      
+      return $val;		 
+	}
+		
+	// Función que elimina los archivos de configuración del foro	
+	function resetConfigFiles()
+	{
+	   // Eliminar los archivos de configuración
+	   if (file_exists("includes/config/bd_config.inc"))
+     {   	 
+   	    unlink("includes/config/bd_config.inc");   	 
+     }
+     
+     if (file_exists("includes/config/template.inc"))
+     {
+        unlink("includes/config/template.inc");
+		 }
+		 
+		 if (file_exists(".htaccess"))
+     {
+        unlink(".htaccess");
+		 }
+	}
+  	
+  // Función que lee archivos	
+	function readFiles($archivo)
+	{
+	    $archivo = "temp/".$archivo;	    	    
+	    $variable;
+	    
+	    // Se abre el archivo
+      $fp = fopen("includes/config/bd_config.inc", "r");
+      
+      if (!$fp)
+      {
+       	  $variable = false; 
+			}
+			else
+			{
+			    // Si se ha abierto correctamente
+			    $cont = 0;
+			    while (!feof($fp))
+					{
+					    // Lo recorremos
+    			    $variable[$cont] = fgets($fp, 4096);
+							$cont++;    					
+				  } 
+			}
+			
+			return $variable;
+	}
+	
+	// Función que crea un archivo .htaccess en el raíz del foro para cargar una página de error 404 personalizada
+	function create404File($path)
+	{	    
+	    // Creamos un archivo .htaccess
+      $fp = fopen(".htaccess", "w");
+      
+      if (!$fp)
+      {
+       	  $val = false; 
+			}
+			else
+			{			 		
+			 		// Y escribimos los datos en él	 				 
+		      fputs($fp, "ErrorDocument 404 http://".$path."index.php?accion=Navigate&destino=404\r");
+					
+		      // Cerramos el archivo.
+		      fclose($fp);
+		      
+		      // Cambiamos los permisos
+		      chmod(".htaccess", 0755);
+			}	
+	}
+	
+	// Función que elimina el archivo de exportación de logs
+	function deleteLogExportControlFile()
+	{
+	    // Abrimos el directorio /temp
+	  	if (is_dir("tmp"))
+      {
+          $dir = @opendir("tmp");	    
+			    while ($archivo = @readdir($dir))
+			    {
+			        if (($archivo != ".") && ($archivo != ".."))
+			        {
+			            // Y eliminamos todos los archivos ahi grabados
+			            if (file_exists("tmp/".$archivo))
+			            {
+			                @unlink("tmp/".$archivo);
+									}
+							}	         
+					}
+			}
+	}
+?>

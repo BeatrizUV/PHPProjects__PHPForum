@@ -1,0 +1,64 @@
+<?
+  /**
+   * Clase que se encarga de mostrar la lista de grupos de usuarios del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowGroups
+	{	 	 
+	   // Variable que guarda el modelo 
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_groupslist.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 
+			
+		 // Constructor de la clase			
+	   function ShowGroups() {	 
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		     
+				 if ($gesBD->selectGroups())
+				 {
+				     // Si existen grupos para mostrar
+				     // Se guardan los grupos en el modelo
+				     $this->modelo = $gesBD->getObj();
+				     // Y se indica que todo ha ido bien
+						 $val = true;		
+				 }
+				 else
+				 {
+				     // Si no existen grupos para motrar
+				     // Se redirige al usuario a la página de error
+				     header("Location: error.php");				     
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción
+		 function getAct() {
+		 }	 
+	}
+?>

@@ -1,0 +1,80 @@
+<? 
+	/**
+   * Clase que se encarga de añadir o sustraer votos de un usuario.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class VoteUser
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_post.str";
+			// Variable que guarda el error
+			var $error;	
+			
+			// Constructor de la clase
+			function VoteUser()
+			{
+			}
+			
+			// Función que ejecuta la acción requerida
+			function ejecutar($gesBD)		
+			{								
+					$flag = true;						
+					
+					if (isset($_SESSION["haySesion"]))
+					{	 
+					    // Si hay sesión
+					    // Obtenemos las variables enviadas
+					    $id_post = $_GET["idp"];
+					    $id_user = $_GET["idu"];
+					    $option = $_GET["op"];
+					    
+					    // Chequeamos el valor de la opción a realizar
+					    if ($option == "positive")
+					    {
+					        $vote = "votes + 1";
+							}
+							else if ($option == "negative")
+							{
+							    $vote = "votes - 1";
+							}
+							
+							// Ejecutamos la actualización
+							$query = "UPDATE phpforum_users SET votes = (".$vote.") WHERE id_user LIKE ".$id_user;
+							$gesBD->update($query);
+							// Y redirigimos al usuario a la página de mostrar un post
+							header("Location: index.php?accion=ShowPost&id=".$id_post);
+					}
+					else
+					{
+					    // Si no hay sesión redirigimos al usuario a la página de inicio
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Funciñon que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción ejecutada
+			function getAct() {
+			}
+	}
+?>

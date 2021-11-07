@@ -1,0 +1,284 @@
+<?  
+  // Función que crea un archivo de configuración del foro
+  function createConfigFileForum($forum_title, $admin_email, $forum_path, $forum_date, $template)
+  {
+   		// Creamos un archivo de configuración con los datos de configuración del foro.
+	  	$val = true;
+      $fp = fopen("../includes/config/forum_config.inc", "w");
+      
+      if (!$fp)
+      {
+       	  $val = false; 
+			}
+			else
+			{			 		
+			 		// Y escribimos los datos de conexión en él.
+		      fputs($fp, "<?\r");		
+					fputs($fp, "$"."forum_title=\"".$forum_title."\";\r");
+					fputs($fp, "$"."admin_email=\"".$admin_email."\";\r");      
+					fputs($fp, "$"."forum_path=\"".$forum_path."\";\r");      
+					fputs($fp, "$"."forum_date=\"".$forum_date."\";\r");
+					fputs($fp, "$"."template=\"".$template."\";\r");      
+		      fputs($fp, "?>");	      
+		      
+		      // Cerramos el archivo.
+		      fclose($fp);
+		      
+		      // Cambiamos los permisos
+		      chmod("../includes/config/forum_config.inc", 0755);
+			}
+      
+      return $val;		 
+	}
+  
+  // Función que crea un archivo TXT con todos los datos de la tabla de backups de logs
+  function createLogFile($listaLogs)
+  {
+     $cont = 0;     
+     $val = true;
+     global $forum_title;
+     
+     // Creamos un archivo de log	  	
+	   $fecha = date("d-m-Y", time());	
+     $archivo = "../tmp/".strtolower(ereg_replace("[^A-Za-z0-9]", "", $forum_title))."@".$fecha.".txt";
+     $_SESSION["logName"] = strtolower(ereg_replace("[^A-Za-z0-9]", "", $forum_title))."@".$fecha.".txt";
+     
+     if (file_exists($archivo))
+     {
+        unlink($archivo);
+		 }
+     
+     $fp = fopen($archivo, "w");
+		  
+     if (!$fp)
+     {
+      	 $val = false; 
+		 }
+		 else
+		 {
+        // Primero creamos la cabecera del archivo
+        $cadena = "";
+        
+        // Primera linea "############..."
+        for ($cont = 0; $cont < 35; $cont++)
+        {
+            $cadena .= "#";
+				}
+				$cadena .= "\r\n";
+				fputs($fp, $cadena);
+				
+				// Segunda linea "# CONTROL DE .... #"
+				$cadena = "#  CONTROL DE LOGS DEL ".$fecha."  #";
+				$cadena .= "\r\n";
+				fputs($fp, $cadena); 
+				
+				$cadena = ""; 
+				// Tercera linea "############..."
+				for ($cont = 0; $cont < 18; $cont++)
+        {
+            $cadena .= "##";
+				}
+				$cadena .= "\r\n";
+				fputs($fp, $cadena);
+				
+				$cadena = "";
+				// Cuarta linea "==============..." 
+				for ($cont = 0; $cont < 25; $cont++)
+        {
+            $cadena .= "====";
+				}
+				$cadena .= "\r\n";
+				fputs($fp, $cadena);
+				
+				$size = count($listaLogs);
+		    for ($cont = 0; $cont < $size; $cont++)
+		    {
+		        // Insertamos los logs
+		        $log = $listaLogs[$cont];
+				    $user = $log->getUser();
+						$cadena = $log->getDate()." | ".$user->getLogin()." | ".$log->getIp()." | ".strip_tags($log->getAction())."\r\n";
+		        fputs($fp, $cadena);
+		        
+		        $cadena = "";
+		        if (($cont+1) == $size)
+		        {
+		            // N linea "================..." 
+		            $contLinea = 0;
+								for ($contLinea = 0; $contLinea < 25; $contLinea++)
+				        {
+				            $cadena .= "====";
+								}
+						}
+						else
+						{
+				        // N linea "---------------..." 
+				        $contLinea = 0;
+								for ($contLinea = 0; $contLinea < 25; $contLinea++)
+				        {
+				            $cadena .= "----";
+								}
+						}
+						$cadena .= "\r\n";
+						fputs($fp, $cadena);
+						$val = true;
+		    }
+		     
+		    // Cerramos el archivo.
+		    fclose($fp);		    
+     }
+      
+     return $val;
+	}
+	
+	// Función que crea un archivo de control de exportación de logs
+	function createLogExportControlFile()
+	{
+	    // Creamos un archivo de archivo de control de exportación de logs del foro.
+	  	$val = true;
+	  	$fecha = date("d-m-Y", time());
+      $fp = fopen("../tmp/log_export_control.txt", "w");
+      
+      if (!$fp)
+      {
+       	  $val = false; 
+			}
+			else
+			{			 		
+			 		// Y escribimos los datos de conexión en él.
+					fputs($fp, $fecha);
+					
+		      // Cerramos el archivo.
+		      fclose($fp);
+		      
+		      // Cambiamos los permisos
+		      chmod("../tmp/log_export_control.txt", 0755);
+			}
+      
+      return $val;	
+	}
+	
+	// Función que elimina un archivo de control de exportación de logs
+	function deleteLogExportControlFile()
+	{
+	    // Se comprueba que "../tmp" sea un directorio
+	  	if (is_dir("../tmp"))
+      {
+          // Se lee 
+          $dir = @opendir("../tmp");	    
+			    while ($archivo = @readdir($dir))
+			    {
+			        if (($archivo != ".") && ($archivo != ".."))
+			        {
+			            // Y se eliminan todos los archivos grabados en el directorio
+			            if (file_exists("../tmp/".$archivo))
+			            {
+			                @unlink("../tmp/".$archivo);
+									}
+							}	         
+					}
+			}
+	}
+	
+	// Función que lee archivos
+	function readFiles($archivo)
+	{	    	    
+	    $variable;
+	    
+	    if (file_exists($archivo))
+	    {
+	        // Se abre el archivo
+	        $fp = fopen($archivo, "r");
+      
+		      if (!$fp)
+		      {
+		       	  $variable = false; 
+					}
+					else
+					{
+					    // Si existe
+					    $cont = 0;
+					    while (!feof($fp))
+							{
+							    // Se lee
+		    			    $variable[$cont] = fgets($fp, 4096);
+									$cont++;    					
+						  } 
+					}
+			}
+			
+			return $variable;
+	}
+	
+	// Función que elimina una carpeta de un template y todos sus archivos y subcarpetas
+	function deleteTemplateDir($name)
+	{		    
+	    $val = true;
+	    
+	    // Se comprueba que el directorio del template es un directorio
+	    if (is_dir("../templates/".$name))
+	    {
+	        // Se lee
+	        if (is_dir("../templates/".$name."/img"))
+	        {
+	            // Se lee el directorio de las imágenes
+	            $dirImg = @opendir("../templates/".$name."/img");	    
+					    while ($archivo = @readdir($dirImg))
+					    {
+					        if (($archivo != ".") && ($archivo != ".."))
+					        {    
+					            // Se eliminan todos los archivos
+					            if (file_exists("../templates/".$name."/img/".$archivo))
+					            {
+					                @unlink("../templates/".$name."/img/".$archivo);
+											}
+									}	         
+							}
+							// Se elimina el directorio de las imágenes
+							$val = @rmdir("../templates/".$name."/img");
+					}
+			    
+			    if (is_dir("../templates/".$name."/str"))
+			    { 
+			        // Se lee el directorio de las páginas
+			        $dirStr = @opendir("../templates/".$name."/str");
+					    while ($archivo = @readdir($dirStr))
+					    {
+					        if (($archivo != ".") && ($archivo != ".."))
+					        {
+					            // Se eliminan todos los archivos
+					            if (file_exists("../templates/".$name."/str/".$archivo))
+					            {
+					                @unlink("../templates/".$name."/str/".$archivo);
+											}
+									}	          
+							}
+							// Se elimina el directorio de las páginas
+							$val = @rmdir("../templates/".$name."/str");
+					}
+			    
+			    if (is_dir("../templates/".$name."/stylesheet"))
+			    {
+			        // Se lee el directorio de las hojas de estilo
+			        $dirStylesheet = @opendir("../templates/".$name."/stylesheet");
+					    while ($archivo = @readdir($dirStylesheet))
+					    {
+					        if (($archivo != ".") && ($archivo != ".."))
+					        {
+					            // Se eliminan todos los archivos
+					            if (file_exists("../templates/".$name."/stylesheet/".$archivo))
+					            {
+					                @unlink("../templates/".$name."/stylesheet/".$archivo);
+											}
+									}	          
+							}					
+							// Se elimina el directorio de las hojas de estilo
+							$val = @rmdir("../templates/".$name."/stylesheet");
+					}
+		   		
+		   		// Y se elimina el directiro del template
+		   		$val = @rmdir("../templates/".$name);
+			}
+			
+			return $val;
+	}
+?>

@@ -1,0 +1,76 @@
+<?
+  /**
+   * Clase que se encarga de eliminar los datos de la tabla de control del logs del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ResetLogs
+	{
+	  // Variable que guarda la vista
+		var $vista = "admin_logs.str";
+		// Variable que guarda el modelo	
+		var $modelo;
+		// Variable que guarda el error
+		var $error;		
+		
+		// Constructor de la clase
+		function ResetLogs() {
+		}
+		
+		// Función que ejecuta el código de la acción requerida
+		function ejecutar($gesBD)
+		{
+		    $encontrado = true;
+		    
+		    if (isset($_SESSION["haySesionAdmin"]))
+		    {
+		        // Si hay sesión de administrador
+		        // Se eliminan todos los logs de la table de backups de logs
+						if (resetLog($gesBD))
+						{
+						    // Si se ejecuta correctamente
+						    // Se indica mediante un mensaje emergente y se redirige al usuario a la página de logs
+						    echo "<SCRIPT>";
+						    echo "alert('Limpieza realizada correctamente.');";
+						    echo "location.href='index.php?accion=ShowLogs';";
+						    echo "</SCRIPT>";
+						}
+						else
+						{
+						    // Si no se ejecuta correctamente
+						    // Se redirige al usuario a la página de error
+						    header("Location: error.php");
+						}
+				}
+				else
+				{
+				    // Si no hay sesión de administrador
+				    // Se redirige al usuario a la página de inicio del foro
+				    header("Location: ../index.php");
+				}
+		    
+		    return $encontrado;
+		}
+		
+		// Función que devuelve el modelo
+		function getModelo()
+		{
+  			return $this->modelo;
+		}
+		
+		// Función que devuelve la vista
+		function getVista()
+		{
+			  return $this->vista;
+		}
+		
+		// Función que devuelve el error
+		function getError()
+		{
+			  return $this->error;
+		}
+		
+		// Función que devuelve la acción realizada
+		function getAct() {
+		}
+	}
+?>

@@ -1,0 +1,110 @@
+<TABLE class="tabla_foro_clara" cellpadding="0" cellspacing="0">
+      <TR>          
+<?
+  // Página que controla los usuarios en línea
+  if ($gesBD->selectCount("SELECT * FROM phpforum_users"))
+	{
+	    $totalUsers = $gesBD->getObj();			    
+	}
+			
+	if ($gesBD->selectCount("SELECT * FROM phpforum_msgs"))
+	{
+	    $totalMsgs = $gesBD->getObj();
+	}			
+?>			
+					<TD class="celda_img_control_users"><IMG src="templates/Default/img/users_connected.jpg" /></TD>  	
+					<TD class="celda_users_y_statistics">
+					    <TABLE class="tabla_acoplada">
+      							 <TR>
+      							 		 <TD class="celda_estadisticas">
+      							 		     Hay registrados <?=$totalUsers-1?> usuarios y han escrito <?=$totalMsgs?> mensajes desde el <?=$forum_date?>.
+      							 		 </TD>      							 		 
+      							 </TR>
+      							 <TR>
+												 <TD class="celda_lista_users_connected">
+<?      							 
+	$error = $modelo["errortrafico"];
+	
+	if (isset($error))
+	{
+?> 				                         
+												     <?=$error?>												 	 	
+<?		
+	}
+	else
+	{
+?>
+	 													 <A HREF="index.php?accion=ShowConnectedUsers" class="link_path">Hay<?	
+	    $userslist = $modelo["trafico"];
+	    $registered = $userslist["registered"];
+	    $anonymous = $userslist["anonymous"];
+			$sizer = count($registered);			
+			$sizea = count($anonymous);			
+			$contr = 0;					
+			
+			if ($sizea > 0)
+			{
+?>&nbsp;<?=$sizea?> visitantes<?
+			}
+			 	 						 	 	 		 	
+			if (isset($registered))
+			{
+			    if ($sizea > 0)
+			    {
+?>&nbsp;y<?			    
+					}
+?>&nbsp;<?=$sizer?> usuarios conectados<?
+      }
+?>.<BR></A>
+<?			
+?>
+									 					 Usuarios conectados en los &uacute;ltimos 10 minutos:<BR>
+<?		
+      if (isset($registered))
+			{
+			    for ($contr = 0; $contr < $sizer; $contr++)
+					{			 			     			     
+							$log = $registered[$contr];
+							$user = $log->getUser();
+							$login = $user->getLogin();
+							$login = replaceCharsToHTML($login);
+							$id_user = $user->getId_user(); 
+						  $rank = $user->getRank();					
+							if ($rank == -2)
+							{
+							    $class = "link_admin_user";
+							}
+							else 
+							{
+							    if ($rank == -1)
+							    {
+							        $class = "link_mode_user";
+									}
+									else
+									{
+									    $class = "link_default_user";
+									}							    
+							}							
+		
+							if (($contr+1) < $sizer)
+							{
+?>
+ 														 <A HREF="index.php?accion=ShowUser&id=<?=$id_user?>" class="<?=$class?>"><?=$login?></A>,&nbsp;			
+<?					
+							}											
+							else
+							{
+?>
+ 					 									 <A HREF="index.php?accion=ShowUser&id=<?=$id_user?>" class="<?=$class?>"><?=$login?></A>			
+<?				
+					  	}
+			    }			
+			}			
+   }
+?>
+								 	 			 </TD> 
+										 </TR>
+					    </TABLE>							
+					</TD>	      		 						
+	 		</TR>	 		 					
+</TABLE>  		

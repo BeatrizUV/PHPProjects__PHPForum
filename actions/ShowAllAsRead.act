@@ -1,0 +1,129 @@
+<?
+  /**
+   * Clase que se encarga de mostrar todos los mensajes del foro o los mensajes privados como leidos.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowAllAsRead
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main.str";
+	 	 // Variable que guarda el error
+	 	 var $error;
+	 	 // Variable que guarda la acción realizada
+	 	 var $act;	 	 
+					
+		 // Constructor de la clase			
+	   function ShowAllAsRead() {	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {	
+		     // Se recogen los valores enviados 
+		     $id_theme = $_GET["id"];
+		     $box = $_GET["box"];
+		     
+		 	   if (isset($_SESSION["haySesion"]))
+		     {
+		         // Si hay sesión
+						 // Se recoge de la sesión el usuario conectado 
+		         $user = unserialize($_SESSION["userlog"]);		 
+						 
+						 if (!isset($box))
+						 {
+						     // Si no se ha indicado ninguna bandeja
+						     if (!isset($id_theme))
+				         {		             
+				             // Si no se ha indicado ningún tema en particular
+				             // Se marcan como leídos TODOS los mensajes del foro
+						         $query = "UPDATE phpforum_reads_control SET status = 1 WHERE id_user LIKE ".$user->getId_user();
+						         $gesBD->update($query);
+						         // Y se redirige al usuario a la página de inicio del foro
+										 header("Location: index.php");						       
+								 }
+								 else
+								 {
+								     // Si sí se ha indicado un tema
+										 // Se seleccionan las ids de todos los posts del tema indicado 
+								     $query = "SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme;						    
+								     $variables[0] = "id_post";
+								     if ($gesBD->selectMore($query, $variables))
+								     {
+								         // Si existen posts para este tema
+								         // Se recogen las ids de los posts
+								         $filas = $gesBD->getObj();
+								         $contf = 0;
+								         $sizef = count($filas);						         
+								         for ($contf = 0; $contf < $sizef; $contf++)
+								         {
+								             $fila = $filas[$contf];	
+														 // Se actualizan los registros de lectura de estos posts a "leídos"					             
+								             $query = "UPDATE phpforum_reads_control SET status = 1 WHERE id_user LIKE ".$user->getId_user()." AND id_post LIKE ".$fila[0];						             
+						         				 $gesBD->update($query);
+						         				 // Y se redirige al usuario al tema desde el que ha solicitado la acción
+														 header("Location: index.php?accion=ShowTheme&id=".$id_theme);						       
+												 }
+										 }
+								 }
+						 } 
+						 else
+						 {			
+						     // Si sí se ha indicado una bandeja
+								 // Se actualiza la bandeja indicada			 
+						     if ($box == "in")
+						     {
+						         $query = "UPDATE phpforum_mps SET is_read = 1 WHERE receptor LIKE ".$user->getId_user()." AND box LIKE '".$box."'";
+								 }
+								 else if ($box == "out")
+								 {
+								     $query = "UPDATE phpforum_mps SET is_read = 1 WHERE emisor LIKE ".$user->getId_user()." AND box LIKE '".$box."'";
+								 }
+						     						     
+				         $gesBD->update($query);
+				         // Y se redirige al usuario a su bandeja
+								 header("Location: index.php?accion=ShowMPs&box=".$box);		
+						 }	           
+				 }
+				 else
+				 {
+				     // Si no hay sesión
+				     if (!isset($id_theme))
+				     {
+				         // Si no se ha indicado un tema en particular
+				         // Se redirige al usuario a la página de inicio del foro
+				         header("Location: index.php");				         
+						 }
+						 else
+						 {
+						     // Si sí se ha indicado un tema
+						     // Se redirige al usuario al tema desde el que ha solicitado la acción
+						     header("Location: index.php?accion=ShowTheme&id=".$id_theme);
+						 }
+				 }
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción
+		 function getAct() {
+		 }	 
+	}
+?>

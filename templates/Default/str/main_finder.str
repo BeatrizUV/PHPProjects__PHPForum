@@ -1,0 +1,260 @@
+<? include("templates/Default/str/header.str"); ?>	
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Buscar
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página del buscador
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>
+<?	  	    	    	
+	}		
+?>
+																 																	<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">
+																			 							 							    					<TR>																			 							 							    					 		 
+																																				 		        <TD height="15px" colspan="3"></TD>	
+																																								</TR> 
+																 																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="align_center" colspan="3">
+																																												Puede realizar una b&uacute;squeda por palabra clave, por autor, o por ambos y ordenar los resultados. 																																											
+																																										</TD>	
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD height="15px" xcolspan="3"></TD>	
+																																								</TR>
+																																								<TR>
+																														                	   	  <TD colspan="3">													                	   	   	   							   
+																														                	   	  	  <TABLE class="tabla_acoplada">
+														  															  						 			 				      <TR>
+																																															    <FORM action="index.php?accion=Finder" method="POST" name="formFinder">
+																																															    <TD class="align_right" xwidth="195px">Patr&oacute;n de b&uacute;squeda&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																																															    <TD class="align_left"><INPUT type="text" class="input" name="key" size="25" maxlength="50" /></TD>
+																																															</TR>
+																																															<TR>																																																
+																                	   	   																					<TD height="25" valign="middle" colspan="4"><HR width="85%" color="#BBBBBB" size="1"></TD>																                	   																							
+																																															</TR>
+																																															<TR>
+																																															    <TD class="align_right" xwidth="195px">Ordenar por&nbsp;&nbsp;:&nbsp;&nbsp;</TD>																																								    
+																																															    <TD class="align_left" valign="top">
+																																															    		<SELECT name="param" class="input">
+																																							    		    				        <OPTION value="fecha">Fecha&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</OPTION>																																																					
+																																																					<OPTION value="asunto">Asunto</OPTION>
+																																																					<OPTION value="author">Autor</OPTION>																																																																														    		    				        
+																																																			</SELECT>
+																																																			<BR>
+																																																			<INPUT type="radio" name="order" value="ASC" checked />Ascendente.
+																																																			<BR>
+																																																			<INPUT type="radio" name="order" value="DESC" />Descendente.
+																																																	</TD>
+																																															</TR>
+																																															<TR>																			 							 							    					 		 
+																																											 		        <TD colspan="2" height="15px"></TD>	
+																																															</TR>
+																																															<TR>
+																																																	<TD colspan="2" class="align_center">
+																																																			<INPUT type="button" class="button" name="Buscar" value="Buscar" onClick="valFormFinder()" />
+																																																			</FORM>
+																																																	</TD>
+																																															</TR>
+																																						   	   	   	</TABLE>    
+																																								 		</TD>
+																																								</TR>
+<?
+	$listaBusquedas = $modelo["modelo"];
+	$cont = 0;
+	$size = count($listaBusquedas);
+	if ($size > 0)
+	{
+?>
+																																								<TR>																																																
+									                	   	   																					<TD valign="top" colspan="3"><HR width="85%" color="#BBBBBB" size="1"></TD>																                	   																							
+																																								</TR>																																								
+																																								<TR>																																																
+									                	   	   																					<TD height="10px" colspan="3"></TD>																                	   																							
+																																								</TR>
+																																								<TR>
+																																								    <TD width="15px"></TD>
+																																								    <TD>																																								        
+																																								    		<TABLE cellpadding="0" cellspacing="0" width="500px">
+																																						    					  <TR>
+																																													 		 	<TD class="celda_cabecera_tabla_usuarios" width="290px">		
+																																																    ASUNTO																																									
+																																																</TD>	
+																																														 		<TD class="celda_cabecera_tabla_usuarios" width="120px">			
+																																																    INICIO 																																								
+																																																</TD>	
+																																																<TD class="celda_cabecera_tabla_usuarios" width="90px">			
+																																																    RESPUESTAS																																							
+																																																</TD>																																						    					 		 
+																																						    					  </TR>																																								    			
+<?	
+		for ($cont = 0; $cont < $size; $cont++)
+		{
+		    $bus = $listaBusquedas[$cont];
+		    $cat_title = $bus->getCat_title();
+		    $theme_title = $bus->getTheme_title();
+		    $post = $bus->getPost(); 
+		    $id_post = $post->getId_post();	    
+		    $post_title = $post->getTitle();
+		    $total_msgs = $post->getTotalMsgs();
+		    $msgs = $post->getMsgs();
+		    $firstMsg = $msgs[0];
+		    $foundMsg = $msgs[1];					
+		    $userFirstMsg = $firstMsg->getAuthor();	    
+		    $userFoundMsg = $foundMsg->getAuthor();
+		    
+		    if ($userFirstMsg->getRank() == -2) 
+		    {
+	          $linkUserFirstMsg = "link_admin_user";
+				}
+				else if ($userFirstMsg->getRank() == -1)
+				{
+				    $linkUserFirstMsg = "link_mode_user";
+				}
+				else
+				{
+				    $linkUserFirstMsg = "link_default_user";
+				}
+		    
+		    if ($userFoundMsg->getRank() == -2) 
+		    {
+	          $linkUserFoundMsg = "link_admin_user";
+				}
+				else if ($userFoundMsg->getRank() == -1)
+				{
+				    $linkUserFoundMsg = "link_mode_user";
+				}
+				else
+				{
+				    $linkUserFoundMsg = "link_default_user";
+				}		
+				
+				if ($cont % 2 == 0)
+				{
+				    $celda = "celda_busqueda_clara";
+				}
+				else
+				{
+				    $celda = "celda_busqueda_oscura";
+				}
+?>																																						
+																																														<TR>																																		 		
+																																														 		<TD class="<?=$celda?>" align="left">		
+																																																    <SPAN class="texto_situacion_busqueda">&nbsp;<?=$cat_title?> / <?=$theme_title?>&nbsp;</SPAN>
+																																																		<TABLE>
+																																																					 <TR>
+																																																					 		 <TD class="align_left">
+																																																					 		     <SPAN style="font-size: 9px; vertical-align: bottom;">En <A HREF="index.php?accion=ShowPost&id=<?=$id_post?>" class="link_cuerpo"><?=$post_title?></A> por <?
+																																																										 if ($foundMsg->getExistAuthor() == 1)
+																																																										 {?><A HREF="index.php?accion=ShowUser&id=<?=$userFoundMsg->getId_user()?>" class="<?=$linkUserFoundMsg?>"><?=replaceCharsToHTML($userFoundMsg->getLogin())?></A><?
+																																																										 }
+																																																										 else
+																																																										 {?>An&oacute;nimo<?
+																																																										 }
+																																																										?> el <?=$foundMsg->getDate()?></SPAN>
+																																																					 		 </TD>
+																																																					 </TR>
+																																																					 <TR>	 
+																																																					 		 <TD class="celda_clara" style="text-align: left; padding: 3px; vertical-align: top;" width="284px">
+																																																					 		     <?=replaceBBCodeToHTML($foundMsg->getBody())?>
+																																																					 		 </TD>
+																																																					 </TR>
+																																																		</TABLE>																																								
+																																																</TD>	
+																																														 		<TD class="<?=$celda?>" align="center">
+																																																    <?=$firstMsg->getDate()?>
+																																																		<BR><?
+																																																		 if ($firstMsg->getExistAuthor() == 1)
+																																																		 {?><A HREF="index.php?accion=ShowUser&id=<?=$userFirstMsg->getId_user()?>" class="<?=$linkUserFirstMsg?>"><?=replaceCharsToHTML($userFirstMsg->getLogin())?></A><?
+																																																		 }
+																																																		 else
+																																																		 {?>An&oacute;nimo<?
+																																																		 }
+																																																		?>																																								
+																																																</TD>																																														 		
+																																																<TD class="<?=$celda?>" align="center">			
+																																																    <?=$total_msgs?>																																							
+																																																</TD>																																																
+																																														</TR>	
+<?				    
+	   }
+?>
+	 																																											</TABLE>
+																																										</TD>	
+																																										<TD width="10px"></TD>																																										
+																																								</TR>	
+<?
+	}
+?>
+																																															
+  																																							<TR>																																																
+									                	   	   																					<TD height="15" colspan="3"></TD>																                	   																							
+																																								</TR>																																					
+			 																																	 </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>																														
+																																	<TR>
+   																																    <TD height="15px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																										 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>	

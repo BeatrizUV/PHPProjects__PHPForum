@@ -1,0 +1,143 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de los mensajes.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class Mensaje {
+    
+        var $author;        
+        var $body;
+        var $date;
+        var $id_msg;
+        var $existAuthor;
+        var $is_first;
+        var $is_last;
+        var $id_post;
+        
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function Mensaje($id_msg, $is_first, $author, $body, $date, $existAuthor, $is_last, $id_post){
+            $this->id_msg = $id_msg;
+            $this->is_first = $is_first;
+			      $this->author = $author;
+            $this->body = $body;
+            $this->date = $date;            
+            $this->existAuthor = $existAuthor;   
+						$this->is_last = $is_last;  
+						$this->id_post = $id_post;       
+        }
+		        
+        /**
+         * Metodo que se encarga de asignar el autor del mensaje.         
+         */
+        function setAuthor($author){
+            $this->author = $author;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el body del mensaje.         
+         */
+        function setBody($body){
+            $this->body = $body;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la date del mensaje.        
+         */
+        function setDate($date){
+            $this->date = $date;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el numero de identificacion del mensaje.       
+         */
+        function setId_msg($id_msg){
+            $this->id_msg = $id_msg;
+        }        
+        
+        /**
+         * Metodo que se encarga de asignar el indicador existAuthor del mensaje.        
+         */
+        function setExistAuthor($existAuthor){
+            $this->existAuthor = $existAuthor;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el indicador de primer mensaje del mensaje.         
+         */
+        function setIs_first($is_first){
+            $this->is_first = $is_first;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el indicador de último mensaje del mensaje.         
+         */
+        function setIs_last($is_last){
+            $this->is_last = $is_last;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el id del post al que pertenece el mensaje.         
+         */
+        function setId_post($id_post){
+            $this->id_post = $id_post;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el autor del mensaje.         
+         */
+        function getAuthor(){
+            return $this->author;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el body del mensaje.         
+         */
+        function getBody(){
+            return $this->body;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver la date del mensaje.         
+         */
+        function getDate(){
+            return $this->date;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el numero de identificacion del mensaje.         
+         */
+        function getId_msg(){
+            return $this->id_msg;
+        }        
+        
+        /**
+         * Metodo que se encarga de devolver el indicador existAuthor del mensaje.         
+         */
+        function getExistAuthor(){
+            return $this->existAuthor;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el indicador de primer mensaje del mensaje.         
+         */
+        function getIs_first(){
+            return $this->is_first;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el indicador de último mensaje del mensaje.         
+         */
+        function getIs_last(){
+            return $this->is_last;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el id del post al que pertenece el mensaje.         
+         */
+        function getId_post(){
+            return $this->id_post;
+        }
+    }
+?>

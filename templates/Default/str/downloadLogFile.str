@@ -1,0 +1,13 @@
+<? 
+    // Función para descargar el archivo de exportación de logs en formato TXT
+    function download()
+    {
+        $name = $_SESSION["logName"];
+        unset($_SESSION["logName"]);
+        header("Content-type: application/txt"); 
+				header("Content-Disposition: attachment; filename=".$name); 
+				readfile("../tmp/".$name);
+		}
+		
+		download();
+?>

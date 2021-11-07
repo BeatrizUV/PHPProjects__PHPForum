@@ -1,0 +1,207 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de los temas.
+     * By Beatriz Urbano Vega [Masane].
+     */
+	class Tema
+	{
+		var $posts;
+		var $title;
+		var $visibility;		
+		var $id_theme;	
+		var $position;	
+		var $comment;
+		var $content;
+		var $totalMsgs;
+		var $totalPosts;
+		var $id_cat;
+		var $is_read;
+		var $lastMsg;
+		
+		/**
+		 * Metodo constructor de la clase.		 
+		 */
+		function Tema($id_theme, $title, $visibility, $posts, $position, $comment, $content, $totalMsgs, $totalPosts, $id_cat, $is_red, $lastMsg){			
+			$this->id_theme = $id_theme;
+			$this->title = $title;
+			$this->visibility = $visibility; 		
+			$this->posts = $posts;
+			$this->position = $position;
+			$this->comment = $comment;
+			$this->content = $content;
+			$this->totalMsgs = $totalMsgs;
+			$this->totalPosts = $totalPosts;
+			$this->id_cat = $id_cat;
+			$this->is_read = $is_read;
+			$this->lastMsg = $lastMsg;
+		}		
+		
+		/**
+		 * Metodo que se encarga de asignar la lista de posts que pertenecen al theme.		 
+		 */
+		function setPosts($posts){
+			$this->posts = $posts;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar el title del theme.		 
+		 */
+		function setTitle($title){
+			$this->title = $title;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar el visibility del theme.		 
+		 */
+		function setVisibility($visibility){
+			$this->visibility = $visibility;
+		}  
+		
+		/**
+		 * Metodo que se encarga de asignar el numero de identificacion del theme.		 
+		 */
+		function setId_theme($id_theme){
+			$this->id_theme = $id_theme;
+		} 
+		
+		/**
+		 * Metodo que se encarga de asignar el numero de identificacion de la categoría padre del theme.		 
+		 */
+		function setId_cat($id_cat){
+			$this->id_cat = $id_cat;
+		} 
+		
+		/**
+		 * Metodo que se encarga de asignar el estado de lectura del theme.		 
+		 */
+		function setIs_read($is_read){
+			$this->is_read = $is_read;
+		} 	
+		
+		/**
+		 * Metodo que se encarga de asignar la posición del theme.		 
+		 */
+		function setPosition($position){
+			$this->position = $position;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar el comentario del theme.		 
+		 */
+		function setComment($comment){
+			$this->comment = $comment;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar la existencia de contenido en el theme.		 
+		 */
+		function setContent($content){
+			$this->content = $content;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar el numero de mensajes del theme.		 
+		 */
+		function setTotalMsgs($totalMsgs){
+			$this->totalMsgs = $totalMsgs;
+		}
+		
+		/**
+		 * Metodo que se encarga de asignar el numero de posts del theme.		 
+		 */
+		function setTotalPosts($totalPosts){
+			$this->totalPosts = $totalPosts;
+		}
+		
+		/**
+     * Metodo que se encarga de asignar el id del ultimo mensaje del post.         
+     */
+    function setLastMsg($lastMsg){
+        $this->lastMsg = $lastMsg;
+    }
+		
+		/**
+		 * Metodo que se encarga de devolver la lista de posts que pertenecen al theme.		 
+		 */
+		function getPosts(){
+			return $this->posts;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el title del theme.		 
+		 */
+		function getTitle(){
+			return $this->title;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el visibility del theme.		 
+		 */
+		function getVisibility(){
+			return $this->visibility;
+		} 
+		
+		/**
+		 * Metodo que se encarga de devolver el numero de identificacion del theme.		 
+		 */
+		function getId_theme(){
+			return $this->id_theme;
+		} 	
+		
+		/**
+		 * Metodo que se encarga de devolver la posición del theme.		 
+		 */
+		function getPosition(){
+			return $this->position;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el comentario del theme.		 
+		 */
+		function getComment(){
+			return $this->comment;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver la existencia de contenido en el theme.		 
+		 */
+		function getContent(){
+			return $this->content;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el numero de mensajes del theme.		 
+		 */
+		function getTotalMsgs(){
+			return $this->totalMsgs;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el numero de posts del theme.		 
+		 */
+		function getTotalPosts(){
+			return $this->totalPosts;
+		}
+		
+		/**
+		 * Metodo que se encarga de devolver el numero de identificacion de la categoría padre del theme.		 
+		 */
+		function getId_cat(){
+			return $this->id_cat;
+		}  
+		
+		/**
+		 * Metodo que se encarga de devolver el estado de lectura del theme.		 
+		 */
+		function getIs_read(){
+			return $this->is_read;
+		} 	
+		
+		/**
+     * Metodo que se encarga de devolver el id del ultimo mensaje del post.         
+     */
+    function getLastMsg(){
+        return $this->lastMsg;
+    } 
+	}
+?>

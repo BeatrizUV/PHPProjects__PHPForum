@@ -1,0 +1,115 @@
+<? include("../templates/Default/str/admin_header.str"); ?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3" id="loc">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A>
+																																			</TD>																																			
+																																	</TR>
+																																	<TR> 
+																																	    <TD class="celda_path" style="text-align: right; height: 15px;" colspan="3" id="submenu"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página de inicio del panel de administración
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>																																	
+<?	  	    	    	
+	}	
+	else
+	{
+?>
+	 																																<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_acoplada" cellpadding="0" cellspacing="0">
+																			 							 							    				<TR>
+																			 							 							    						<TD>
+																			 							 							    						    <BR>
+																			 							 							    								Bienvenido al panel de administraci&oacute;n del foro.
+																			 							 							    								<BR><BR>
+																			 							 							    								En la parte superior se muestra un men&uacute; con las acciones que puede desarrollar desde este panel.
+																			 							 							    								<BR><BR>
+																			 							 							    								Al pinchar sobre dicho men&uacute;, dependiendo de la secci&oacute;n elegida, aparecer&aacute; otro men&uacute;
+																																											<BR>con las subsecciones en las que se dividen las secciones principales.
+																																											<BR><BR>
+																																											Para cambiar el estilo del foro, o algún dato del administrador principal o el nombre del foro, etc...
+																																											<BR>acceda a la secci&oacute;n "<B>Configuraci&oacute;n</B>"
+																																											<BR><BR>
+																																											Para crear, editar, ordenar, y/o borrar categor&iacute;as, acceda a la secci&oacute;n "<B>Categor&iacute;as</B>".
+																																											<BR><BR>
+																																											Para crear, editar, ordenar, y/o borrar temas, acceda a la secci&oacute;n "<B>Temas</B>".
+																																											<BR><BR>
+																																											Para crear, editar y/o borrar usuarios, acceda a la secci&oacute; "<B>Usuarios</B>";
+																																											<BR><BR>
+																																											Para crear, editar y/o borrar grupos, acceda a la secci&oacute; "<B>Grupos</B>";
+																																											<BR><BR>
+																																											Y por &uacute;ltimo, para consultar los movimientos de los usuarios del foro, acceda a la secci&oacute;n "<B>Seguimiento</B>".
+																																											<BR><BR><BR>
+																																											Nota: Su sesi&oacute;n (tiempo de conexi&oacute;n) caduca pasados <?=ini_get("session.gc_maxlifetime") / 60?> minutos de haberse conectado,
+																																											<BR>y ser&aacute; redirigido al inicio del foro.
+																																											<BR><BR>
+																																											Si desea que esto no pase, al conectarse, marque la casilla "Conectar autom&aacute;ticamente". 			
+																																											<BR><BR><BR>										 							 							    								
+																			 							 							    						</TD>
+																			 							 							    				</TR>
+																			 							 							    		</TABLE>
+																			 							 							    </TD>
+																																			<TD width="10px"></TD>
+																																	</TR>					
+<?
+	}
+?>																																																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																											 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("../templates/Default/str/admin_footer.str"); ?>														 		 

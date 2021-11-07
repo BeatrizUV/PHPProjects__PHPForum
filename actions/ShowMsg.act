@@ -1,0 +1,108 @@
+<?
+  /**
+   * Clase que se encarga de mostrar un mensaje.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowMsg
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_writeMsg.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+			
+		 // Constructor de la clase			
+	   function ShowMsg(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     // Se recogen los valores enviados
+		     $val = false;		 	   
+		 	   $id_msg = $_GET["idm"];		
+						
+				 if (isset($_GET["act"]))
+				 {
+				     // Si la acción tiene algún valor
+				     if (($_GET["act"] != "editarMsg") && ($_GET["act"] != "citar"))
+				     {
+				         // Si es diferente de "editarMsg" y de "citar"
+				         // Se redirige al usuario a la página de error
+				         header("Location: error.php");
+				 	 	 }
+				 }
+				 else
+				 {
+				     // Si la acción no tiene ningún valor
+				     // Se redirige al usuario a la página de error
+				     header("Location: error.php");
+				 }								  	   
+					
+		 	   if (isset($pagina))
+		 	   {
+		 	       // Si la página tiene algún valor
+		 	       // Se establece la vista a partir de esta página
+		 	       $this->vista = $pagina.".str";
+				 }
+				 // Si no, se carga la vista por defecto
+		 	   
+		 	   if (isset($id_msg))
+		 	   {
+		 	       // Si el id del mensaje tiene algún valor
+		 	       if (isset($_SESSION["haySesion"]))
+						 {								
+						     // Si hay sesión
+						     // Se recoge al usuario conectado de la sesión
+						     $user = unserialize($_SESSION["userlog"]);						     
+								 if ($gesBD->selectMsg($id_msg, $user->getRank()))
+								 {								     
+								     // Si existe el mensaje y el usuario tiene permisos para verlo
+								     // Se guarda el mensaje en el modelo
+										 $this->modelo = $gesBD->getObj();
+										 // Y se indica que todo ha ido bien
+										 $val = true;	 
+								 }			    						 				 
+						 }
+						 else
+						 {
+						     // Si no hay sesión
+						     // Se redirige al usuario a la página de inicio
+						     header("Location: index.php");
+						 }		 
+				 }
+				 
+				 if (!$val)
+				 {
+				     // Si ha ocurrido algún error de acceso a la base de datos durante la ejecución de la acción
+				     // Se manda al usuario a la página de error
+				     header("Location: error.php");
+				 }		 		 	   
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción
+		 function getAct() {
+		 }	 
+	}
+?>

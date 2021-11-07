@@ -1,0 +1,197 @@
+<? include("../templates/Default/str/admin_header.str"); ?>
+<SCRIPT>
+  // Función que selecciona grupos
+	function selectGroup(accion, numSel)
+	{	   
+	    if (accion == "all")
+	    {
+	        var cont = 0;
+	        for (cont = 0; cont < numSel; cont++)
+	        {
+	            document.getElementById(cont).checked = false;
+	            document.getElementById(cont).disabled = true;	            
+					}					
+			}
+			else if (accion == "some")
+			{
+			    var cont = 0;
+	        for (cont = 0; cont < numSel; cont++)
+	        {	            
+	            document.getElementById(cont).disabled = false;
+					}
+			}
+			
+			document.getElementById("tipoEnvio").value = accion;
+	}			
+</SCRIPT>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3" id="loc">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Configuraci&oacute;n
+																																			</TD>																																			
+																																	</TR>
+																																	<TR> 
+																																	    <TD class="celda_path" style="text-align: right; height: 15px;" colspan="3" id="submenu"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página de envío de correos masivos
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+	    $listaGrupos = unserialize($_SESSION["grupos"]);
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>																																	
+<?	  	    	    	
+	}	
+	else
+	{
+	    $listaGrupos = $modelo["modelo"];	  
+			$_SESSION["grupos"] = serialize($listaGrupos); 
+	}  	     
+?>
+	 																																<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">												                			       
+																										                			       <TR>
+																														                	   	   <TD>
+																														                	   	   		 <FORM action="index.php?accion=SendMail" method="POST" name="formSendEmail" id="formSendEmail">																																						             																																																																						
+																				                                             </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>A continuaci&oacute;n se ofrece la posibilidad de mandar e-mails a los usuarios del foro:
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="10"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">
+																														                	   	   	        <TR>
+																																                	   	            <TD colspan="2" height="40px">
+																																                	   	            		Puede elegir entre enviar un e-mail a todos los usuarios,
+																																																			<BR>o enviarlo a ciertos a ciertos grupos de usuarios.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	
+																																						   	   	   		    <TR>
+																																																	<TD colspan="2" class="celda_acoplada">
+																																																	    Mensaje&nbsp;&nbsp;:
+																																																	</TD>   
+																																															</TR>		
+																																																	<TD colspan="2" class="celda_acoplada">
+																																																			<TEXTAREA class="input_textarea" name="body" id="body" maxlength="250" rows="5" cols="55" style="width: 300px;" wrap="virtual"></TEXTAREA>
+																																																			<BR><BR>																																						                	   	   	   		  	     				     		     
+																																						                	   	   	<INPUT type="reset" class="button" name="reset" id="reset" value="Borrar" />																																																
+																																																	</TD>
+																																															</TR>
+																																															<TR>																																																
+																                	   	   																					<TD valign="top" colspan="2" style="height: 10px;"></TD>																                	   																							
+																																															</TR>
+																														                	   	   	   		  <TR>																																																
+																                	   	   																					<TD valign="top" colspan="2"><HR width="80%" color="#AAAAAA" size="1"></TD>																                	   																							
+																																															</TR>																																															
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="200px">Enviar e-mail&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="300px">
+<?
+	    $cont = 0;
+	    $size = count($listaGrupos);
+?>
+  																																																				<INPUT type="radio" name="grupos" id="grupos" value="some" onClick="selectGroup('some', '<?=$size?>')" /> Por grupos.
+																																																					&nbsp;&nbsp;&nbsp;<INPUT type="radio" name="grupos" id="grupos" value="all" onClick="selectGroup('all', '<?=$size?>')" checked /> A todo el foro.
+																																																	</TD>
+																																															</TR>
+																																															<TR>		
+																																																	<TD class="align_right" width="200px"></TD>
+																														                	   	   	   		  	  <TD class="align_left" width="300px">																					 																																										 
+<?	    
+	    for ($cont = 0; $cont < $size; $cont++)
+	    {
+	        $group = $listaGrupos[$cont];
+					$g = $group["group"];	        
+?>
+																														                	   	   	   		  	  				<BR><INPUT type="checkbox" name="<?=$g->getId_group()?>" id="<?=$cont?>" value="" disabled/> <?=$g->getName()?>.
+<?			
+			}
+?>																																																						 																																																						 		
+																														                	   	   	   		  	  		</SELECT>
+																																																	</TD>
+																														                	   	   	   		  </TR>																														                	   	   	   		  
+																																															<TR>
+																																                	   	            <TD colspan="2" height="25px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>																													                	   	   	   		  
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2">	
+																																																	    <INPUT type="hidden" name="tipoEnvio" id="tipoEnvio" value="all" /> 																															                	   	            		
+																																																			<INPUT class="button" type="button" name="Enviar" value="Enviar" onClick="valFormSendEmail()"/>
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		</TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																								 <TR>
+																																								     <TD>
+																																												 </FORM>
+																																										 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																				 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="15px"></TD>
+																																	</TR>																										
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																											 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("../templates/Default/str/admin_footer.str"); ?>														 		 

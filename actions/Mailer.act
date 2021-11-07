@@ -1,0 +1,16 @@
+<? 
+   // Función que manda emails
+	 function sendMail($to, $from, $subject, $body)
+	 {
+		    //para el envío en formato HTML 
+				$headers = "MIME-Version: 1.0\r\n"; 
+				$headers .= "Content-type: text/html; charset=iso-8859-1\r\n"; 
+				
+				//dirección del remitente 
+				$headers .= "From: ".$from."\r\n";
+				
+				// Mandamos el mail
+				$var = mail($to,$subject,$body,$headers);
+				return $var;
+	 } 
+?> 

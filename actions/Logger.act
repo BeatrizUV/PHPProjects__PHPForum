@@ -1,0 +1,241 @@
+<?
+  // Función que registra los logs de cada usuario en la base de datos
+	function registerLog($gesBD, $action)
+	{
+	    // Variable que guarda el id del usuario
+		  $id_user;
+		  // Variabla que guarda la ip del usuario
+	    $ip;
+	    // Variable que guarda la ip actual del usuario
+	    $ipActual = $_SERVER["REMOTE_ADDR"];
+	    
+	    // Comprobar si el usuario que realiza la acción ha iniciado sesión o no
+	    if (isset($_SESSION["haySesion"]))
+	    {    
+	        // Si ha iniciado sesión, se comprueba la ip
+	        // Se recoge al usuario conectado de la sesión
+	        $userLog = unserialize($_SESSION["userlog"]);
+	        // Se extrae su id
+	        $id_user = $userLog->getId_user();
+	        // Se extrae su ip (la última ip registrada en la base de datos)
+					$ipRegistrada = $userLog->getIp();
+					if ($ipActual != $ipRegistrada)
+	        {
+	            // Si la ip registrada es diferente de la ip actual, se actualiza la nueva ip
+	            $query = "UPDATE phpforum_users SET ip = '".$ipActual."' WHERE id_user LIKE ".$id_user;
+	            $gesBD->update($query);
+	            $userLog->setIp($ipActual);
+							// Se guarda el usuario actualizado en la sesión	
+	            $_SESSION["userlog"] = serialize($userLog);
+	            // Y se actualiza el valor de ip
+	            $ip = $ipActual;
+	        }
+	        else
+	        {
+	            // Si las dos ips son iguales
+	            // Se actualiza el valor de ip
+	            $ip = $ipRegistrada;
+	        }        
+	    }
+	    else
+	    {
+	       // Si no ha iniciado sesión, se configuran los parámetros como usuario anónimo
+	       $ip = $ipActual;
+	       $id_user = -1;
+	    }    
+	    
+	    // Se compara la acción para mostrar un mensaje de último click personalizada
+			if (empty($action))
+			{
+			    $action = "ShowForum";
+			}
+	    // Si la acción tiene algún valor
+	    $encontrado = false;
+	    // Se busca que acción se está desarrollando
+	    switch($action)
+			{
+			    case "ShowForum": $action = "Viendo el índice del foro.";
+			    		 							$encontrado = true;
+			    		 							break;
+			    case "navegar_main_login": $action = "Ingresando al foro.";
+			    		 											 $encontrado = true;
+			    		 											 break;
+			    case "navegar_main_register": $action = "Registrándose en el foro.";
+			    		 													$encontrado = true;
+			    		 											 		break;		 											 
+			    case "navegar_main_finder": $action = "Buscando contenidos en el foro.";
+			    		 												$encontrado = true;
+			    		 												break;
+			    case "navegar_main_faqs": $action = "Consultando la ayuda.";
+			    		 											$encontrado = true;
+			    		 											break;		
+					case "navegar_main_writeMP": $action = "Escribiendo un mensaje privado.";
+							 												 $encontrado = true;
+			    		 											 	 break;													     		 											
+			    case "ShowTheme": $query = "SELECT title, id_theme FROM phpforum_themes WHERE id_theme LIKE ".$_GET["id"];
+			    		 							$variables[0] = "title";
+			    		 							$variables[1] = "id_theme";
+			    		 							$gesBD->selectMore($query, $variables);
+														$filas = $gesBD->getObj();
+														$fila = $filas[0];
+														$theme_title = $fila[0];
+														$id_theme = $fila[1];
+							 							$action = "Viendo el tema \"<A HREF=\"index.php?accion=ShowTheme&id=".$id_theme."\" class=\"link_cuerpo\">".$theme_title."</A>\".";
+							 							$encontrado = true;
+							 							break; 
+					case "ShowPost": if ($_GET["pagina"] != "resume")
+							 						 {
+							 						     $id_post = $_GET["id"];
+													 	   if (!isset($id_post))
+													 	   {
+													 	       if (!isset($_GET["idp"]))
+													 	       {
+													 	           $id_post = $_SESSION["idpost"];
+																	 }		 	       
+																	 else
+																	 {
+																	     $id_post = $_GET["idp"];
+																	 }
+															 }
+							 						     $query = "SELECT title, id_theme FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+							                 $variables[0] = "title";
+															 $variables[1] = "id_theme"; 
+					    		 						 $gesBD->selectMore($query, $variables);
+					    		 						 $filas = $gesBD->getObj();
+					    		 						 $fila = $filas[0];
+															 $post_title = $fila[0];
+															 $id_theme = $fila[1];
+															 $query = "SELECT title FROM phpforum_themes WHERE id_theme LIKE ".$id_theme;															 
+					    		 						 $gesBD->selectOne($query, "title");														  
+					    		 						 $theme_title = $gesBD->getObj();													  
+									 						 $action = "Viendo \"<A HREF=\"index.php?accion=ShowPost&id=".$id_post."\" class=\"link_cuerpo\">".$post_title."</A>\" en el tema \"<A HREF=\"index.php?accion=ShowTheme&id=".$id_theme."\" class=\"link_cuerpo\">".$theme_title."</A>\".";
+									 						 $encontrado = true;
+													 }
+							 						 break; 		 							
+					case "ShowUser": $id = $_GET["id"];
+					                 if (!isset($id))
+							 						 {
+							 						     $id = $id_user;
+													 }													 
+					                 $query = "SELECT login FROM phpforum_users WHERE id_user LIKE ".$id;
+			    		 						 $gesBD->selectOne($query, "login");														  
+							 						 $action = "Viendo el perfil de \"<A HREF=\"index.php?accion=ShowUser&id=".$id."\" class=\"link_user\">".$gesBD->getObj()."</A>\".";
+							 						 $encontrado = true;
+							 						 break;
+					case "ShowGroups": $action = "Viendo la lista de grupos.";
+							 							 $encontrado = true;
+							 							 break;
+					case "ShowMPs": $action = "Leyendo sus mensajes privados.";
+							 						$encontrado = true;
+							 						break;
+					case "ShowMsg": $act = $_GET["act"];									 						
+													if ($act == "crearPost")
+													{
+													    $action = "Creando nuevo tema en \"".str_replace("'", "\\\"", $_SESSION["locSesion"])."\"";
+													}
+													else
+													{
+													    $action = "Escribiendo respuesta en \"".str_replace("'", "\\\"", $_SESSION["locSesion"])."\"";
+													}																												
+													$encontrado = true;
+							 						break;
+					case "navegar_main_writeMsg": $act = $_GET["act"];
+														 						if ($act == "crearPost")
+																				{
+																				    $action = "Creando nuevo tema en \"".str_replace("'", "\\\"", $_SESSION["locSesion"])."\"";
+																				}
+																				else
+																				{
+																				    $action = "Escribiendo respuesta en \"".str_replace("'", "\\\"", $_SESSION["locSesion"])."\"";
+																				}																																						
+																				$encontrado = true;
+														 						break;
+					case "CreateMP": $action = "Escribiendo un mensaje privado.";
+							 						 $encontrado = true;
+							 						 break;
+					case "DeleteMP": $action = "Borrando mensajes privados.";
+							 						 $encontrado = true;
+							 						 break;		 							
+					case "ShowUsers": $action = "Viendo la lista de usuarios.";
+							 							$encontrado = true;
+							 							break;
+					case "ShowConnectedUsers": $action = "Viendo quién está en línea.";
+					 		 											 $encontrado = true;
+							 											 break;				
+					case "admin": $action = "Acción desconocida.";
+					 		 										$encontrado = true;
+							 										break;																										    		 									 
+			}
+			
+			if ($encontrado)
+			{
+			    // Si se ha encontrado la acción que se está realizando
+			    // Se insertan los datos en la base de datos
+			    $query = "INSERT INTO phpforum_logs (fecha, action, ip, id_user) VALUES((SELECT NOW()), '".$action."', '".$ip."', ".$id_user.")";					  
+			    $gesBD->insert($query);
+			    // Se hace una copia de los datos en la tabla de backups
+					$query = "INSERT INTO phpforum_logs_backup (fecha, action, ip, id_user) VALUES((SELECT NOW()), '".$action."', '".$ip."', ".$id_user.")";					  
+			    $gesBD->insert($query);
+			    // Se purgan los registros con más de media hora de antigüedad
+					autoPruneLog($gesBD);	
+					// Se busca el archivo de control de exportación de logs
+					$lista = readFiles("../tmp/log_export_control.txt");
+					// Se obtiene la fecha actual
+					$date = date("d-m-Y", time());
+					// Y se obtiene la fecha grabada en el archivo de control
+					$fecha = $lista[0];
+					if (isset($fecha))
+					{
+					    // Si la fecha del archivo tiene algún valor
+					    if ($fecha != $date)
+							{
+							    // Si las fecha del archivo de control y la fecha actual son diferentes
+							    // Se eliminar el archivo de exportación de logs
+							    deleteLogExportControlFile();
+							}				    
+					}
+			} 
+	}
+			
+	// Función que elimina todos los registros de la tabla de backups de logs		
+	function resetLog($gesBD)
+	{
+	  // Se eliminan todos los registros de la table de backups de logs
+		$query = "DELETE FROM phpforum_logs_backup";
+		$val = $gesBD->delete($query);
+		return $val;
+	}
+	
+	// Función que auto purga la tabla de registros de logs
+	function autoPruneLog($gesBD)
+	{	  
+	    // Se eliminan todos los registros de la tabla de control de logs que superen la media hora de vida
+	    $query = "DELETE FROM phpforum_logs WHERE fecha < DATE_SUB((SELECT NOW()), INTERVAL 30 MINUTE)";
+	    $gesBD->delete($query);
+	}
+	
+	// Función que exporta los registros de la tabla de backups de logs en un archivo TXT
+	function exportLog($gesBD)
+	{	    
+	    $val;
+	    // Se recogen todos los registros de la tabla de backups de control de logs ordenados por fecha descendente
+	    $query = "SELECT * FROM phpforum_logs_backup ORDER BY fecha DESC";
+		  
+		  if ($gesBD->selectLogs($query))
+		  {
+		      // Si existen registros
+		      // Se recogen todos los registros
+		      $listaLogs = $gesBD->getObj();
+		      // Y se crea el archivo TXT
+		      $val = createLogFile($listaLogs);
+			}
+			else
+			{			
+			    // Si no existen registros
+			    // Se redirige al usuario a la página de error
+					header("Location: error.php");
+			}		
+			
+			return $val;	    
+	}		
+?>

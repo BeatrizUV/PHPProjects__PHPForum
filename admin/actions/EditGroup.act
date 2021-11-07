@@ -1,0 +1,146 @@
+<?
+  /**
+   * Clase que se encarga de editar grupos  de usuarios en el foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class EditGroup
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_editGroup.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+		
+		 // Constructor de la clase			
+	   function EditGroup(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	 	
+				     // Si hay sesión de administrador
+				     // Se recogen los datos enviados
+				     $id_group = $_POST["rank"];
+				     $name = $_POST["name"];
+				     $comment = $_POST["comment"];
+				     $can_read = $_POST["can_read"];
+				     $can_write = $_POST["can_write"];
+				     
+				     if ($id_group != -3)
+				     {
+				         // Si el grupo no es el grupo de anónimos
+				         // Se validan los datos
+				         $this->error = valFormEditGroup($id_group, $name);
+						 }
+				     
+				     if ($this->error == null)
+				     {
+				         // Si los datos se han validado correctamente
+				         // Se comprueba que el nuevo nombre del grupo esté libre
+				         $flag = true;
+				         $query = "SELECT id_rank FROM phpforum_ranks WHERE name LIKE '".$name."'";
+				         if ($gesBD->selectOne($query, "id_rank"))
+				         {
+				             if ($id_group != $gesBD->getObj())
+				             {
+				                 $flag = false;
+										 }
+				         }
+				         
+				         if ($flag)
+				         {
+				             // Si el nombre está libre
+				             // Se establecen los permisos de lectura y escritura 
+				             if ($can_read == "on")
+				             {
+				                 $can_read = "1";
+										 }
+										 else
+										 {
+										     $can_read = "0";
+										 }
+										 
+										 if ($can_write == "on")
+				             {
+				                 $can_write = "1";
+										 }
+										 else
+										 {
+										     $can_write = "0";
+										 }
+										 
+										 // Dependiendo de si el grupo a editar es el de anónimos o no, se monta un query u otro
+										 if ($id_group == "-3")
+										 {
+										     $query = "UPDATE phpforum_ranks SET can_read = ".$can_read." WHERE id_rank LIKE ".$id_group;
+										 }
+										 else
+										 {
+										     $query = "UPDATE phpforum_ranks SET can_read = ".$can_read.", can_write = ".$can_write.", description = '".$comment."', name = '".$name."' WHERE id_rank LIKE ".$id_group;
+										 }
+		                
+		                 // Se actualiza el grupo 
+										 if ($gesBD->update($query))
+										 {
+										     // Si se actualiza correctamente
+										     // Se eliminan de la sesión los datos relacionados con la edición de este grupo
+										     unset($_SESSION["grupos"]);
+										     // Se indica el éxito de la operación mediante una ventana emergente y se redirecciona al usuario a la página de editar grupos
+										     echo "<SCRIPT>";
+										     echo "alert('Grupo editado correctamente.');";
+										     echo "location.href='index.php?accion=ShowGroups&pagina=admin_editGroup';";
+										     echo "</SCRIPT>";
+										 }
+										 else
+										 {
+										     // Si no se actualiza correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");
+										 }
+								 }
+								 else
+								 {
+								     // Si el nombre no está libre
+								     // Se indica mediante un mensaje de error
+								 		 $this->error = "El <B>NOMBRE</B> que ha indicado ya existe para otro grupo.<BR>Elija otro nombre, por favor.";
+								 }	
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

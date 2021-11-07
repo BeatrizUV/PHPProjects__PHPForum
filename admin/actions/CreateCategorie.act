@@ -1,0 +1,121 @@
+<?
+  /**
+   * Clase que se encarga de crear categorías en el foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class CreateCategorie
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_createCat.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function CreateCategorie(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	 				     				     
+				     // Se recogen los datos enviados
+				     $title = $_POST["ctitle"];
+				     $visibility = $_POST["rank"];
+				     				     
+				     // Se validan los datos obligatorios				     
+		         $this->error = valFormCreateCat($title);
+		     
+				     if ($this->error == null)
+				     {
+				         // Se comprueba que el título está libre
+				         $query = "SELECT title FROM phpforum_categories WHERE title LIKE '".$title."'";
+				         if (!$gesBD->selectOne($query, "title"))
+				         {
+				             // Si el título está libre
+				             // Se establece la posición para la nueva categoría
+				             $query = "SELECT MAX(position) FROM phpforum_categories";
+				             if ($gesBD->selectOne($query, "MAX(position)"))
+				             {
+				                 $position = $gesBD->getObj();
+				                 $position += 1;
+				             }
+										 else
+										 {
+										     if ($gesBD->getError() == null)
+										     {
+										         $position = 0;
+												 }
+												 else
+												 {
+												     header("Location: error.php");	
+												 }
+										 }   
+										  
+										 // Se inserta la nueva categoría 
+		                 $query = "INSERT INTO phpforum_categories (title, position, visibility) VALUES ('".$title."', ".$position.", ".$visibility.")";
+		                 if ($gesBD->insert($query))
+		                 {
+		                     // Si se inserta correctamente
+		                     // Se eliminan de la sesión todos los datos relacionados con esta nueva categoría
+		                     unset($_SESSION["grupos"]);
+		                     // Se indica que todo ha ido bien
+		                     $val = true;				              
+												 // Y se indica mediante un mensaje emergente y se redirige al usuario a la página de crear categorías       
+		                     echo "<SCRIPT>";
+		                     echo "alert('Categoría ".$title." creada correctamente.');";
+		                     echo "location.href='index.php?accion=ShowGroups&pagina=admin_createCat';";    
+		                     echo "</SCRIPT>";				                     
+										 }
+										 else
+										 {
+										     // Si no se inserta correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");	
+										 }
+								 }
+								 else
+								 {
+								     // Si el título no está libre
+								     // Se indica mediante un mensaje de error
+								     $this->error = "El t&iacute;tulo que ha indicado ya existe.<BR>Pruebe otro diferente.";
+								 }
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

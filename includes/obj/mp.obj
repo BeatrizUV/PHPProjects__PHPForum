@@ -1,0 +1,143 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de los MP (Mensajes Privados).
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class MP {    
+        
+        var $title;
+        var $to;
+        var $from;
+        var $body;        
+        var $is_read;
+        var $fecha;
+        var $id_mp; 
+				var $box;
+        
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function MP ($id_mp, $title, $from, $to, $body, $date, $box, $is_read) {
+            $this->id_mp = $id_mp;
+						$this->title = $title;
+						$this->from = $from;
+            $this->to = $to;            
+            $this->body = $body;
+            $this->date = $date;             
+						$this->box = $box;          
+						$this->is_read = $is_read;						
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el title del MP.
+         */
+        function getTitle() {
+            return $this->title;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el receptor del MP.         
+         */
+        function getTo() {
+            return $this->to;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el emisor del MP.         
+         */
+        function getFrom() {
+            return $this->from;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el cuerpo del MP.         
+         */
+        function getBody() {
+            return $this->body;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver la date del MP.         
+         */
+        function getDate() {
+            return $this->date;
+        }        
+        
+        /**
+         * Metodo que se encarga de devolver el numero de identificacion del MP.         
+         */
+        function getId_mp() {
+            return $this->id_mp;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver la bandeja del MP.         
+         */
+        function getBox() {
+            return $this->box;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el estado de lectura del MP.         
+         */
+        function getIs_read() {
+            return $this->is_read;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el title del MP.         
+         */
+        function setTitle($title) {
+            $this->title = $title;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el to del MP.         
+         */
+        function setTo($to) {
+            $this->to = $to;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el from del MP.         
+         */
+        function setFrom($from) {
+            $this->from = $from;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el body del MP.         
+         */
+        function setBody($body) {
+            $this->body = $body;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la date del MP.         
+         */
+        function setDate($date) {
+            $this->date = $date;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el numero de identificacion del MP.         
+         */
+        function setId_mp($id_mp) {
+            $this->id_mp = $id_mp;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar la bandeja del MP.         
+         */
+        function setBox($box) {
+            $this->box = $box;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el estado de lectura del MP.         
+         */
+        function setIs_read($is_read) {
+            $this->is_read = $is_read;
+        }
+    }
+?>

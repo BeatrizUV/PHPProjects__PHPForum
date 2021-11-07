@@ -1,0 +1,72 @@
+<?  
+   // Se establece el panel del usuario dependiendo de sus datos
+  if (isset($_SESSION["haySesion"]))
+	{	   
+	   $userLog = unserialize($_SESSION["userlog"]);
+		 $login = $userLog->getLogin();
+		 $id_user = $userLog->getId_user();
+		 $rank = $userLog->getRank();
+		 $mpsUnread = $userLog->getMpsUnread();
+		 $urlAvatar = $userLog->getUrlAvatar();		 	
+?>
+													 <TR>
+													 		 <TD class="celda_header_middle1">
+													 		     <TABLE class="tabla_acoplada">
+													 		         <TR>
+													 		         		 <TD width="100" height="100" valign="bottom">												 		         
+																				        &nbsp;<IMG width="95px" height="95px" src="<?=$urlAvatar?>" />		 
+																				   </TD>
+													 		         		 <TD id="capa_reloj" valign="bottom" align="right"></TD>
+													 		         </TR>
+													 		     </TABLE>
+															 </TD>
+													 </TR>
+													 <TR>
+													 		 <TD class="celda_header_middle2"></TD>
+													 </TR>
+													 <TR>
+													 		 <TD class="celda_header_bottom"> 
+																	 <!-- TABLA PATH + PANEL -->
+																	 <TABLE class="tabla_acoplada" align="right" xborder="1">
+																			<TR> 
+																		      <TD class="celda_usuario">
+																		          Hola,&nbsp;<B><I><?=replaceCharsToHTML($login)?></I></B></TD>																																											
+<?
+	}
+	else
+	{
+	    $rank = -3;
+	    $mpsUnread = 0;
+?> 	 		 																				
+													 <TR>
+													 		 <TD class="celda_header_middle1">
+													 		     <TABLE class="tabla_acoplada">
+													 		         <TR>
+													 		         		 <TD width="100" height="100" valign="bottom"></TD>
+													 		         		 <TD id="capa_reloj" valign="bottom" align="right"></TD>
+													 		         </TR>
+													 		     </TABLE>
+															 </TD>
+													 </TR>
+													 <TR>
+													 		 <TD class="celda_header_middle2"></TD>
+													 </TR>
+													 <TR>
+													 		 <TD class="celda_header_bottom"> 
+																	 <!-- TABLA PATH + PANEL -->
+																	 <TABLE class="tabla_acoplada" xborder="1">
+																			<TR> 
+																		      <TD class="celda_usuario">
+																							Hola,&nbsp;<B><I>An&oacute;nimo</I></B></TD>		 			 	 										 	 							
+<?	 		
+	}
+	
+	include("templates/Default/str/menus.inc");
+	$menu = menus($rank, $mpsUnread, $gesBD);
+?><?=$menu?>
+                                              </UL>
+                                          </TD>	
+																			</TR>
+                                   </TABLE>
+                               </TD>  
+                           </TR>

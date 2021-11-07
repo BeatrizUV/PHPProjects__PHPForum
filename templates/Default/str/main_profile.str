@@ -1,0 +1,218 @@
+<? include("templates/Default/str/header.str"); ?>
+<SCRIPT>
+// Función que redimensiona imágenes
+function resizeImg(imgname)
+{
+    var w = document.getElementById(imgname).width;
+    var h = document.getElementById(imgname).height;
+    if (w > 265)
+    {
+        document.getElementById(imgname).width = "265";
+		}    			
+		else if (h > 200)
+		{
+		    document.getElementById(imgname).height = "200";
+		}  		
+}
+</SCRIPT>
+<?
+  // Página que muestra el perfil de un usuario
+	$userProfile = $modelo["modelo"];	
+	$login = $userProfile->getLogin();
+	$login = replaceCharsToHTML($login);
+	$urlAvatar = $userProfile->getUrlAvatar();
+	$rankName = $userProfile->getRankName();
+	$rankName = replaceCharsToHTML($rankName);
+	$email = $userProfile->getEmail();
+	$msn = $userProfile->getMsn();
+	$site = $userProfile->getSite();
+	$site = replaceCharsToHTML($site);
+	$web = $userProfile->getWeb();
+	$sex = $userProfile->getSex();
+	$name = $userProfile->getName();
+	$name = replaceCharsToHTML($name);
+	$num_msgs = $userProfile->getNum_msgs();
+	if (!empty($sex))
+	{
+	    if ($sex == "F")
+	    {
+	        $sex = "Mujer";
+			}
+			else
+			{
+			    $sex = "Hombre";
+			}
+	}
+	$date = $userProfile->getDate();
+	$lastClick = $userProfile->getLastClick();
+	$sign = $userProfile->getSign();
+	$sign = replaceBBCodeToHTML(replaceCharsToHTML($sign));
+	if (empty($sign))
+	{
+	    $sign = "&nbsp;";
+	}	
+?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Perfil de <B><I><?=$login?></I></B>
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>		
+																 																	<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" stylet="height: 225px;" cellpadding="0" cellspacing="0">
+																			 							 							    		      <TR>
+																			 							 							    		      		<TD class="celda_profile_oscura_grande" style="width: 275px; height: 25px; text-align: right;">NOMBRE&nbsp;&nbsp;</TD>
+																			 							 							    		      		<TD class="celda_profile_grande" style="width: 280px; height: 25px; text-align: left;">&nbsp;&nbsp;<?=$name?></TD>
+																			 							 							    		      </TR>
+																 																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_profile_oscura" style="width: 275px; height: 225px; vertical-align: top; border: 0px; background-color: #D0D0D0">
+																																				 		        		<TABLE class="tabla_acoplada">
+																																				 		        					 <TR>
+																																				 		        					 		 <TD class="celda_profile" style="height: 150px; border: 0px;">
+																																				 		        					 		 		 <TABLE class="tabla_acoplada">																																				 		        					 		 		 		   
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 		   		 <TD class="celda_profile"  style="height: 125px;"><IMG src="<?=$urlAvatar?>" width="95px" height="95px" /></TD>
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 		   		 <TD class="celda_profile_oscura" style="height: 25px; text-align: center;"><?=$rankName?></TD>
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 </TABLE>
+																																																	 </TD>
+																																				 		        					 </TR>
+																																				 		        					 <TR>
+																																				 		        					 		 <TD class="celda_profile" style="height: 75px;">
+																																				 		        					 		 		 <TABLE class="tabla_acoplada">
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 		   		 <TD class="celda_profile_oscura" style="width: 50px; height: 25px; text-align: right;">EMAIL&nbsp;&nbsp;</TD>
+																																				 		        					 		 		 		   		 <TD class="celda_profile" style="width: 200px; height: 25px; text-align: left;">&nbsp;&nbsp;<A HREF="mailto:<?=$email?>" class="link_cuerpo"><?=$email?></A></TD>
+																																				 		        					 		 		 		   <TR>																																				 		        					 		 		 		   
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 		   		 <TD class="celda_profile_oscura" style="width: 50px; height: 25px; text-align: right;">MSN&nbsp;&nbsp;</TD>
+																																				 		        					 		 		 		   		 <TD class="celda_profile" style="width: 200px; height: 25px; text-align: left;">&nbsp;&nbsp;<A HREF="http://members.msn.com/<?=$msn?>" class="link_cuerpo" target="_blank"><?=$msn?></A></TD>
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 		   <TR>
+																																				 		        					 		 		 					 <TD class="celda_profile_oscura" style="width: 50px; height: 25px; text-align: right;">WEB&nbsp;&nbsp;</TD>
+																																				 		        					 		 		 					 <TD class="celda_profile" style="width: 200px; height: 25px; text-align: left;">&nbsp;&nbsp;<A HREF="<?=$web?>" class="link_cuerpo" target="_blank"><?=$web?></TD>
+																																				 		        					 		 		 			 </TR>
+																																				 		        					 		 		 </TABLE>
+																																																	 </TD>
+																																															 </TR>
+																																												</TABLE>
+																																										</TD>
+																																										<TD class="celda_profile" style="width: 280px; height: 225px; border: 0px;">
+																																				 		        		<TABLE class="tabla_acoplada">
+																																				 		        					 <TR>
+																																				 		        					 		 <TD class="celda_profile" style="height: 100px; border: 0px;">
+																																				 		        					 		 		 <TABLE class="tabla_acoplada">
+																																				 		        					 		 		 				<TR>
+																																				 		        					 		 		 						<TD class="celda_profile_oscura" style="width: 100px; height: 25px; text-align: right;">UBICACI&Oacute;N&nbsp;&nbsp;</TD>
+																																				 		        					 		 		 						<TD class="celda_profile" style="width: 180px; height: 25px; text-align: left;">&nbsp;&nbsp;<?=$site?></TD>
+																																				 		        					 		 		 				</TR>																																				 		        					 		 		 				
+																																				 		        					 		 		 				<TR>
+																																				 		        					 		 		 						<TD class="celda_profile_oscura" style="width: 100px; height: 25px; text-align: right;">REGISTRO&nbsp;&nbsp;</TD>
+																																				 		        					 		 		 						<TD class="celda_profile" style="width: 180px; height: 25px; text-align: left;">&nbsp;&nbsp;<?=$date?></TD>
+																																				 		        					 		 		 				</TR>
+																																				 		        					 		 		 				<TR>
+																																				 		        					 		 		 						<TD class="celda_profile_oscura" style="width: 100px; height: 25px; text-align: right;">&Uacute;LTIMO ACCESO&nbsp;&nbsp;</TD>
+																																				 		        					 		 		 						<TD class="celda_profile" style="width: 180px; height: 25px; text-align: left;">&nbsp;&nbsp;<?=$lastClick?></TD>
+																																				 		        					 		 		 				</TR>
+																																				 		        					 		 		 				<TR>
+																																				 		        					 		 		 				    <TD colspan="2" class="celda_acoplada" style="width: 280px; height: 25px; border: 0px;">
+																																				 		        					 		 		 				        <TABLE class="tabla_acoplada">
+																																				 		        					 		 		 				            <TR>
+																																				 		        					 		 		 				                <TD class="celda_profile_oscura" style="width: 50px; height: 25px; text-align: right;">SEXO&nbsp;&nbsp;</TD>
+																																										 		        					 		 		 						<TD class="celda_profile" style="width: 70px; height: 25px; text-align: left;">&nbsp;&nbsp;<?=$sex?></TD>
+																																										 		        					 		 		 						<TD class="celda_profile_oscura" style="width: 70px; height: 25px; text-align: right;">MENSAJES&nbsp;&nbsp;</TD>
+																																										 		        					 		 		 						<TD class="celda_profile" style="width: 90px; height: 25px; text-align: left;">&nbsp;&nbsp;<?=$num_msgs?></TD>
+																																				 		        					 		 		 				            </TR>
+																																				 		        					 		 		 				        </TABLE>
+																																				 		        					 		 		 				    </TD>																																				 		        					 		 		 						
+																																				 		        					 		 		 				</TR>
+																																				 		        					 		 		 </TABLE>
+																																																	 </TD>
+																																				 		        					 </TR>
+																																				 		        					 <TR>
+																																				 		        					 		 <TD class="celda_profile" style="height: 100px; border: 0px;">
+																																				 		        					 		 		 <TABLE class="tabla_acoplada">
+																																				 		        					 		 		 				<TR>
+																																				 		        					 		 		 						<TD class="celda_profile_oscura" style="height: 25px; text-align: center;">FIRMA</TD>
+																																				 		        					 		 		 				</TR>
+																																				 		        					 		 		 				<TR>
+																																				 		        					 		 		 						<TD class="celda_profile" style="height: 95px; text-align: left; padding: 5px; vertical-align: top;"><?=$sign?></TD>
+																																				 		        					 		 		 				</TR>
+																																				 		        					 		 		 </TABLE>
+																																																	 </TD>
+																																															 </TR>
+																																												</TABLE>
+																																										</TD> 																																	 		
+																																								</TR>																																					
+			 																																	 </TABLE>
+																																      </TD>																																      
+																																      <TD width="10px"></TD>
+																																  </TR>    
+<?
+	if (isset($_SESSION["haySesion"]))
+	{
+	    $userLogged = unserialize($_SESSION["userlog"]);
+	    if (($userProfile->getId_user() == $userLogged->getId_user()) || ($userLogged->getRank() == -2))
+	    {
+?>
+			 	 														 															<TR>
+   																																    <TD height="10px" colspan="3"></TD>																																    			
+																																	</TR>
+											 																 			 			<TR>
+																																			<TD colspan="3" style="text-align: center;">
+																																			    <FORM action="index.php" method="GET">
+																																					    <INPUT type="hidden" name="accion" value="ShowUser" />
+																																					    <INPUT type="hidden" name="pagina" value="main_edituser" />
+<?
+					if ($userLogged->getRank() == -2)
+					{
+?>
+					 	 												 			 																		<INPUT type="hidden" name="id" value="<?=$userProfile->getId_user()?>" />
+<?					
+					}																																		
+?>																																					    
+																																							<INPUT type="submit" class="button" name="editar" value="Editar Perfil" />
+																																					</FORM>		
+																																			</TD>
+																																	</TR>
+<?	    
+			}
+	}
+?>																																
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																										 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>	

@@ -1,0 +1,87 @@
+<?
+  /**
+   * Clase que se encarga de mostrar la lista de grupos de usuarios del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowGroups
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista;
+	 	 // Variable que guarda el error
+	 	 var $error;	 
+					
+		 // Constructor de la clase 			
+	   function ShowGroups() {	 
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  	
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {
+				     // Si hay sesión de administrador
+				     if (isset($_GET["pagina"]))
+						 {
+						     // Si la página tiene algún valor
+						     // Se recogen los grupos de grupos
+						     if ($gesBD->selectGroups())
+								 {
+								     // Si se ejecuta correctamente
+								     // Se guarda la lista de grupos en el modelo
+								     $this->modelo = $gesBD->getObj();
+								     // Se establece la vista a partir de la página
+								     $this->vista = $_GET["pagina"].".str";
+								     // Y se indica que todo ha ido bien
+										 $val = true;		
+								 }
+								 else
+								 {
+								     // Si no se ejecuta correctamente
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");			     
+								 }
+						 }
+						 else
+						 {
+						     // Si la página no tiene ningún valor
+						     // Se redirige al usuario a la página de inicio del panel de administración1
+						     header("Location: index.php");
+						 }
+				 }
+				 else
+				 {
+				     // Si no hay sesión de administración
+				     // Se redirige al usuario a la página de inicio del foro
+						 header("Location: ../index.php");	
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción
+		 function getAct() {
+		 }	 
+	}
+?>

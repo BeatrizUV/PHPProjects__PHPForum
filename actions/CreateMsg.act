@@ -1,0 +1,140 @@
+<? 
+	/**
+   * Clase que se encarga de crear mensajes.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class CreateMsg
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_writeMsg.str";
+			// Variable que guarda el error
+			var $error;	
+			
+			// Constructor de la clase
+			function CreateMsg()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{			   	
+			    // Se recogen los datos enviados
+					$body = $_POST["body"];
+					$id_post = $_SESSION["idpost"];							
+					$flag = true;						
+					
+					if (isset($_SESSION["haySesion"]))
+					{					    
+					    // Si hay sesión
+					    // Se valida el cuerpo del mensaje
+					    $this->error = valFormMsg($body);				    
+					
+							if ($this->error == null)
+							{				
+							    // Si se valida correctamente
+							    // Se recoge el usuario de la sesión
+							    $user = unserialize($_SESSION["userlog"]);
+							    
+							    // Se recoge el permiso de escritura del grupo del usuario
+							    $query = "SELECT can_write FROM phpforum_ranks WHERE id_rank LIKE ".$user->getRank();
+							    
+							    if ($gesBD->selectOne($query, "can_write"))
+							    {
+							        // Si se ejecuta correctamente
+							        // Se recoge el permiso
+							        $can_write = $gesBD->getObj();
+							        if ($can_write == 1)
+							        {
+							            // Si tiene permiso
+							            // Se crea el mensage
+							            if ($gesBD->createMsg($id_post, $user->getId_user(), $body, 0, 1))
+											    {
+											        // Si se crea correctamente
+											        // Se recoge la id del nuevo mensaje
+											        $query = "SELECT id_msg FROM phpforum_msgs WHERE id_post LIKE ".$id_post." AND is_last LIKE 1";
+											        if ($gesBD->selectOne($query, "id_msg"))
+											        {
+											            // Si existe el mensaje
+											            // Se recoge la id
+											            $id_msg = $gesBD->getObj();
+															}
+															else
+															{
+															    // Si no existe el mensaje
+															    // Se redirige al usuario a la página de error
+															    header("Location: error.php");
+															}
+															// Se eliminan de la sesión los datos relacionados con la creación del mensaje							       
+											        unset($_SESSION["idpost"]);
+											        unset($_SESSION["idmsg"]);
+															unset($_SESSION["actSesion"]);
+															unset($_SESSION["datos"]);							        
+															// Y se redirige al usuario al post desde el que solicitó la acción
+											        header("Location: index.php?accion=ShowPost&id=".$id_post."&id_mensaje=".$id_msg);
+													}
+													else
+													{
+													    // Si no se crea correctamente
+															// Se redirige al usuario a la página de error 
+													    header("Location: error.php");
+													}
+											}
+											else
+											{
+											    // Si no tiene permiso de escritura
+											    // Se indica mediante un mensaje emergente
+											    echo "<SCRIPT>";
+											    echo "alert('No puede escribir mensajes porque el grupo al que pertenece no posee permisos de escritura sobre el foro.');";
+											    echo "location.href='index.php?accion=ShowPost&id=".$id_post."';";
+											    echo "</SCRIPT>";											    
+											}
+									}
+									else
+									{
+									    // Si no se ejecuta correctamente
+									    // Se redirige al usuario a la página de error
+									    header("Location: error.php");
+									}	
+							}
+							else
+							{
+							    // Si los datos no se validan correctamente
+							    // Se indica
+							    $flag = false;							    
+						  }	
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se regirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuele la acción realizada
+			function getAct() {
+			}
+	}
+?>

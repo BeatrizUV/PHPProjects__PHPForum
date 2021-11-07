@@ -1,0 +1,175 @@
+<? 
+	/**
+   * Clase que se encarga de borrar posts.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class DeletePost
+	{
+			var $modelo;
+			var $vista = "main_post.str";
+			var $error;		
+			var $a_email;
+			var $f_title;
+			var $f_path;
+			
+			function DeletePost()
+			{
+			}
+			
+			function ejecutar($gesBD)		
+			{
+			   	$id_post = $_GET["idp"];
+					$all = $_GET["all"];
+					$id_theme = $_GET["idt"]; 						
+					$flag = true;						
+					
+					if (isset($_SESSION["haySesion"]))
+					{					    
+					    $query = "DELETE FROM phpforum_posts WHERE";
+					    $queryReads = "DELETE FROM phpforum_reads_control WHERE";
+					    $user = unserialize($_SESSION["userlog"]);
+					    if (!isset($id_post))
+					    {
+					        if (!isset($all))
+					        {
+					            $query2 = "SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme;
+					            $queryTotalMsgs = "SELECT * FROM phpforum_msgs WHERE";
+					            $queryMsgs = "DELETE FROM phpforum_msgs WHERE id_post IN (SELECT id_post FROM phpforum_posts WHERE";
+											
+											$variables[0] = "id_post";
+											
+											if ($gesBD->selectMore($query2, $variables))
+											{											    
+											    $filas = $gesBD->getObj();
+											    $sizef = count($filas);											   
+											    $contf = 0;
+											    $total_posts = 0;
+											    
+							    				for ($contf = 0; $contf < $sizef; $contf++)
+											    {
+											        $fila = $filas[$contf];																								        
+											        if (isset($_POST[$fila[0]]))
+											        {								            
+											            $query .= " id_post LIKE ".$fila[0]." OR";
+											            $queryReads .= " id_post LIKE ".$fila[0]." OR";
+											            $queryMsgs .= " id_post LIKE ".$fila[0]." OR";
+											            $queryTotalMsgs .= " id_post LIKE ".$fila[0]." OR";
+											            $total_posts++;
+															}
+													}
+													
+													if ($contf > 0)
+													{
+													    $query = substr($query, 0, (strlen($query) - 3));
+													    $queryReads = substr($queryReads, 0, (strlen($queryReads) - 3));
+													    $queryMsgs = substr($queryMsgs, 0, (strlen($queryMsgs) - 3));
+													    $queryTotalMsgs = substr($queryTotalMsgs, 0, (strlen($queryTotalMsgs) - 3));
+													}											    
+											}				             
+									}
+									else
+									{
+									    $query .= " id_theme LIKE ".$id_theme;	
+											$queryMsgs = "DELETE FROM phpforum_msgs WHERE id_post IN (SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme;
+											$queryTotalMsgs = "SELECT * FROM phpforum_msgs WHERE id_post IN (SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme.")";
+											$queryTotalPosts = "SELECT * FROM phpforum_posts WHERE id_theme LIKE ".$id_theme;
+											$queryReads .= " id_post IN (SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme.")";
+											if ($gesBD->selectCount($query))
+											{
+											    $total_posts = $gesBD->getObj();
+											}
+											else
+											{
+											    header("Location: error.php");
+											}								
+									}
+							}
+							else
+							{
+							    $query .= " id_post LIKE ".$id_post;
+							    $queryMsgs = "DELETE FROM phpforum_msgs WHERE id_post LIKE ".$id_post;
+							    $queryTotalMsgs = "SELECT * FROM phpforum_msgs WHERE id_post LIKE ".$id_post;
+							    $queryReads .= " id_post LIKE ".$id_post;
+							    $query2 = "SELECT id_theme FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+							    $total_posts = 1;
+							    if ($gesBD->selectOne($query2, "id_theme"))
+							    {
+							        $id_theme = $gesBD->getObj();
+									}
+									else
+									{
+									    header("Location: error.php");
+									}
+							}
+									
+							echo $queryTotalMsgs;							
+							if ($gesBD->delete($query))
+							{
+							    if ($gesBD->delete($queryReads))
+							    {
+							       header("Location: error.php");
+									}
+									
+									if ($gesBD->selectCount($queryTotalMsgs))
+							    {
+							        $total_msgs = $gesBD->getObj();
+									}
+									else
+									{
+									    header("Location: error.php");
+									}
+									
+									if ($gesBD->delete($queryMsgs))
+							    {
+							        header("Location: error.php");
+									}
+									
+									$query = "SELECT MAX(id_msg) FROM phpforum_msgs WHERE is_last = 1 AND id_post IN (SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme.")";
+									if ($gesBD->selectOne($query, "MAX(id_msg)"))
+									{
+									    $id_lastMsg = $gesBD->getObj();
+									    $query = "UPDATE phpforum_themes SET total_posts = (total_posts - ".$total_posts."), total_msgs = (total_msgs - ".$total_msgs."), id_last_msg = ".$id_lastMsg." WHERE id_theme LIKE ".$id_theme;
+									    if (!$gesBD->update($query))
+									    {
+									        header("Location: error.php");
+											}
+									}
+									else
+									{
+									    header("Location: error.php");
+									}
+									
+									header("Location: index.php?accion=ShowTheme&id=".$id_theme);
+							}
+							else
+							{
+							    header("Location: error.php");
+							}
+					}
+					else
+					{
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			function getAct() {
+			}
+	}
+?>

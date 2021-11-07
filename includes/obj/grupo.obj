@@ -1,0 +1,93 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de los grupo.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class Grupo{
+    
+        var $name;
+        var $comment;
+	      var $id_group;  
+	      var $can_read;
+	      var $can_write;
+				
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function Grupo($id_group, $name, $comment){
+        	  $this->id_group = $id_group;
+            $this->name = $name;
+            $this->comment = $comment;						          
+        }   
+        
+        /**
+         * Metodo que se encarga de asignar el nombre del grupo.         
+         */
+        function setName($name){
+            $this->name = $name;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el comentario del grupo.         
+         */
+        function setComment($comment){
+            $this->comment = $comment;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el numero de identificacion del grupo.         
+         */
+        function setId_group($id_group){
+            $this->id_group = $id_group;
+        }
+				
+				/**
+         * Metodo que se encarga de asignar el permiso de lectura del grupo.         
+         */
+        function setCan_read($can_read){
+            $this->can_read = $can_read;
+        }
+				
+				/**
+         * Metodo que se encarga de asignar el permiso de escritura del grupo.         
+         */
+        function setCan_write($can_write){
+            $this->can_write = $can_write;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el nombre del grupo.         
+         */
+        function getName(){
+            return $this->name;
+        }
+        
+        /**
+         * Metodo que se encarga de debolver el comentario del grupo.         
+         */
+        function getComment(){
+            return $this->comment;
+        }
+        
+        /**
+         * Metodo que se encarga de debolver el numero de identificacion del grupo.         
+         */
+        function getId_group(){
+            return $this->id_group;
+        }  
+				
+				/**
+         * Metodo que se encarga de debolver el permiso de lectura del grupo.         
+         */
+        function getCan_read(){
+            return $this->can_read;
+        }
+				
+				/**
+         * Metodo que se encarga de debolver el permiso de escritura del grupo.         
+         */
+        function getCan_write(){
+            return $this->can_write;
+        }  
+    }
+?>

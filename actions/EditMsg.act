@@ -1,0 +1,96 @@
+<? 
+	/**
+   * Clase que se encarga de editar mensajes.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class EditMsg
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_writeMsg.str";
+			// Variable que guarda el error
+			var $error;
+			
+			// Constructor de la clase
+			function EditMsg()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{			   	
+			    // Se recogen los valores enviados
+					$body = $_POST["body"];
+					$id_msg = $_SESSION["idmsg"];
+					$id_post = $_SESSION["idpost"];							
+					$flag = true;	
+					if (isset($_SESSION["haySesion"]))
+					{	    
+					    // Si hay sesión
+					    // Se valida el cuerpo del mensaje
+					    $this->error = valFormMsg($body);				    
+					
+							if ($this->error == null)
+							{			
+							    // Si el cuerpo del mensaje tiene algún valor
+							    // Se actualiza el mensaje
+							    $query = "UPDATE phpforum_msgs SET body = '".$body."' WHERE id_msg LIKE ".$id_msg;							    
+							    if ($gesBD->update($query))
+							    {
+							        // Si se actualiza correctamente
+											// Se borran de la sesión los datos relacionados con la edición de este mensaje							       
+							        unset($_SESSION["idpost"]);
+							        unset($_SESSION["idmsg"]);
+											unset($_SESSION["actSesion"]);	
+											unset($_SESSION["datos"]);
+											// Y se redirige al usuario al post desde el que ha solicitado la acción						        
+							        header("Location: index.php?accion=ShowPost&id=".$id_post."&id_mensaje=".$id_msg);
+									}
+									else
+									{
+									    // Si no se actualiza correctamente
+									    // Se redirige al usuario a la página de error
+									    header("Location: error.php");
+									}	
+							}
+							else
+							{
+							    // Si el cuerpo del mensaje no tiene ningún valor
+							    // Se indica
+							    $flag = false;							    
+						  }	
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuele la acción realizada
+			function getAct() {
+			}
+	}
+?>

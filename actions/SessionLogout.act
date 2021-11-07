@@ -1,0 +1,38 @@
+<?   
+  /**
+   * Clase que se encarga de desloguear a los usuarios del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+  class SessionLogout
+	{	    
+	    // Constructor de la clase
+	    function SessionLogout() {
+			}
+	    
+	    // Función que ejecuta el código de la acción requerida
+	    function ejecutar($gesBD)
+			{		
+					if (isset($_SESSION["haySesion"]))
+					{							    
+					    // Si hay sesión
+					    // Recoge al usuario conectado de la sesión
+					    $user = unserialize($_SESSION["userlog"]);
+					    // Actualiza al usuario para que no inicie sesión desde una coookie
+					    $query = "UPDATE phpforum_users SET use_cookie = 0, rand_cookie_code = '' WHERE id_user LIKE ".$user->getId_user();					              
+					    $gesBD->update($query);
+					    // Borra todos los logs registrados por el usuario durante los últimos 10 minutos
+							$query = "DELETE FROM phpforum_logs WHERE id_user LIKE ".$user->getId_user()." AND ip LIKE '".$user->getIp()."' AND fecha BETWEEN DATE_SUB((SELECT NOW()), INTERVAL 10 MINUTE) AND (SELECT NOW())";
+						  $gesBD->update($query);
+						  // Elimina la cookie generada por el usuario al loguearse
+							setcookie("prfinal3asi");
+							// Elimina todos los datos de la sesión
+							session_unset();
+							// Elimina la sesión
+							session_destroy();	 
+					}	
+					
+					// Y redirige al usuario a la página de inicio del foro
+					header("Location: index.php?accion=ShowForum");					
+			}			
+	}	
+?>

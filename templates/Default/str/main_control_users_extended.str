@@ -1,0 +1,156 @@
+<? include("templates/Default/str/header.str"); ?>
+<?
+  // Página que muestra las acciones de los usuarios en línea
+	$listaLogs = $modelo["modelo"];
+	$listaUsers = $listaLogs["registered"];
+	$sizelu = count($listaUsers);
+	$listaInvitados = $listaLogs["anonymous"];
+	$sizeli = count($listaInvitados);
+	$cont = 0;		
+?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Viendo qui&eacute;n est&aacute; en l&iacute;nea
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>																																		
+																			 							 							<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="width: 150px;">
+																																												USUARIO
+																																										</TD>																																	 		
+																																								 		<TD class="celda_cabecera_tabla_usuarios" style="width: 125px;">
+																																										 		FECHA 
+																																										</TD>
+																																								 		<TD class="celda_cabecera_tabla_usuarios" style="width: 255px;">
+																																										 		ACCI&Oacute;N
+																																										</TD>																																								 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD colspan="3" class="celda_cabecera_tabla_usuarios" style="width: 530px; background-color: #FFFFFF; color: #000000; text-align: left;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt;</B></SPAN> Usuarios conectados: <?=$sizelu?>
+																																										</TD>																																						 		
+																																								</TR>
+<?	
+	for ($cont = 0; $cont < $sizelu; $cont++)
+	{
+	 		$log = $listaUsers[$cont];
+	 		$date = $log->getDate();
+	 		$action = $log->getAction();
+	 		$user = $log->getUser();
+	 		$rank = $user->getRank();
+	 		
+	 		if (($cont % 2) == 0)
+	 		{
+	 		    $celda = "celda_profile_oscura";
+			}
+			else
+			{
+			    $celda = "celda_profile";
+			}
+	 		
+	 		if ($rank == -2)
+			{
+			    $link = "link_admin_user";
+			}
+			else 
+			{
+			    if ($rank == -1)
+			    {
+			        $link = "link_mode_user";
+					}
+					else
+					{
+					    $link = "link_default_user";
+					}							    
+			}	
+?>																																									 
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="<?=$celda?>" style="width: 150px; height: 20px;">
+																																												<A HREF="index.php?accion=ShowUser&id=<?=$user->getId_user()?>" class="<?=$link?>"><?=replaceCharsToHTML($user->getLogin())?></A>
+																																										</TD>																																	 		
+																																								 		<TD class="<?=$celda?>" style="width: 125px; height: 20px;">
+																																										 		<?=$date?>
+																																										</TD>
+																																								 		<TD class="<?=$celda?>" style="width: 255px; height: 20px;">
+																																										 		<?=$action?>
+																																										</TD>																																								 		
+																																								</TR>	
+<?
+	}
+?>																																					
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD colspan="3" class="celda_cabecera_tabla_usuarios" style="width: 530px; text-align: left;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt;</B></SPAN> Invitados: <?=$sizeli?>
+																																										</TD>																																						 		
+																																								</TR>	
+<?	
+	for ($cont = 0; $cont < $sizeli; $cont++)
+	{
+	 		$log = $listaInvitados[$cont];
+	 		$date = $log->getDate();
+	 		$action = $log->getAction(); 		
+	 		
+	 		if (($cont % 2) == 0)
+	 		{
+	 		    $celda = "celda_profile_oscura";
+			}
+			else
+			{
+			    $celda = "celda_profile";
+			}
+?>																																									 
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="<?=$celda?>" style="width: 150px; height: 20px;">
+																																												Invitado
+																																										</TD>																																	 		
+																																								 		<TD class="<?=$celda?>" style="width: 125px; height: 20px;">
+																																										 		<?=$date?>
+																																										</TD>
+																																								 		<TD class="<?=$celda?>" style="width: 255px; height: 20px;">
+																																										 		<?=$action?>
+																																										</TD>																																								 		
+																																								</TR>	
+<?
+	}
+?>																																																																															  
+																																	        </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>																												
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>														 		 

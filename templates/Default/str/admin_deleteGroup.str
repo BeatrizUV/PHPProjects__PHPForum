@@ -1,0 +1,172 @@
+<? include("../templates/Default/str/admin_header.str"); ?>
+<SCRIPT>
+    // Función que muestra los detalles del grupo de usuarios
+    function showDetails()
+		{
+		    var group = document.getElementById("rank").value;
+		    document.getElementById("num_users").innerHTML = "N&uacute;mero de usuarios asignados: " + document.getElementById(group).value; 
+		}			
+</SCRIPT>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3" id="loc">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Grupos
+																																			</TD>																																			
+																																	</TR>
+																																	<TR> 
+																																	    <TD class="celda_path" style="text-align: right; height: 15px;" colspan="3" id="submenu"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página de administración en la que se eliminan los usuarios
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+	    $listaGroups = unserialize($_SESSION["grupos"]);
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>																																	
+<?	  	    	    	
+	}	
+	else
+	{
+	    $listaGroups = $modelo["modelo"];	  
+			$_SESSION["grupos"] = serialize($listaGroups); 
+	}  	     
+?>
+	 																																<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>A continuaci&oacute;n se ofrece la posibilidad de eliminar un grupo de usuarios del foro:
+																														                	   	   	   <BR>
+																																												 <BR>(Al eliminar un grupo, si &eacute;ste tuviese usuarios asignados, estos pasar&iacute;an a pertenecer al grupo "Usuarios").
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="15"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">								
+																																													    <TR>
+																																				                	   	    <TD>
+																																				                	   	   		  <FORM action="index.php?accion=DeleteGroup" method="POST" name="formDeleteGroup" id="formDeleteGroup">																																																															
+																										                                              </TD>
+																																				                	    </TR>
+																																															<TR>
+																																							   	   	   		  	  <TD class="align_right" width="182px" height="0px"></TD>
+																																							   	   	   		  	  <TD class="align_left" height="0px" id="num_users">
+																																						   	   	   		    </TR>		
+																																															<TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>																																													  
+																																							   	   	   		  <TR>
+																																							   	   	   		  	  <TD class="align_right" width="182px">Grupo&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																																							   	   	   		  	  <TD class="align_left"> 
+																																							   	   	   		  	 		  <SELECT name="rank" id="rank" class="input" style="width: 200px;" size="5" onChange="showDetails()">																														                	   	   		    
+<?
+	    $cont = 0;
+	    $size = count($listaGroups);
+	    
+	    for ($cont = 0; $cont < $size; $cont++)
+	    {
+	        $grupo = $listaGroups[$cont];
+					$g = $grupo["group"];						 
+					if (($g->getName() != "Administrador") && ($g->getName() != "Moderador") && ($g->getName() != "Usuario"))
+					{
+?>
+																														                	   	   											<OPTION value="<?=$g->getId_group()?>"><?=replaceCharsToHTML($g->getName())?></OPTION>
+<?					
+					}
+			}
+?>																																																			 																																																						 		
+																																					                	   	   	  </SELECT>
+																																																	</TD>
+																																					                	  </TR>																								                	   	   	   		  
+																																															<TR>
+																																                	   	            <TD colspan="2" height="25px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>																							                	   	   	   		  
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2">	
+<?			
+			for ($cont = 0; $cont < $size; $cont++)
+			{
+			    $grupo = $listaGroups[$cont];
+					$g = $grupo["group"];		
+					$users = $grupo["users"];
+?>
+<INPUT type="hidden" id="<?=$g->getId_group()?>" name="<?=$g->getId_group()?>" value="<?=$users?>" />
+<?
+      }
+?>																								 													                	   	            		
+																																																			<INPUT class="button" type="button" name="Eliminar" value="Eliminar" onClick="document.formDeleteGroup.submit()"/>
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   	 </TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																								 <TR>
+																																								     <TD>
+																																												 </FORM>
+																																										 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																							 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="15px"></TD>
+																																	</TR>																										
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																											 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("../templates/Default/str/admin_footer.str"); ?>														 		 

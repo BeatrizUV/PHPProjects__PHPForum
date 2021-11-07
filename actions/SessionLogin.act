@@ -1,0 +1,212 @@
+<?   
+  /**
+   * Clase que se encarga de loguear al administrador.
+   * By Beatriz Urbano Vega [Masane].
+   */
+  class SessionLogin
+	{
+	    //Variable que guarda el modelo
+	    var $modelo;
+	    // Variable que guarda la vista
+	    var $vista;
+	    // Variable que guarda el error
+	    var $error;
+	    
+	    // Constructor de la clase
+	    function SessionLogin() {
+			}
+	    
+	    // Función que ejecuta el código de la acción requerida
+	    function ejecutar($gesBD)
+			{			    
+			    $val = false;
+			    // Establecemos la vista
+			    $this->vista = $_GET["destino"];
+			    
+					if (!isset($_SESSION["haySesion"]))
+					{
+					    // Si no hay sesión
+					    // Recogemos los datos 
+					    if ((isset($_SESSION["loginRegister"])) && (isset($_SESSION["passwdRegister"])))
+					    {
+					        // Si hay login y clave en la sesión y tienen algún valor
+					        // Se recogen el login y la clave
+					        $login = $_SESSION["loginRegister"];
+									$passwd = $_SESSION["passwdRegister"];
+									// Y se eliminan el login y la clave de la sesión
+									unset($_SESSION["loginRegister"]);
+									unset($_SESSION["passwdRegister"]);
+							}
+							else
+							{
+							    // Si no hay ni login ni clave en la sesión
+							    // Se recogen el login y la clave enviados
+							    $login = $_POST["login"];
+									$passwd = $_POST["passwd"];
+							}
+							
+							// Se recoge el uso de cookie
+							$useCookie = $_POST["usecookie"];
+							
+							// Se validan los datos			
+							$this->error = valFormLogin($login, $passwd);
+							if ($this->error == null)
+							{
+							    // Si login y clave tienen datos
+							    // Se busca dicho usuario en la base de datos
+									$query = "SELECT * FROM phpforum_users WHERE login LIKE '".$login."' AND passwd LIKE '".md5($passwd)."'";
+								
+									if ($gesBD->selectUser($query))
+									{   					  
+									    // Si existe el usuario en la base de datos
+											// Se recoge el usuario          				    				 
+											$user = $gesBD->getObj();
+											
+											if ($user->getIs_banned() == 0)
+											{
+											    // Si no está baneado
+											    if ($useCookie == "on")
+													{					
+													    // Si ha indicado que quiere usar cookie
+															// Se crea un random para identificar la cookie del usuario 															    	
+													    $randCookieCode = rand(0,1000000);
+													    // Se codifica el id del usuario
+															$cadena = base64_encode($user->getId_user());
+															// Se monta la cadena que se guardará en la cookie (id codificada + # + random identificador)
+															$cadena.="#";																	
+															$cadena.=$randCookieCode;
+													    if (setcookie("prfinal3asi", $cadena, time() + (7 * 86400)))
+													    {												
+													        // Si se crea la cookie correctamente con un tiempo de vida de una semana
+													        // Se actualizan los datos del usuario para establecer que usa cookie y el identificador random de la cookie que usa
+																	$query = "UPDATE phpforum_users SET use_cookie = 1, rand_cookie_code = ".$randCookieCode." WHERE id_user LIKE ".$user->getId_user();																																
+																	if ($gesBD->update($query))
+																	{		   															    															
+																	    // Si se actualizan los datos
+																	    // Se establece que el usuario utiliza cookie y se le asigna el random
+																			$user->setUseCookie(1);						
+															    		$user->setRandCookieCode($randCookieCode);
+															    }	
+													    }												    																														    							
+													}
+													
+													if ($user->getIp() != $_SERVER["REMOTE_ADDR"])
+													{
+													    // Si la ip actual del usuario es diferente de la ip registrada en la base de datos
+													    // Se actualiza la ip del usuario
+													    $query = "UPDATE phpforum_users SET ip = '".$_SERVER["REMOTE_ADDR"]."' WHERE id_user LIKE ".$user->getId_user();
+													    $gesBD->update($query);
+													    $user->setIp($_SERVER["REMOTE_ADDR"]);
+													}  
+													
+													// Se buscan los logs del usuario durante los últimos 10 minutos
+													$query = "SELECT id_user FROM phpforum_logs WHERE id_user LIKE ".$user->getId_user()." AND ip NOT LIKE '".$user->getIp()."' AND fecha BETWEEN DATE_SUB((SELECT NOW()), INTERVAL 10 MINUTE) AND (SELECT NOW())";
+													if (!$gesBD->selectOne($query, "id_user"))
+													{				
+													    // Si no existen logs registrados de este usuario como usuario conectado durante los últimos 10 minutos
+														  /***** Cambiar la ip del usuario si ha cambiado desde el ultimo logueo *****/
+														  $user->setIp($_SERVER["REMOTE_ADDR"]);												  
+														  $query = "UPDATE phpforum_users SET ip = '".$user->getIp()."' WHERE id_user LIKE ".$user->getId_user();
+														  $gesBD->update($query);
+														  /***************************************************************************/
+														  
+														  /***** Cambiar la id del anonimo por la id del usuario logueado donde coincida la ip en los ultimos 10 minutos *****/
+														  $query = "UPDATE phpforum_logs SET id_user = ".$user->getId_user()." WHERE ip LIKE '".$user->getIp()."' AND fecha BETWEEN DATE_SUB((SELECT NOW()), INTERVAL 10 MINUTE) AND (SELECT NOW())";
+														  $gesBD->update($query);
+														  /*******************************************************************************************************************/
+														  
+														  // Se guarda el usuario en la sesión
+													    $_SESSION["userlog"] = serialize($user);
+													    // Y se indica que hay sesión
+													    $_SESSION["haySesion"] = "si";
+													    
+													    if (($this->vista == null) || ($this->vista == ""))
+													    {
+													        // Si no se ha recibido ninguna vista
+													        // Se establece la vista por defecto
+													        $this->vista = "ShowForum";
+													    }
+															else
+															{
+															    // Si sí se ha recibido una vista
+															    if ($this->vista == "Navigate")
+															    {
+															        // Si la vista es igual a "Navigate"
+															        // Se establece la página de destino y la acción que iba a ejecutarse antes de loguearse
+															        $this->vista .= "&destino=".$_GET["pagina"]."&act=".$_GET["act"]; 
+																	}
+																	else
+																	{
+																	    // Si la vista no es igual a "Navigate"
+															        // Se establece la vista por defecto
+															        $this->vista = "ShowForum";
+																	}
+															}			          			    
+													    
+													    // Y se redirige al usuario a donde tenga que ir
+													    header("Location: index.php?accion=".$this->vista);													    
+													}
+													else
+													{
+													    // Si sí existen logs registrados del usuario en los últimos 10 minutos
+													    // Se indica que no se puede conectar porque ya está conectado desde otro equipo
+													 		$this->error = "No puede conectarse porque ya est&aacute; conectado desde otro equipo.";
+													 		// Y se establece la vista de vuelta a la página de login
+									    				$this->vista = "main_login.str";
+													}
+											}
+											else
+											{
+											    // Si sí está baneado
+											    // Se indica que el usuario no puede conectarse por estar baneado
+											    $this->error = "No puede conectarse debido a que est&aacute; baneado.";
+													$this->error .= "<BR>Para m&aacute;s informaci&oacute;n contacte con el administrador del foro.";
+													// Y se establece la vista de vuelta a la página de login
+													$this->vista = "main_login.str";
+											}
+									}
+									else
+									{
+									    // Si no se encuentra el usuario
+									    // Se indica que el usuario con el que intenta conectarse no existe
+									    $this->error = "El usuario no existe.<BR>Compruebe su <B>LOGIN</B> y su <B>CLAVE</B>";
+									    // Y se establece la vista de vuelta a la página de login
+									    $this->vista = "main_login.str";
+									}
+							}		
+					}		
+					else
+					{			
+					    // Si ya existe una sesión
+					    // Se indica que no puede volver a conectarse sin haberse desconectado previamente
+					    $this->error = "No puede volver a conectarse sin haberse desconectado previamente.";
+					    // Y se establece la vista de vuelta a la página de login
+							$this->vista = "main_login.str";			
+					}
+					
+					return $val;
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+	  			return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}	
+?>

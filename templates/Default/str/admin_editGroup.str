@@ -1,0 +1,252 @@
+<? include("../templates/Default/str/admin_header.str"); ?>
+<SCRIPT>
+// Función que seleccina un grupo
+function selectGroup()
+{
+    var group = document.getElementById("rank").value;
+    
+    document.getElementById("name").value = document.getElementById(group+"_name").value;
+    document.getElementById("comment").value = document.getElementById(group+"_comment").value;
+		
+		if (group == "-3")
+		{
+		    document.getElementById("name").disabled = true;
+		    document.getElementById("comment").disabled = true;
+		    document.getElementById("can_write").disabled = true;
+		}
+		else
+		{
+		    document.getElementById("name").disabled = false;
+		    document.getElementById("comment").disabled = false;
+		    document.getElementById("can_write").disabled = false;
+		    document.getElementById("can_write").checked = false;
+		    document.getElementById("can_read").checked = false;
+		}
+		
+    var permisos = document.getElementById("permisos_"+group).value;
+    if (permisos == "00")
+    {
+        document.getElementById("can_read").checked = false;
+        document.getElementById("can_write").checked = false;
+		}
+		else if (permisos == "01")
+		{
+		    document.getElementById("can_read").checked = false;
+        document.getElementById("can_write").checked = true;
+		}
+		else if (permisos == "10")
+		{
+		    document.getElementById("can_read").checked = true;
+        document.getElementById("can_write").checked = false;
+		}
+		else if (permisos == "11")
+		{
+		    document.getElementById("can_read").checked = true;
+        document.getElementById("can_write").checked = true;
+		}
+}
+</SCRIPT>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3" id="loc">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Grupos
+																																			</TD>																																			
+																																	</TR>
+																																	<TR> 
+																																	    <TD class="celda_path" style="text-align: right; height: 15px;" colspan="3" id="submenu"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página de administración en la que se editan los grupos
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+	    $listaGroups = unserialize($_SESSION["grupos"]);
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>																																	
+<?	  	    	    	
+	}	
+	else
+	{
+	    $listaGroups = $modelo["modelo"];	  
+			$_SESSION["grupos"] = serialize($listaGroups); 
+	}  	     
+?>
+	 																																<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>A continuaci&oacute;n se ofrece la posibilidad de editar grupos de usuarios del foro:
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="10"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">	
+																																													    <TR>
+																																				                	   	    <TD>
+																																				                	   	   		  <FORM action="index.php?accion=EditGroup" method="POST" name="formEditGroup" id="formEditGroup">
+																																																				<INPUT type="hidden" id="oldtitle" name="oldtitle" value="" />																																						             																																																																						
+																										                                              </TD>
+																																				                	    </TR>	 																																															  
+																																							   	   	   		  <TR>
+																																							   	   	   		  	  <TD class="align_right" width="182px">Categor&iacute;as&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																																							   	   	   		  	  <TD class="align_left"> 
+																																							   	   	   		  	 		  <SELECT name="rank" id="rank" class="input" style="width: 200px;" size="5" onChange="selectGroup()">																														                	   	   		    
+<?
+	    $cont = 0;
+	    $size = count($listaGroups);
+?>
+																																																			    <OPTION value="-3">An&oacute;nimo</OPTION>
+<?	    
+	    for ($cont = 0; $cont < $size; $cont++)
+	    {
+	        $grupo = $listaGroups[$cont];
+					$g = $grupo["group"];						 
+					if (($g->getName() != "Administrador") && ($g->getName() != "Moderador") && ($g->getName() != "Usuario"))
+					{
+?>
+																														                	   	   											<OPTION value="<?=$g->getId_group()?>"><?=replaceCharsToHTML($g->getName())?></OPTION>
+<?					
+					}
+			}
+?>																																																			 																																																						 		
+																																					                	   	   	  </SELECT>
+																																																	</TD>
+																																					                	  </TR>
+																																															<TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																														                	   	   	        <TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Este ser&aacute; el nombre del nuevo grupo.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="182px">Nombre&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="text" name="name" id="name" value="" maxlength="25" size="34"/></TD>
+																														                	   	   	   		  </TR>	
+																																															<TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 												
+																																															<TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Esta ser&aacute; la descripci&oacute;n del nuevo grupo.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="182px">Descripci&oacute;n&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="text" name="comment" id="comment" value="" maxlength="100" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																																																 <TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 												
+																																															<TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Estos ser&aacute;n los permisos de lectura y escritura del nuevo grupo.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="182px">Permisos&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT type="checkbox" name="can_read" id="can_read" /> Lectura&nbsp;&nbsp;&nbsp;<INPUT type="checkbox" name="can_write" id="can_write" /> Escritura</TD>
+																														                	   	   	   		  </TR>																															                	   	   	   		  
+																																															<TR>
+																																                	   	            <TD colspan="2" height="25px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>																							                	   	   	   		  
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2">	
+<?			
+			for ($cont = 0; $cont < $size; $cont++)
+			{
+			    $grupo = $listaGroups[$cont];
+					$g = $grupo["group"];		
+?>
+<INPUT type="hidden" id="<?=$g->getId_group()?>_name" name="<?=$g->getId_group()?>_name" value="<?=$g->getName()?>" />
+<INPUT type="hidden" id="<?=$g->getId_group()?>_comment" name="<?=$g->getId_group()?>_comment" value="<?=$g->getComment()?>" />
+<INPUT type="hidden" id="permisos_<?=$g->getId_group()?>" name="permisos_<?=$g->getId_group()?>" value="<?=$g->getCan_read()?><?=$g->getCan_write()?>" />	
+<?			  
+			}
+?>
+<INPUT type="hidden" id="-3_name" name="-3_name" value="Anónimo" />		
+<INPUT type="hidden" id="-3_comment" name="-3_comment" value="Grupo de usuarios anónimos." />
+<?
+   $query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE -3";
+   if ($gesBD->selectOne($query, "can_read"))
+   {
+       $cr = $gesBD->getObj();
+	 }
+?>
+<INPUT type="hidden" id="permisos_-3" name="permisos_Anónimo" value="<?=$cr?>0" />																																															 													                	   	            		
+																																																			<INPUT class="button" type="button" name="Editar" value="Editar" onClick="valFormEditGroup()" />
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   	 </TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																								 <TR>
+																																								     <TD>
+																																												 </FORM>
+																																										 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																							 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="15px"></TD>
+																																	</TR>																										
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																											 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("../templates/Default/str/admin_footer.str"); ?>														 		 

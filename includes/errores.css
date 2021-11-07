@@ -1,0 +1,10 @@
+.tabla_errores {
+    width: 400px; height: 50px; color: #FF0000; padding-left: 8px;
+		border: 1px #FF0000 dashed; text-align: center; vertical-align: middle; font-size: 11px;
+    font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif; 	  
+}
+.tabla_errores_popup {
+    color: #FF0000; padding-left: 8px; border: 1px #FF0000 dashed; 
+		text-align: center; vertical-align: middle; font-size: 11px;
+    font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif; 	  
+}

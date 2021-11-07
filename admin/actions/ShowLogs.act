@@ -1,0 +1,86 @@
+<?
+  /**
+   * Clase que se encarga de mostrar todos los registros del control de logs del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowLogs
+	{
+	  // Variable que guarda la vista 
+		var $vista = "admin_logs.str";
+		// Variable que guarda el modelo	
+		var $modelo;
+		// Variable que guarda el error
+		var $error;		
+		
+		// Constructor de la clase
+		function ShowLogs() {
+		}
+		
+		// Función que ejecuta el código de la acción requerida
+		function ejecutar($gesBD)
+		{
+		    $encontrado = false;
+		    
+		    if (isset($_SESSION["haySesionAdmin"]))
+		    {
+		        // Si hay sesión de administrador
+		        // Se seleccionan todos los logs ordenados por fecha descendente
+						$query = "SELECT * FROM phpforum_logs_backup ORDER BY fecha DESC";		    				
+						if ($gesBD->selectLogs($query))
+						{
+						    // Si se ejecuta correctamente
+						    // Se guarda la lista de logs en el modelo
+						    $this->modelo = $gesBD->getObj();
+						    // Y se indica que todo ha ido bien
+								$encontrado = true;		
+						}
+						else
+				    {
+				        // Si no se ejecuta correctamente
+				        if ($this->error == null)
+				        {
+				            // Si no es por un error de acceso a la base de datos
+				            // Se establece el error
+									  $this->error = "No hay usuarios en l&iacute;nea.";
+								}
+								else
+								{
+								    // Si sí es por un error de acceso a la base de datos
+								    // Se redirige al usuario a la página de error
+								    header("Location: error.php");	  
+								}    
+				    }
+				}
+				else
+				{
+				    // Si no hay sesión de administrador
+				    // Se redirige al usuario a la página de inicio del foro
+				    header("Location: ../index.php");
+				}
+		    
+		    return $encontrado;
+		}
+		
+		// Función que devuelve el modelo
+		function getModelo()
+		{
+  			return $this->modelo;
+		}
+		
+		// Función que devuelve la vista
+		function getVista()
+		{
+			  return $this->vista;
+		}
+		
+		// Función que devuelve el error
+		function getError()
+		{
+			  return $this->error;
+		}
+		
+		// Función que devuelve la acción
+		function getAct() {
+		}
+	}
+?>

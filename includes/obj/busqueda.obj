@@ -1,0 +1,63 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de las búsquedas.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class Busqueda{
+    
+        var $cat_title;
+        var $theme_title;
+	      var $post;      
+				
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function Busqueda($cat_title, $theme_title, $post){            
+        	  $this->cat_title = $cat_title;
+            $this->theme_title = $theme_title;
+						$this->post = $post;											            
+        }   
+        
+        /**
+         * Metodo que se encarga de asignar el titulo de la categoria.         
+         */
+        function setCat_title($cat_title){
+            $this->cat_title = $cat_title;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el titulo del tema.         
+         */
+        function setTheme_title($theme_title){
+            $this->theme_title = $theme_title;
+        }     
+        
+        /**
+         * Metodo que se encarga de asignar el post.         
+         */
+        function setPost($post){
+            $this->post = $post;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el titulo de la categoria.         
+         */
+        function getCat_title(){
+            return $this->cat_title;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el titulo del tema.         
+         */
+        function getTheme_title(){
+            return $this->theme_title;
+        }     
+        
+        /**
+         * Metodo que se encarga de devolver el post.         
+         */
+        function getPost(){
+            return $this->post;
+        }
+    }
+?>

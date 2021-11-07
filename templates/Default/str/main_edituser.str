@@ -1,0 +1,302 @@
+<? include("templates/Default/str/header.str"); ?>
+<SCRIPT type="text/javascript" src="includes/js/editorWysiwyg.js">
+    // Variable para la selección de texto del textarea
+    var sel;
+    var campo = "sign";
+</SCRIPT>
+<SCRIPT>
+// Función para redimensionar imágenes
+function resizeImg(imgname)
+{
+    var w = document.getElementById(imgname).width;
+    if (w > 200)
+    {
+        document.getElementById(imgname).width = "200";
+		}    				
+}
+
+// Función que chequea el maxlength de un textarea
+function checkMaxLength()
+{
+    // funcion para chequear el tamaño máximo del textarea de la firma
+		var mLength = document.getElementById('sign').maxlength;
+		if (document.getElementById('sign').value.length > mLength)
+		{
+		    document.getElementById('sign').value = document.getElementById('sign').value.substring(0,mLength);
+		}		
+}
+
+// Función que carga una vista previa
+function vistaPrevia()
+{
+    document.getElementById('texto').value = document.getElementById('sign').value;
+    document.getElementById("fpreview").submit();
+}
+</SCRIPT>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>																														
+																											   <TD width="25px"></TD>
+ 	 																										   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR>
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Editando perfil de <B></I><?=$login?></I></B>
+																																			</TD>																																			
+																																	</TR>																																										                	   	   
+<?
+  // Página en la que se edita el perfil de un usuario
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+	    $userProfile = unserialize($_SESSION["profileToEdit"]);
+?>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>				
+																																	<TR>	
+																																     <TD class="align_center" colspan="3">
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>		  
+<?	  	    	    	
+	}	
+	else
+	{
+	    $userProfile = $modelo["modelo"];
+	    $_SESSION["profileToEdit"] = serialize($userProfile);
+	}
+	
+	if (isset($userProfile))
+	{
+	    $id_user = $userProfile->getId_user();	
+			$login = $userProfile->getLogin();
+			//$login = replaceCharsToHTML($login);
+			$urlAvatar = $userProfile->getUrlAvatar();
+			$rankName = $userProfile->getRankName();
+			//$rankName = replaceCharsToHTML($rankName);
+			$email = $userProfile->getEmail();
+			$name = $userProfile->getName();
+			//$name = replaceCharsToHTML($name);
+			$msn = $userProfile->getMsn();
+			$site = $userProfile->getSite();
+			//$site = replaceCharsToHTML($site);
+			$web = $userProfile->getWeb();
+			$sex = $userProfile->getSex();
+			if (empty($sex))
+			{
+			    $sex = "NoSex";
+			}			
+			$num_msgs = $userProfile->getNum_msgs();	
+			$date = $userProfile->getDate();
+			$lastClick = $userProfile->getLastClick();
+			$sign = $userProfile->getSign();		  
+	}	
+?>																																
+                                                                  <TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">												                			       
+																										                			       <TR>
+																														                	   	   <TD>
+																														                	   	   		 <FORM action="index.php?accion=EditUser&id=<?=$id_user?>" method="POST" name="formEditUser" enctype="multipart/form-data">																																						             																																																																						
+																				                                             </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>Para poder registrarse en el foro, debe rellenar el siguiente formulario:
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="10"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">																														                	   	   	        
+																														                	   	   	   		  <TR>
+																																													 		    <TD colspan="2" height="10px"></TD>																														                	   	   	   		  	  
+																														                	   	   	   		  </TR>
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="182px">Login&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="text" name="login" id="login" value="<?=$login?>" maxlength="15" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">Clave Actual&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="password" name="old_passwd" id="old_passwd" value="" maxlength="20" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														    								  						<TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">Clave Nueva&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="password" name="new_passwd" id="new_passwd" value="" maxlength="20" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">(Repita Clave Nueva)&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="password" name="new_passwd2" id="new_passwd2" value="" maxlength="20" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">E-mail&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="text" name="email" id="email" value="<?=$email?>" maxlength="40" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">Nombre&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="text" name="name" id="name" value="<?=$name?>" maxlength="20" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">Ubicaci&oacute;n&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="text" name="site" id="site" value="<?=$site?>" maxlength="30" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">MSN&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="text" name="msn" id="msn" value="<?=$msn?>" maxlength="100" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">Web&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"> <INPUT class="input" type="text" name="web" id="web" value="<?=$web?>" maxlength="20" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="182px">Sexo&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="318px"><INPUT xclass="input" type="radio" name="sex" id="sex" value="NoSex" <?if($sex == "NoSex"){?>checked<?}?> /> Indefinido&nbsp;&nbsp;&nbsp;<INPUT xclass="input" type="radio" name="sex" value="M" <?if($sex == "M"){?>checked<?}?> /> Hombre&nbsp;&nbsp;&nbsp;<INPUT xclass="input" type="radio" name="sex" value="F" <?if($sex == "F"){?>checked<?}?> /> Mujer<BR></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>																																																
+																                	   	   																					<TD valign="top" colspan="2"><HR width="80%" color="#AAAAAA" size="1"></TD>																                	   																							
+																																															</TR>	
+																														                	   	   	   		  <TR>
+																														                	   	   	   		      <TD colspan="2" class="align_center" width="100%">
+																														                	   	   	   		      		<TABLE class="tabla_acoplada" width="100%">
+																														                	   	   	   		      					 <TR>
+																														                	   	   	   		      					 		  <TD class="align_right" width="125px">* Avatar&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																																						                	   	   	   		  	  <TD class="align_left">				
+																																																										 Desde su PC:<BR>																									                	   	   	   		  	     
+																																																										 <INPUT class="input" type="file" name="avyfile" id="avyfile" value="" size="18" /><BR>
+																																																										 Desde Internet:<BR>																																																		 																																																		 
+																																																										 <INPUT class="input" type="text" name="avyurl" id="avyurl" value="" maxlength="250" size="34" />
+																																																									</TD>
+																																																									<TD class="align_left" width="185px">
+																																																											&nbsp;&nbsp;<IMG src="<?=$urlAvatar?>" width="95px" height="95px" />
+																																																									</TD>		
+																														                	   	   	   		      					 </TR>
+																														                	   	   	   		      		</TABLE>
+																																																	</TD>																									                	   	   	   		  	  
+																														                	   	   	   		  </TR>	
+																														                	   	   	   		  <TR>																																																
+																                	   	   																					<TD valign="top" colspan="2"><HR width="80%" color="#AAAAAA" size="1"></TD>																                	   																							
+																																															</TR>
+																																															<TR>
+																																																	<TD colspan="2" class="celda_acoplada">
+																																																	    Firma&nbsp;&nbsp;:
+																																																	    <TABLE>
+																																																	    		<TR>
+																																																	    				<TD style="width: 90px;"></TD>
+																																																	    				<TD style="width: 350px;">
+																																																	    				    <TABLE class="celda_profile" style="width: 350px; padding: 10px;">
+																																																											<TR>
+																																																													<TD style="height: 10px;"></TD>																																																	
+																																																											</TR>																																																			        	
+																																																											<TR>
+																																																													<TD class="celda_acoplada" style="text-align: center;">																																																													    
+																																																													    <TABLE class="tabla_acoplada" style="width: 300px;">
+																																																													        <TR>
+																																																													            <TD class="tabla_marco_foro" style="text-align: left; height: 150px; width: 300px;">																																																													                
+																																																													                <IFRAME name="preview" id="preview" src="index.php?accion=Navigate&destino=preview" style="overflow-x: hidden;" width="100%" height="100%" marginwidth="0" marginheight="5" frameborder="0" scrolling="auto"></IFRAME>
+																																																													            </TD>																																																													            
+																																																																	</TR>
+																																																															</TABLE>																																																														
+																																																													</TD>																																																	
+																																																											</TR>		
+																																																											<TR>
+																																																													<TD style="height: 10px;"></TD>																																																	
+																																																											</TR>	
+																																										                	   	   	   		  <TR>																														                	   	   	   		  	  
+																																										                	   	   	   		  	  <TD class="celda_acoplada" >
+																																										                	   	   	   		  	     <TABLE class="tabla_acoplada">
+																																						                	   	   	   		  	     				     <TR>
+																																						                	   	   	   		  	     				     		 <TD class="align_center">																																																								 		
+																																																																				 <? $field = "sign";?>																									                	   	   	   		  	     				     		     
+																																																																		     <? include("templates/Default/str/bbc_menu.str"); ?>																										                	   	   	   		  	     				     		 
+																																						                	   	   	   		  	     				     		 </TD>
+																																						                	   	   	   		  	     				     </TR>
+																																																																 <TR>	 
+																																						                	   	   	   		  	     				     		 <TD class="align_center">																										                	   	   	   		  	     				     		     
+																																						                	   	   	   		  	     				     		     <TEXTAREA class="input_textarea" name="sign" id="sign" maxlength="250" onkeyup="checkMaxLength()" rows="5" cols="55" style="width: 300px;" wrap="virtual"><?=$sign?></TEXTAREA></FORM>																																						                	   	   	   		  	     				     		     
+																																						                	   	   	   		  	     				     		     <FORM method="post" name="fpreview" id="fpreview" action="index.php?accion=Navigate&destino=preview" target="preview">
+																																																																						 <INPUT type="hidden" name="texto" id="texto" value="" />
+																																																																						 <INPUT type="button" name="ver" class="button" value="Vista Previa" onClick="vistaPrevia()" />&nbsp;&nbsp;<INPUT class="button" onClick="document.getElementById('sign').value=''" type="button" name="boton" value="Borrar" />
+																																																																				 </FORM>	
+																																						                	   	   	   		  	     				     		 </TD>
+																																						                	   	   	   		  	     				     </TR>
+																																										                	   	   	   		  	     </TABLE>																																																		 
+																																																													</TD>	 
+																																										                	   	   	   		  </TR>
+																																																							    </TABLE>
+																																																							</TD>
+																																																	    				<TD style="width: 90px;"></TD>
+																																																					</TR>	 
+																																																	    </TABLE>
+																																																	</TD>
+																																															</TR>
+																														                	   	   	   		  <TR>																																																
+																                	   	   																					<TD valign="top" colspan="2"><HR width="80%" color="#AAAAAA" size="1"></TD>																                	   																							
+																																															</TR>																													                	   	   	   		  
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2">	 																															                	   	            		
+																																																			<INPUT class="button" type="button" onClick="document.formEditUser.submit()" name="Aceptar" value="Aceptar" />
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		    <TR>
+																																                	   	            <TD colspan="2" height="5px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		    <TR>
+																																                	   	            <TD class="align_center" colspan="2">
+																																																			(*) El avatar no debe exceder de 100KB y el tama&ntilde;o debe ser de 95x95 p&iacute;xeles.
+																																																			<BR>El formato puede ser *.bmp, *.jpg, *.gif o *.png.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		</TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																				 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>										
+																										 <TR>
+								       		 													 		 <TD height="10" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>	

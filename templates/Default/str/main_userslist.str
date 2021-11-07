@@ -1,0 +1,225 @@
+<? include("templates/Default/str/header.str"); ?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Usuarios
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página que lista los usuarios
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>
+<?	  	    	    	
+	}	
+	else
+	{
+	    $listaUsers = $modelo["modelo"];
+	    $size = count($listaUsers);	    
+?>			
+																																	<TR>
+   																																    <TD colspan="3" height="5px">
+																																			Hay <?=$size?> usuarios registrados.   																																    
+																																			</TD>
+																																	</TR>
+<?	    
+   	  $cont = 0;
+?>
+																 																	<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">
+																 																								<TR>																																 		
+																																								 		<TD class="celda_cabecera_tabla_usuarios">
+																																										 		LOGIN
+																																										</TD>
+																																								 		<TD class="celda_cabecera_tabla_usuarios">
+																																										 		E-MAIL
+																																										</TD>
+																																								 		<TD class="celda_cabecera_tabla_usuarios">
+																																										 		MSN
+																																										</TD>
+																																										<TD class="celda_cabecera_tabla_usuarios">
+																																										 		WEB
+																																										</TD>
+																																										<TD class="celda_cabecera_tabla_usuarios">
+																																										 		GRUPO
+																																										</TD>
+																																										<TD class="celda_cabecera_tabla_usuarios">
+																																										 		FECHA DE REGISTRO
+																																										</TD>
+																																										<TD class="celda_cabecera_tabla_usuarios">
+																																										 		MENSAJES
+																																										</TD>
+																																								</TR>			 
+<?	
+		  for ($cont = 0; $cont < $size; $cont++)
+		  {		       
+		      $user = $listaUsers[$cont];
+		      $id_user = $user->getId_user();
+		      $login = $user->getLogin();
+		      $email = $user->getEmail();
+		      $msn = $user->getMsn();		      
+		      $web = $user->getWeb();
+		      $rank = $user->getRank();
+		      $rankName = $user->getRankName();
+		      $fecha = $user->getDate();
+		      $num_msgs = $user->getNum_msgs();
+		      
+		      
+					if (($cont % 2) == 0)
+					{
+					    $classCelda = "celda_clara";
+					}	      
+					else
+					{
+					    $classCelda = "celda_oscura";
+					}
+					
+					if ($rank == -2)
+					{
+					    $classRank = "link_admin_user";
+					}
+					else if ($rank == -1)
+					{
+					    $classRank = "link_mode_user";
+					}
+					else
+					{
+					    $classRank = "link_default_user";
+					}    
+?>																			 							 							
+																			 							 							    					<TR>																																 		
+																																								 		<TD class="<?=$classCelda?>">
+																																										 		<A HREF="index.php?accion=ShowUser&id=<?=$id_user?>" class="<?=$classRank?>" title="Ver perfil"><?=replaceCharsToHTML($login)?></A>
+																																										</TD>
+																																								 		<TD class="<?=$classCelda?>" valign="bottom">
+																																										 		<A HREF="mailto:<?=$email?>" class="link_imagen" title="Mandar e-mail"><IMG src="templates/Default/img/email.gif" width="35px" height="22px" border="0" /></A>
+																																										</TD>
+																																								 		<TD class="<?=$classCelda?>" valign="bottom">
+<?
+          if (($msn != null) && ($msn != ""))
+          {
+?>
+ 																																										    <A HREF="http://members.msn.com/<?=$msn?>" class="link_imagen" target="_blank" title="Ver msn"><IMG src="templates/Default/img/msn.gif" width="35px" height="22px" border="0" /></A>
+<?          
+					}
+					else
+					{
+?>
+					 																																							&nbsp;	 
+<?					
+					}
+?>
+																																										</TD>
+																																										<TD class="<?=$classCelda?>" valign="bottom">
+<?
+          if (($web != null) && ($web != ""))
+          {
+?>
+																																										 		<A HREF="<?=$web?>" class="link_imagen" target="_blank" title="Ver Web"><IMG src="templates/Default/img/www.gif" width="35px" height="22px" border="0" /></A>
+<?          
+					}
+					else
+					{
+?>
+					 																																							&nbsp;	 
+<?					
+					}
+?>
+																																										</TD>
+																																										<TD class="<?=$classCelda?>">
+																																										 		<?=replaceCharsToHTML($rankName)?>
+																																										</TD>
+																																										<TD class="<?=$classCelda?>">
+																																										 		<?=$fecha?>
+																																										</TD>
+																																										<TD class="<?=$classCelda?>">
+																																										 		<?=$num_msgs?>
+																																										</TD>
+																																								</TR>
+<?			
+			}	
+?>
+			 																																	 </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>	
+<?
+	}
+?>																																		
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																						
+																																	<TR>
+   																																    <TD width="10px"></TD>
+																																	    <TD height="50px" width="530px" cellpadding="0" cellspacing="0">
+<? include("control_users.str"); ?>
+																																			</TD>																																
+   																																    <TD width="10px"></TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD width="10px"></TD>
+																																	    <TD width="530px" cellpadding="0" cellspacing="0" align="left">
+																																					<SPAN class="corchetes">[</SPAN> <SPAN class="admin_user">Administrador</SPAN> <SPAN class="corchetes">]</SPAN>&nbsp;&nbsp;&nbsp;<SPAN class="corchetes">[</SPAN> <SPAN class="mode_user">Moderador</SPAN> <SPAN class="corchetes">]</SPAN>
+																																			</TD>																																
+   																																    <TD width="10px"></TD>
+																																	</TR>																																	
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																										 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>	

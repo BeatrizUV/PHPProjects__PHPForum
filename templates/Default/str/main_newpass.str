@@ -1,0 +1,68 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<HTML>
+			<HEAD>
+						<TITLE>:: <?=$forum_title?> Foros ::</TITLE>
+						<LINK rel="stylesheet" type="text/css" href="includes/errores.css" />	
+						<STYLE>
+						    .texto_cuerpo {
+								    font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+										color: #4F4F4F; text-align: center; font-size: 11px; vertical-align: middle;		
+								}
+								.button {
+									border: #000000 1px solid; font-size: 11px; background-color: #666666;
+									color: #CCCCCC; border-bottom: #000000 1px solid; width: 100px;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;	
+								}
+								.input {
+									border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+									border-left: #000000 1px solid; color: #EEEEEE; border-bottom: #FFFFFF 1px solid;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #999999; padding-left: 3px;
+								}
+								.input:hover {
+									border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+									border-left: #000000 1px solid; color: #555555; border-bottom: #FFFFFF 1px solid;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #CCCCCC; padding-left: 3px;
+								}
+								.inputError {
+							    border: #FF0000 1px solid; font-size: 11px; color: #EEEEEE;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #999999; padding-left: 3px;
+								}
+						</STYLE>				
+						<SCRIPT type="text/javascript" src="includes/js/valForms.js"></SCRIPT>							
+			</HEAD>
+
+			<BODY bgcolor="#C0C0C0">
+<?
+  // Popup para renovar la clave
+	session_start();
+?>			
+					  <CENTER>	         
+      					 <P align="right"><INPUT style="width: 25px; font-weight: bold;" type="button" class="button" name="cerrar" value=" X" onclick="javascript:window.close();" />&nbsp;</P>																					     																																									                	   	   
+<?
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+?>								 				         
+ 						     <TABLE width="300px" class="tabla_errores_popup">
+ 						         <TR>
+				        		     <TD>
+ 						        		     <?=$error?>
+ 						        		 </TD>
+ 						         </TR>																																         						        
+ 						     </TABLE>
+<?	  	    	    	
+	}	
+?>																		
+			 					 <FORM action="index.php?accion=NewPass" method="POST" name="formNewPass">									
+			               <P class="texto_cuerpo">Si no recuerda su clave, ingrese su e-mail.</P>																														                	   	   	   
+									   <P class="texto_cuerpo">E-mail&nbsp;&nbsp;:&nbsp;&nbsp;<INPUT class="input" type="text" name="email" id="email" value="" maxlength="100" size="25" /></P>
+		                 <P><TD class="align_center" colspan="2"><INPUT class="button" type="button" name="aceptar" value="Aceptar" onClick="valFormNewPass()" /></P>
+								 </FORM>
+						</CENTER>
+			</BODY>
+</HTML>

@@ -1,0 +1,388 @@
+<? include("templates/Default/str/header.str"); ?>	
+													 		 <TD class="celda_cuerpo" valign="top">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Ayuda
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>	
+																 																	<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">
+																			 							 							    		      <TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Configuraciones y Comprobaciones Previas:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>Antes de nada, &iquest;qu&eacute; es necesario para que el foro funcione perfectamente?</B></SPAN>
+																																												<BR>
+																																												El foro est&aacute; optimizado para <I>Internet Explorer</I> y <I>Mozilla Firefox</I>, aunque tambi&eacute;n ha sido probado en <I>Opera</I>, <I>Netscape</I> 
+																																												(con &eacute;ste da problemas con los formularios multipart) y <I>Apple Safari</I>. Es imprescindible que el Javascript est&eacute; activado.
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo compruebo que tengo activado Javascript en mi navegador?</B></SPAN>
+																																												<BR>
+																																												Todo depende del navegador que tenga instalado. Si no tiene instalada una versión de <I>Internet Explorer 5</I> o superior, <I>Netscape 6</I> 
+																																												o superior, o <I>Mozilla Firefox 1</I> o superior, le recomendamos actualizar su navegador, puesto que versiones anteriores de los 
+																																												navegadores ya mencionados no podr&aacute;n acceder al foro con normalidad. En caso de tener alguno de los citados, siga estos pasos para 
+																																												comprobar si tiene activado Javascript:
+																																												<BR><BR>
+																																												<U>Internet Explorer 7</U>:
+																																												<BR>&nbsp;&nbsp;1. Haga click en "Herramientas", luego en "Opciones de Internet".
+																																												<BR>&nbsp;&nbsp;2. Haga click en la pesta&ntilde;a de "Seguridad".
+																																												<BR>&nbsp;&nbsp;3. Haga click en el bot&oacute;n "Nivel personalizado".
+																																												<BR>&nbsp;&nbsp;4. Vaya a la secci&oacute;n de "Automatizaci&oacute;n".
+																																												<BR>&nbsp;&nbsp;5. Seleccione "Activar" en "Automatizaci&oacute;n de los subprogramas de Java", "Permitir operaciones de pegado por medio de una secuencia de comandos" y "Secuencias de comandos ActiveX".
+																																												<BR>&nbsp;&nbsp;6. Haga click en el bot&oacute;n "Aceptar".
+																																												<BR><BR>
+																																												<U>Internet Explorer 6:</U>
+																																												<BR>&nbsp;&nbsp;1. Haga click en "Herramientas", luego en "Opciones de Internet". 
+																																												<BR>&nbsp;&nbsp;2. Haga click en la pesta&ntilde;a de "Seguridad". 
+																																												<BR>&nbsp;&nbsp;3. Haga click en el bot&oacute;n "Nivel personalizado". 
+																																												<BR>&nbsp;&nbsp;4. Vaya a la secci&oacute;n de "Automatizaci&oacute;n". 
+																																												<BR>&nbsp;&nbsp;5. Seleccione "Activar" en "Automatizaci&oacute;n de los subprogramas de Java", "Permitir operaciones de pegado por medio de una secuencia de comandos" y "Secuencias de comandos ActiveX". 
+																																												<BR>&nbsp;&nbsp;6. Haga click en el bot&oacute;n "Aceptar". 
+																																												<BR><BR>
+																																												<U>Internet Explorer 5:</U>
+																																												<BR>&nbsp;&nbsp;1. Haga click en "Herramientas", luego en "Opciones de Internet". 
+																																												<BR>&nbsp;&nbsp;2. Haga click en la pesta&ntilde;a de "Seguridad". 
+																																												<BR>&nbsp;&nbsp;3. Haga click en el bot&oacute;n "Nivel personalizado". 
+																																												<BR>&nbsp;&nbsp;4. Vaya a la secci&oacute;n de "Automatizaci&oacute;n". 
+																																												<BR>&nbsp;&nbsp;5. Seleccione "Activar" en "Automatizaci&oacute;n de los subprogramas de Java", "Permitir operaciones de pegado por medio de una secuencia de comandos" y "Secuencias de comandos ActiveX". 
+																																												<BR>&nbsp;&nbsp;6. Haga click en el bot&oacute;n "Aceptar". 
+																																												<BR><BR>
+																																												<U>Netscape 6.x:</U>
+																																												<BR>&nbsp;&nbsp;1. Haga click en "Edici&oacute;n", luego en "Preferencias". 
+																																												<BR>&nbsp;&nbsp;2. Haga click en "Avanzadas". 
+																																												<BR>&nbsp;&nbsp;3. Seleccione "Activar JavaScript para el Navegador". 
+																																												<BR>&nbsp;&nbsp;4. Haga click en el bot&oacute;n "Aceptar".
+																																												<BR><BR>
+																																												<U>Netscape 4.x:</U>
+																																												<BR>&nbsp;&nbsp;1. Haga click en "Edici&oacute;n", luego en "Preferencias". 
+																																												<BR>&nbsp;&nbsp;2. Haga click en "Avanzadas". 
+																																												<BR>&nbsp;&nbsp;3. Haga click en "Activar JavaScript". 
+																																												<BR>&nbsp;&nbsp;4. Haga click en el bot&oacute;n "Aceptar".
+																																												<BR><BR>
+																																												<U>Mozilla Firefox 1.5:</U>
+																																												<BR>&nbsp;&nbsp;1. Seleccione "Tools". 
+																																												<BR>&nbsp;&nbsp;2. Seleccione  "Options". 
+																																												<BR>&nbsp;&nbsp;3. Seleccione "Content". 
+																																												<BR>&nbsp;&nbsp;4. Seleccione la casilla de "Enable JavaScript" y de click en "OK".
+																																												<BR><BR>
+																																												<U>Mozilla Firefox 1.0:</U>
+																																												<BR>&nbsp;&nbsp;1. Seleccione "Tools". 
+																																												<BR>&nbsp;&nbsp;2. Seleccione "Options". 
+																																												<BR>&nbsp;&nbsp;3. Seleccione "Web Features". 
+																																												<BR>&nbsp;&nbsp;4. Seleccione la casillla de "Enable JavaScript" y de click en "OK".  
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Ingreso (login) y registro:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Por qu&eacute; no puedo conectarme?</B></SPAN>
+																																												<BR>
+																																												&iquest;Ya se registr&oacute;? Debe registrarse en el sistema antes de poder acceder a &eacute;l. 
+																																												&iquest;Ha sido baneado en el foro? (si es asi se le indicar&aacute; mediante un mensaje). 
+																																												Si esto sucede env&iacute;e un mensaje al administrador del foro para encontrar la causa. 
+																																												Si se ha registrado y no ha sido baneado verifique que su nombre de usuario y contrase&ntilde;a coincidan, 
+																																												es el problema m&aacute;s com&uacute;n. En caso de persistir el problema, consulte la codificación de caracteres de su navegador, 
+																																												y compruebe que la codificación que está utilizando es la Europea. Si est&aacute; seguro de que est&aacute;n correctos los datos, 
+																																												env&iacute;e un mensaje al administrador, es posible que el foro est&eacute; mal configurado y/o tenga fallos 
+																																												en la programación.
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Por qu&eacute; me tengo que registrar para todo?</B></SPAN>
+																																												<BR>
+																																												No est&aacute; obligado a hacerlo. Para acceder al contenido del foro puede hacerlo como visitante, podr&aacute; ver todas las zonas que 
+																																												est&eacute;n abiertas al p&uacute;blico. Sin embargo estar registrado le da muchas ventajas que como usuario invitado 
+																																												no difrutar&iacute;a, como tener su gr&aacute;fico personalizado (avatar), mensajes privados, participar en conversaciones del foro, 
+																																												etc.... Solo le tomar&aacute; unos segundos, es muy recomendable.
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Por qu&eacute; mi sesi&oacute;n de usuario expira autom&aacute;ticamente?</B></SPAN>
+																																												<BR>
+																																												Si no activa la casilla "Conectar autom&aacute;ticamente" cuando ingresa al foro, sus datos del usuario se guardan en su navegador durante su visita 
+																																												por un tiempo m&aacute;ximo de <?=ini_get("session.gc_maxlifetime") / 60?> minutos, y se eliminan cuando el usuario cierra el navegador o cuando pasan 
+																																												estos <?=ini_get("session.gc_maxlifetime") / 60?> minutos. Esto previene que su cuenta pueda ser usada por alguien m&aacute;s. Para que el sistema 
+																																												le reconozca autom&aacute;ticamente (muy recomendado para tareas de administraci&oacute;n que necesiten un cierto tiempo) solo active 
+																																												la casilla al ingresar. NO es recomendable si accede al foro desde un ordenador compartido (cybercaf&eacute;s, bibliotecas, colegios ...).
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iexcl;He perdido mi contrase&ntilde;a!</B></SPAN>
+																																												<BR>
+																																												Calma, si no recuerda su contrase&ntilde;a puede cambiarla. Para hacer esto dirijase a la p&aacute;gina de 
+																																												<A HREF="index.php?accion=Navigate&destino=main_login" class="link_path" title="Conectar">ingreso</A> y haga click en "&iquest;No 
+																																												recuerda su clave? Pinche aqu&iacute;", siga las instrucciones y estar&aacute; dentro en muy poco tiempo.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>Hace un tiempo me registr&eacute;, pero ahora no puedo conectarme</B></SPAN>
+																																												<BR>
+																																												Las posibles razones son: ingres&oacute; un login o clave incorrectos (verifique el mensaje que se le env&iacute;a al registrarse). 
+																																												Es posible que el administrador haya borrado su cuenta, esto es muy frecuente, pu&eacute;s si no ha escrito ning&uacute;n mensaje en 
+																																												cierto tiempo el administrador puede borrar el usuario para que la base de datos no se sature de registros. Si es as&iacute; 
+																																												registrese de nuevo y participe.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Preferencias de usuario y configuraciones:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo puedo cambiar mi configuraci&oacute;n?</B></SPAN>
+																																												<BR>
+																																												Todos sus datos y configuraciones (si estas registrado) est&aacute;n archivados en nuestra base de datos. Para modificarlos pincha 
+																																												en el link <A HREF="index.php?accion=ShowUser" class="link_path" title="perfil">Perfil</A>, generalmente se encuentra arriba de cada p&aacute;gina.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo puedo poner una imagen abajo de mi nombre de usuario?</B></SPAN>
+																																												<BR>
+																																												La imagen bajo el nombre de usuario se llama "avatar", y puedes introducirlo en tu perfil.
+																																										</TD>																																						 		
+																																								</TR>		
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo puedo cambiarme de grupo de usuarios?</B></SPAN>
+																																												<BR>
+																																												No puedes cambiarte de grupo de usuarios. Solo los administradores pueden cambiarte de grupo.
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Para qu&eacute; sirven la firma y el avatar?</B></SPAN>
+																																												<BR>
+																																												El Avatar es una imagen que aparecer&aacute; debajo de su nombre de usuario al escribir un mensaje, es meramente un elemento decorativo. 
+																																												En la Firma puede escribir lo que quiera o poner im&aacute;genes, para personalizar sus mensajes, siempre y cuando no rebase los 250 
+																																												car&aacute;cteres. Si va a insertar una imagen en su firma, &eacute;sta no debe rebasar los 375x200 p&iacute;xeles y su avatar debe medir 95x95 p&iacute;xeles.
+																																										</TD>																																						 		
+																																								</TR>		
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Publicaci&oacute;n de mensajes:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo puedo publicar un mensaje en el foro?</B></SPAN>
+																																												<BR>
+																																												F&aacute;cil, reg&iacute;strate como miembro del foro (pinchando en el link de <A HREF="index.php?accion=Navigate&destino=main_register" class="link_path" title="">Registrar</A>, 
+																																												generalmente arriba de cada p&aacute;gina), despues del registro pinchas en "Responder" para responder con un mensaje en un post ya creado, 
+																																												o en "Nuevo", para crear un nuevo post y comenzar ah&iacute; una nueva conversaci&oacute;n sobre alg&uacute;n otro tema que no se haya tratado todav&iacute;a en el foro.
+																																												Desde ah&iacute; se te presentar&aacute; un panel con el que f&aacute;cilmente publicar&aacute;s un mensaje.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo puedo editar o borrar un mensaje?</B></SPAN>
+																																												<BR>
+																																												Si su mensaje es el &uacute;ltimo escrito en un post, el usuario podr&aacute; borrar su propio mensaje, pero posteriormente no. 
+																																												Para modificarlo, podr&aacute; hacerlo en cualquier momento pulsando el bot&oacute;n "Editar". Los administradores y moderadores 
+																																												pueden borrar o editar mensajes en cualquier momento.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo puedo agregar una firma a mi mensaje?</B></SPAN>
+																																												<BR>
+																																												Para insertar una firma en tu mensaje primero debes crearte una, esto se hace modificando tu perfil.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Por qu&eacute; no puedo acceder a alg&uacute;n tema o categor&iacute;a?</B></SPAN>
+																																												<BR>
+																																												Algunos temas y categor&iacute;as tienen limitado el acceso a ciertos grupos de usuarios, para verlos, postear, editar, etc, necesitas pertenecer a alguno 
+																																												de esos grupos, y eso solo lo puede cambiar el administrador del foro.
+																																										</TD>																																						 		
+																																								</TR>		
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Formateo de mensajes y tipos de temas:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qu&eacute; es el código BBCode?</B></SPAN>
+																																												<BR>
+																																												BBCode es una implementación especial del HTM, la forma en la que el BBCode se usa es determinada por el administrador, 
+																																												es muy similar al HTML, las etiquetas van entre corchetes [ y ] y sirven para darle formato al texto de sus mensajes. 
+																																												Para mas información puedes ver el manual de <A HREF="http://www.bbcode.org/tags.php" class="link_path" title="Manual BBCode" target="_blank">BBCode</A>.
+																																												Las etiquetas BBCode utilizadas en este foro (excluyendo los smileys o emoticons) son:
+																																												<BR><B>[B]Negrita[/B]</B>
+																																												<BR><I>[I]Cursiva[/I]</I>
+																																												<BR><U>[U]Subrayado[/U]</U>
+																																												<BR><SPAN style="color: #FF0000;">[COLOR=red]Color de texto[/COLOR]</SPAN>
+																																												<BR><SPAN style="color: #FF0000;">[COLOR=#FF0000]Color de texto[/COLOR]</SPAN>
+																																												<BR>[IMG]Url_de_una_imagen[/IMG]
+																																												<BR>[URL=ruta_de_un_enlace]V&iacute;nculo[/URL]
+																																												<BR>[QUOTE=Usuario]Cita[/QUOTE]
+																																												<BR>[QUOTE=]Cita[/QUOTE]
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Puedo usar HTML?</B></SPAN>
+																																												<BR>
+																																												No, no est&aacute; implementada la opci&oacute;n de usar HTML para dar formato al cuerpo de los mensajes.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qu&eacute; son los smileys o emoticons?</B></SPAN>
+																																												<BR>
+																																												Los smileys o emoticons son peque&ntilde;os gr&aacute;ficos que pueden ser usados para expresar emociones, aparecen introduciendo un peque&ntilde;o 
+																																												c&oacute;digo, por ejemplo: [:)] significa feliz, [:(] significa triste. La lista completa de smileys se muestra cuando envias un mensaje.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Puedo postear im&aacute;genes?</B></SPAN>
+																																												<BR>
+																																												Las imagenes pueden ser adheridas al mensaje, insertandolas al momento de redactarlo. No puede haber im&aacute;genes de sitios de correo, 
+																																												b&uacute;squeda o cualquier autentificaci&oacute;n (Yahoo, Hotmail...).
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qu&eacute; son los Posts Fijos o Posts Importantes?</B></SPAN>
+																																												<BR>
+																																												Los Posts Fijos (o posts importantes) aparecen siempre los primeros al listar los posts de un tema y son informaci&oacute;n muy importante que deber&iacute;as leer.
+																																												Estos tipos de Posts solo pueden crearlos los Administradores y los Moderadores.
+																																										</TD>																																						 		
+																																								</TR>		
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qu&eacute; son los Posts Cerrados o Bloquedados?</B></SPAN>
+																																												<BR>
+																																												Los Posts Cerrados o Bloqueados son precisamente eso, posts en los que ya no se puede postear, esto lo deciden los administradores o moderadores del foro.
+																																										</TD>																																						 		
+																																								</TR>		
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Niveles de usuario y grupos:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>		
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qu&eacute; son los Administradores?</B></SPAN>
+																																												<BR>
+																																												Los Administradores son los usuarios con control total sobre todo el foro.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qu&eacute; son los Moderadores?</B></SPAN>
+																																												<BR>
+																																												Los Moderadores son los usuarios con permisos para moderar el foro. No pueden acceder al panel de administraci&oacute;n.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qu&eacute; son los Grupos de Usuarios?</B></SPAN>
+																																												<BR>
+																																												Los Grupos de Usuarios sirven para agrupar usuarios seg&uacute;n los permisos que se les quiera otorgar. Un usuario solo puede pertenecer 
+																																												a un solo grupo. Esto se hace con el fin de conceder permisos de acceso y moderaci&oacute;n sobre el foro.
+																																										</TD>																																						 		
+																																								</TR>
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;C&oacute;mo puedo pertenecer a un Grupo de Usuarios?</B></SPAN>
+																																												<BR>
+																																												Contacta con el Administrador del foro.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Mensajer&iacute;a Privada:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iexcl;He recibido spam o mensajes maliciosos de alguien en este foro!</B></SPAN>
+																																												<BR>
+																																												Lo sentimos mucho, la caracter&iacute;stica de mandar Mensajes Privados tiene amplios conceptos de seguridad y privacidad. Envia el mail al administrador, 
+																																												tal como ven&iacute;a y el tomar&aacute; medidas.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_cabecera_tabla_usuarios" style="height: 25px; width: 530px; background-color: #000000; color: #FFFFFF; text-align: left; padding: 2px;">
+																																												&nbsp;<SPAN style="font-size: 11px;"><B>&gt;&gt; Acerca de PHPForum:</B></SPAN>
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Por qu&eacute; este foro no tiene X cosa?</B></SPAN>
+																																												<BR>
+																																												El foro ha sido creado por una persona con un tiempo l&iacute;mite, pero est&aacute; abierto a nuevas actualizaciones.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_clara" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>Quiero tener un foro igual para m&iacute;. &iquest;C&oacute;mo me lo creo?</B></SPAN>
+																																												<BR>
+																																												Accediendo a <A HREF="includes/PHPForum.rar" class="link_path" title="Descargar PHPForum" target="_blank">este enlace</A>, podr&aacute; descargarse su propio PHPForum, que podr&aacute; instalar en su servidor.
+																																										</TD>																																						 		
+																																								</TR>	
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_oscura" style="width: 530px; text-align: left; padding: 2px;">
+																																												<SPAN style="font-size: 11px;"><B>&iquest;Qui&eacute;n ha programado este foro?</B></SPAN>
+																																												<BR>
+																																												Todo el foro, desde la p&aacute;gina de instalaci&oacute;n hasta el resultado final, ha sido totalmente programado y dise&ntilde;ado por Beatriz Urbano Vega, alumna de 3&ordm;A.S.I. en el I.E.S. Punta del Verde.
+																																										</TD>																																						 		
+																																								</TR>																																			
+			 																																	 </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>	
+																																	<TR>
+																																	    <TD height="15px" colspan="3"></TD>																																			
+																																	</TR>																								
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																										 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>	

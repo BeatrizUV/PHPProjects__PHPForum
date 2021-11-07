@@ -1,0 +1,228 @@
+<? include("../templates/Default/str/admin_header.str"); ?>
+<SCRIPT>
+// Función que selecciona un tema
+function selectThemes()
+{
+    window.open("index.php?accion=Navigate&destino=admin_listarThemes&idcat="+document.getElementById('cat').value, "listarTemas", "width=215px,height=125px,top=100px,left=150px,scrollbars=auto,resizable=no,directories=no,location=no,menubar=no,status=no,toolbar=no");
+}
+</SCRIPT>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3" id="loc">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Temas
+																																			</TD>																																			
+																																	</TR>
+																																	<TR> 
+																																	    <TD class="celda_path" style="text-align: right; height: 15px;" colspan="3" id="submenu"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página de administración en la que se editan los temas
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+	    $listaCats = unserialize($_SESSION["categorias"]);
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>																																	
+<?	  	    	    	
+	}	
+	else
+	{
+	    $listaCats = $modelo["modelo"];	  
+			$_SESSION["categorias"] = serialize($listaCats); 
+	}  	     
+?>
+	 																																<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>A continuaci&oacute;n se ofrece la posibilidad de editar temas de una categor&iacute;a del foro:
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="10"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">	
+																																													    <TR>
+																																				                	   	    <TD>
+																																				                	   	   		  <FORM action="index.php?accion=EditTheme" method="POST" name="formEditTheme" id="formEditTheme">
+																																																				<INPUT type="hidden" id="oldtitle" name="oldtitle" value="" />																																						             																																																																						
+																										                                              </TD>
+																																				                	    </TR>	 																																															  
+																																							   	   	   		  <TR>
+																																							   	   	   		  	  <TD class="align_right" width="140px">Categor&iacute;as&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																																							   	   	   		  	  <TD class="align_left"> 
+																																							   	   	   		  	 		  <SELECT name="cat" id="cat" class="input" style="width: 325px;" size="5" onChange="selectThemes()">																														                	   	   		    
+<?
+	    $contc = 0;
+	    $sizec = count($listaCats);
+	    
+	    for ($contc = 0; $contc < $sizec; $contc++)
+	    {
+	        $cat = $listaCats[$contc];						 
+?>
+																														                	   	   											<OPTION value="<?=$cat->getId_cat()?>"><?=replaceCharsToHTML($cat->getTitle())?></OPTION>
+<?			
+			}
+?>																																																			 																																																						 		
+																																					                	   	   	  </SELECT>
+																																																	</TD>
+																																					                	  </TR>
+																																															<TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																														                	   	   	        <TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Este ser&aacute; el t&iacute;tulo del nuevo tema.
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="140px">T&iacute;tulo&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="text" name="ttitle" id="ttitle" value="" maxlength="50" size="59"/></TD>
+																														                	   	   	   		  </TR>
+																																															<TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>		
+																														                	   	   	        <TR>
+																																                	   	            <TD colspan="2" height="20px">
+																																                	   	            		Este ser&aacute; la descripci&oacute;n del nuevo tema.
+																																                	   	            		<BR>(Si la deja en blanco, se borrar&aacute; la descripci&oacute;n actual del tema).
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="140px">Descripci&oacute;n&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> <INPUT class="input" type="text" name="comment" id="comment" value="" maxlength="100" size="59"/></TD>
+																														                	   	   	   		  </TR>		 	
+																																															<TR>
+																																                	   	            <TD colspan="2" height="10px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 												
+																																															<TR>
+																																                	   	            <TD colspan="2" height="50px">
+																																                	   	            		Este ser&aacute; &aacute;mbito de visibilidad que tendr&aacute; dicha categor&iacute;a.
+																																                	   	            		<BR>(Si selecciona el permiso sobre el grupo "An&oacute;nimo", todos los usuarios
+																																																			<BR>podr&aacute;n ver esta categor&iacute;a, hasta los usuarios no registrados.)																																																			
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>	 
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="140px">Permiso de acceso&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left"> 
+																														                	   	   	   		  	  		<SELECT name="rank" id="rank" class="input" style="width: 325px;">																														                	   	   	   		  	  		    
+<?
+      if ($gesBD->selectGroups())
+      {
+          $listaGrupos = $gesBD->getObj();
+?>
+											 	 																																									<OPTION value="-3">An&oacute;nimo</OPTION> 		
+<?          
+			}
+	    $cont = 0;
+	    $size = count($listaGrupos);
+	    
+	    for ($cont = 0; $cont < $size; $cont++)
+	    {
+	        $group = $listaGrupos[$cont];
+					$g = $group["group"];	 
+?>
+																														                	   	   	   		  	  				<OPTION value="<?=$g->getId_group()?>"><?=replaceCharsToHTML($g->getName())?></OPTION>																														                	   	   	   		  	  				
+<?			
+			}
+?>																																																	 																																																						 		
+																														                	   	   	   		  	  		</SELECT>
+																																																	</TD>
+																														                	   	   	   		  </TR>																														                	   	   	   		  
+																																															<TR>
+																																                	   	            <TD colspan="2" height="25px"></TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>																													                	   	   	   		  
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2">	
+<?			
+			for ($contc = 0; $contc < $sizec; $contc++)
+			{
+			    $cont = 0;
+			    $encontrado = false;
+			    $cat = $listaCats[$contc];
+			    $listaThemes = $cat->getThemes();
+			    $contt = 0;
+			    $sizet = count($listaThemes);
+			    for ($contt = 0; $contt < $sizet; $contt++)
+			    {
+			        $theme = $listaThemes[$contt];
+?>
+<INPUT type="hidden" id="<?=$theme->getTitle()?>" name="<?=$theme->getTitle()?>" value="<?=$theme->getComment()?>" />	
+<?			        
+					}
+			}
+?>																																																	 													                	   	            		
+																																																			<INPUT class="button" type="button" name="Editar" value="Editar" onClick="valFormEditTheme()" />
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   	 </TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																								 <TR>
+																																								     <TD>
+																																												 </FORM>
+																																										 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																							 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="15px"></TD>
+																																	</TR>																										
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																											 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("../templates/Default/str/admin_footer.str"); ?>														 		 

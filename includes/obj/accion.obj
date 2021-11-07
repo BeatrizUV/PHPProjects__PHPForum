@@ -1,0 +1,95 @@
+<?		
+	  /**
+     * Clase que se encarga de elegir el tipo de accion a realizar.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class Accion{       			    
+            
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function Accion()
+				{                             
+        }   
+        
+        /**
+         * Metodo que se encarga de crear la accion necesaria.         
+         */
+        function getAccion($admin_email, $forum_title, $forum_path, $act)
+				{
+            $accion = null;           
+            
+            if (($act == null) || ($act == ""))
+            {
+               // accion predeterminada
+               $act = "ShowForum";
+						}
+						
+						// Se ejecuta la acción determinada
+						switch($act)
+						{
+						    case "ShowForum": $accion = new ShowForum();
+						                      break; 
+  							case "SessionLogin": $accion = new SessionLogin();
+						                         break;
+						    case "SessionAdminLogin": $accion = new SessionAdminLogin();
+						                         			break;                     
+								case "SessionLogout": $accion = new SessionLogout();
+						                          break;																											                      
+						    case "Navigate": $accion = new Navigate($act);
+						                     break;								
+								case "CreateUser": $accion = new CreateUser($admin_email, $forum_title, $forum_path);
+						                       break;
+                case "NewPass": $accion = new NewPass($admin_email, $forum_title, $forum_path);
+						                    break;						                      
+						    case "ShowAllAsRead": $accion = new ShowAllAsRead();
+						                          break;
+						    case "ShowConnectedUsers": $accion = new ShowConnectedUsers();
+						                          		 break;                      
+							  case "ShowUsers": $accion = new ShowUsers();
+						                      break;
+						    case "ShowUser": $accion = new ShowUser();
+						                     break;
+								case "ShowTheme": $accion = new ShowTheme();
+						                      break;
+								case "ShowPost": $accion = new ShowPost();
+						                     break;
+								case "CreatePost": $accion = new CreatePost();
+						                       break;
+								case "EditPost": $accion = new EditPost();
+						                     break; 									  									  																	 									                  
+						    case "DeletePost": $accion = new DeletePost();
+						                     	 break;                   
+						    case "EditUser": $accion = new EditUser($admin_email, $forum_title, $forum_path);
+						                     break;                  
+								case "ShowGroups": $accion = new ShowGroups();
+						                       break;
+						    case "ShowMPs": $accion = new ShowMPs();
+						                    break;
+								case "ShowMP": $accion = new ShowMP();
+						                   break;
+						    case "ShowMsg": $accion = new ShowMsg();
+						                    break;
+								case "CreateMsg": $accion = new CreateMsg();
+						                      break;
+								case "EditMsg": $accion = new EditMsg();
+						                    break; 								    									 								                  
+						    case "DeleteMsg": $accion = new DeleteMsg();
+						                    break;                
+								case "CreateMP": $accion = new CreateMP();
+						                     break;
+								case "DeleteMP": $accion = new DeleteMP();
+						                     break; 									             									                  									                  
+								case "Finder": $accion = new Finder();
+						                   break;
+								case "VoteUser": $accion = new VoteUser();
+						                   	 break;
+								case "AlertUser": $accion = new AlertUser();
+						                   		break;  									  							   									  										  									                
+								default: $accion = new ShowForum();						                     																										                  
+						}		
+						
+						return $accion; 
+        }      
+    }
+?>

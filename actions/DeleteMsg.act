@@ -1,0 +1,148 @@
+<? 
+	/**
+   * Clase que se encarga de borrar mensajes.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class DeleteMsg
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_post.str";
+			// Variable que guarda el error
+			var $error;
+			
+			// Constructor de la clase
+			function DeleteMsg()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{			   						
+			    // Se recoge la id del mensaje
+					$id_msg = $_GET["id"];	
+					if (isset($_SESSION["haySesion"]))
+					{	    
+					    // Si hay sesión
+					    // Se recogen el id del post padre y el indicador de último mensaje del mensaje enviado
+					    $query = "SELECT id_post, is_last FROM phpforum_msgs WHERE id_msg LIKE ".$id_msg." AND is_first LIKE 0";
+					    $variables[0] = "id_post";
+					    $variables[1] = "is_last";
+							if ($gesBD->selectMore($query, $variables))
+							{
+							    // Si existe el mensaje
+							    $filas = $gesBD->getObj();
+							    $fila = $filas[0];
+							    $id_post = $fila[0];
+							    $is_last = $fila[1];
+							    
+							    if ($is_last == 1)
+							    {
+							        // Si el mensaje a borrar es el último mensaje del post
+							        // Se busca el mensaje inmediatamente anterior
+							        $query = "SELECT MAX(id_msg) FROM phpforum_msgs WHERE id_post LIKE ".$id_post." AND is_last LIKE 0";
+											if ($gesBD->selectOne($query, "MAX(id_msg)"))
+									    {
+									        // Si existe el mensaje
+									        // Se recoge el mensaje
+									        $id_lastMsg = $gesBD->getObj();
+											}
+											else
+											{
+											    // Si no existe el mensaje
+											    // Se redirige al usuario a la página de error
+											    header("Location: error.php");
+											}							        
+									}
+									else
+									{
+									    // Si el mensaje a borrar no es el último mensaje del post
+									    // Buscamos el último mensaje del post
+									    $query = "SELECT id_msg FROM phpforum_msgs WHERE id_post LIKE ".$id_post." AND is_last LIKE 1";
+											if ($gesBD->selectOne($query, "id_msg"))
+									    {
+									        // Si existe el mensaje
+									        // Recogemos el mensaje
+									        $id_lastMsg = $gesBD->getObj();
+											}
+											else
+											{
+											    // Si no existe
+											    // Se redirige al usuario a la página de error
+											    header("Location: error.php");
+											}									    
+									}								
+									
+							    // Se elimina el mensaje a borrar
+							  	$query = "DELETE FROM phpforum_msgs WHERE id_msg LIKE ".$id_msg;							    
+							    if ($gesBD->delete($query))
+							    {
+							        // Si se elimina
+							        // Se actualiza el último mensaje extraido y se establece su identificador de último mensaje a 1 
+							        $query = "UPDATE phpforum_msgs SET is_last = 1 WHERE id_msg LIKE ".$id_lastMsg;
+							        $gesBD->update($query);
+							        // Se actualiza el número total de mensajes y el id del último mensaje del post padre
+							        $query = "UPDATE phpforum_posts SET total_msgs = (total_msgs - 1), id_last_msg = ".$id_lastMsg." WHERE id_post LIKE ".$id_post;
+							        $gesBD->update($query);
+							        // Se busca el id del tema del post padre
+							        $query = "SELECT id_theme FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+							        if ($gesBD->selectOne($query, "id_theme"))
+							        {
+							            // Si existe el tema
+							            // Se recoge el id del tema
+							            $id_theme = $gesBD->getObj();
+							            // Se actualiza el número total de mensajes y el id del último mensaje del tema padre
+							            $query = "UPDATE phpforum_themes SET total_msgs = (total_msgs - 1), id_last_msg = ".$id_lastMsg." WHERE id_theme LIKE ".$id_theme;
+							        		$gesBD->update($query);
+											}							        
+											// Se indica que todo hay ido bien
+							        $val = true;
+							        // Y se redirige al usuario al post desde el que ha solicitado la acción
+							        header("Location: index.php?accion=ShowPost&id=".$id_post);
+									}
+									else								
+									{
+									    // Si el mensaje no se ha eliminado
+									    // Se redirige al usuario al post desde el que ha solicitado la acción
+									    header("Location: index.php?accion=ShowPost&id=".$id_post);
+									}  
+							}
+							else								
+							{
+							    // Si no existe el mensaje a borrar
+							    // Se redirige al usuario a la página de error
+							    header("Location: error.php");
+							}
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realiazada
+			function getAct() {
+			}
+	}
+?>

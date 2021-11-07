@@ -1,0 +1,63 @@
+<HTML>
+		<HEAD>
+		      <TITLE>Vista previa</TITLE>
+					<STYLE>
+						  BODY {
+						       background-color: #C0C0C0;
+									 color: #4F4F4F;
+				           font-size: 11px;
+				           font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+				           padding: 5px;				           
+								 	 scrollbar-arrow-color: #FFFFFF;
+									 scrollbar-3dlight-color: #FFFFFF;
+									 scrollbar-darkshadow-color: #FFFFFF;
+									 scrollbar-face-color: #C0C0C0;
+									 scrollbar-highlight-color: #C0C0C0;
+									 scrollbar-shadow-color: #C0C0C0;
+									 scrollbar-track-color: #C0C0C0;
+									 CURSOR: default;
+				      }
+				      .tabla_cita {
+							    width: 350px; padding: 5px; border-spacing: 0px; text-align: left; height: 50px; 
+									vertical-align: bottom; font-size: 10px;
+							}
+							.celda_cita {
+							    background-color: #D0D0D0; border: #FFFFFF 1px double; padding: 5px; 
+									text-align: left; vertical-align: top; font-size: 10px; color: #787878;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+							} 
+					</STYLE>
+					<SCRIPT>
+					    function resizeImg(imgname)
+							{
+							    var w = document.getElementById(imgname).width;
+							    var h = document.getElementById(imgname).height;
+							    if (w > 270)
+							    {
+							        document.getElementById(imgname).width = "270";
+									}  
+									else if (h > 375)
+									{
+									    document.getElementById(imgname).height = "375";
+									}  				
+							}
+					</SCRIPT>
+		</HEAD>
+		<BODY leftmargin="0" rightmargin="0">	
+<?
+  // Se recoge el texto a previsualizar
+	$texto = $_POST["texto"];
+	if (!empty($texto))
+	{
+	    $texto = replaceBBCodeToHTML(replaceCharsToHTML($texto));
+	    $texto = str_replace("\'", "'", $texto);
+	}
+	else
+	{
+	    $texto = "&nbsp;";
+	}
+	// Y se muestra
+?>
+         <?=$texto?>
+	  </BODY>
+</HTML>

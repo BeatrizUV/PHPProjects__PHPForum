@@ -1,0 +1,147 @@
+<?   
+  /**
+   * Clase que se encarga de loguear al administrador.
+   * By Beatriz Urbano Vega [Masane].
+   */
+  class SessionAdminLogin
+	{
+	    // Variable que guarda el modelo
+	    var $modelo;
+	    // Variable que guarda la vista
+	    var $vista = "admin_login.str";
+	    // Variable que guarda el error
+	    var $error;
+	    
+	    // Constructor de la clase
+	    function SessionAdminLogin() {
+			}
+	    
+	    // Función que ejecuta el código de la acción requerida
+	    function ejecutar($gesBD)
+			{			    
+			    $val = false;			    
+			    
+					if (isset($_SESSION["haySesion"]))
+					{
+					    // Si hay sesión
+					    // Recogemos de la sesión el usuario conectado
+					    $user = unserialize($_SESSION["userlog"]);
+					    if (isset($_GET["admin"]))
+					    {
+					        // Si el indicador de administrador tiene algún valor
+					        // Se recogen el login y la clave enviados
+					        $login = $_POST["login"];
+									$passwd = $_POST["passwd"];
+									
+									// Se validan los datos			
+									$this->error = valFormLogin($login, $passwd);
+									if ($this->error == null)
+									{
+									    // Si el login y la clave contienen datos
+									    // Se busca el usuario con esos datos
+											$query = "SELECT * FROM phpforum_users WHERE login LIKE '".$login."' AND passwd LIKE '".md5($passwd)."' AND rank LIKE -2";
+										
+											if ($gesBD->selectUser($query))
+											{   		
+											    // Si existe el usuario
+													// Se recoge el usuario					            				    				 
+													$user = $gesBD->getObj();
+													
+													if ($user->getIs_banned() == 0)
+													{
+													    // Si no está baneado
+													    if ($login == $user->getLogin())
+													    {		
+													        // Si el login enviado coincide con el login del usuario conectado
+													        if ($user->getIp() != $_SERVER["REMOTE_ADDR"])
+																	{
+																	    // Si la ip actual del usuario es diferente de la ip registrada en la base de datos
+																	    // Se actualiza la ip del usuario
+																	    $query = "UPDATE phpforum_users SET ip = '".$_SERVER["REMOTE_ADDR"]."' WHERE id_user LIKE ".$user->getId_user();
+																	    $gesBD->update($query);
+																	    $user->setIp($_SERVER["REMOTE_ADDR"]);
+																	}   
+																	
+																	// Se guarda el usuario en la sesión
+															    $_SESSION["userlog"] = serialize($user);
+															    // Se indica que hay sesión
+															    $_SESSION["haySesion"] = "si";
+															    // Se indica que hay sesión de administrador
+															    $_SESSION["haySesionAdmin"] = "si";
+															    
+															    // Y se redirige al usuario al panel de administración
+															    echo "<SCRIPT>";																	    
+																	echo "window.opener.location.href='admin/index.php';";
+																	echo "window.close();";																			
+																	echo "</SCRIPT>";
+															}
+															else
+															{
+															    // Si el login enviado no coincide con el del usuario conectado
+															    // Se indica que no puede acceder al panel de administrador con otro usuario que no sea con el que está conectado y que no sea administrador
+															    $this->error = "No puede acceder al panel de administraci&oacute;n con otro usuario que no sea el mismo con el que est&aacute; conectado.";
+													    }													    
+													}
+													else
+													{
+													    // Si el usuario está baneado
+													    // Se indica que el usuario está baneado
+													    $this->error = "No puede conectarse debido a que est&aacute; baneado.";
+															$this->error .= "<BR>Para m&aacute;s informaci&oacute;n contacte con el administrador del foro.";
+															// Y se desconecta al usuario
+													    echo "<SCRIPT>";																	    
+															echo "window.opener.location.href='index.php?accion=SessionLogout';";
+															echo "window.close();";																			
+															echo "</SCRIPT>";
+													}
+											}
+											else
+											{
+											    // Si el usuario no existe
+											    // Se indica que el usuario con el que está intentando conectarse el usuario no existe
+											    $this->error = "El usuario que ha indicado no es administrador.<BR>Compruebe su <B>LOGIN</B> y su <B>CLAVE</B>";
+											}
+									}
+							}
+							else
+							{
+							    // Si el indicador de administrador no tiene ningún valor
+							    // Se cierra la ventana
+							    echo "<SCRIP>";
+							    echo "window.close();";
+							    echo "</SCRIPT>";
+							}		
+					}		
+					else
+					{			
+					    // Si no hay sesión
+					    // Se cierra la ventana
+					    echo "<SCRIP>";
+					    echo "window.close();";
+					    echo "</SCRIPT>";
+					}
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+	  			return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}	
+?>

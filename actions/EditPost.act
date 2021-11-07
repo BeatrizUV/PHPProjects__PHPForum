@@ -1,0 +1,153 @@
+<? 
+	/**
+   * Clase que se encarga de editar posts.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class EditPost
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_writeMsg.str";
+			// Variable que guarda el error
+			var $error;		
+			
+			// Constructor de la clase
+			function EditPost()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{		
+			    // Se recogen los valores enviados
+					$is_fixed = $_GET["pin"];
+					$status = $_GET["status"];
+					$flag = true;	
+					
+					if (isset($_SESSION["haySesion"]))
+					{
+					    // Si hay sesión
+					    if ((!isset($is_fixed)) && (!isset($status)))
+							{
+							    // Si ni se quiere fijar/defijar ni abrir/cerrar el post
+							    // Se recogen los valores enviados
+							    $body = $_POST["body"];
+							    $title = $_POST["ptitle"];
+							    $id_post = $_SESSION["idpost"];
+							    
+							    // Se validan los datos
+							    $this->error = valFormPost($title, $body);
+							    
+							    if ($this->error == null)
+									{			
+									    // Si los datos tiene algún valor
+									    // Se actualiza el título del post
+									    $query = "UPDATE phpforum_posts SET title = '".$title."' WHERE id_post LIKE ".$id_post;									    							    
+									    if ($gesBD->update($query))
+									    {
+									        // Si se ejecuta correctamente
+									        // Se actualiza el cuerpo del primer mensaje del post
+									        $query = "UPDATE phpforum_msgs SET body = '".$body."' WHERE id_post LIKE ".$id_post." AND is_first LIKE 1";
+									        if ($gesBD->update($query))
+									        {									            
+									            // Si se actualiza bien
+									            // Se indica que todo ha ido bien
+									            $val = true;							       
+									            // Se eliminan los datos generados de la edición de la sesión
+											        unset($_SESSION["idpost"]);											        
+															unset($_SESSION["actSesion"]);	
+															unset($_SESSION["datos"]);						        
+															// Y se redirige al usuario al post desde el que ha solicitado la acción
+											        header("Location: index.php?accion=ShowPost&id=".$id_post);
+													}
+													else
+													{
+													    // Si no se actualiza correctamente
+													    // Se redirige al usuario a la página de error
+													    header("Location: error.php");
+													}
+											}
+											else
+											{
+											    // Si no se actualiza correctamente
+											    // Se redirige al usuario a la página de error
+											    header("Location: error.php");
+											}	
+									}
+									else
+									{
+									    // Si los datos no tiene ningún valor
+									    // Se indica
+									    $flag = false;							    
+								  }	
+							}
+							else
+							{
+							    // Si sí se quiere fijar/desfijar o abrir/cerrar el post
+							    // Se recoge la id
+							    $id_post = $_GET["id"];
+							    if (isset($is_fixed))
+							    {
+							        // Si se quiere fijar/desfijar el post
+							        // Se actualiza el post
+							        $query = "UPDATE phpforum_posts SET is_fixed = ".$is_fixed." WHERE id_post LIKE ".$id_post;							      
+							        $gesBD->update($query);
+									}
+									else if (isset($status))
+									{
+									    // O si lo que se quiere es abrir/cerrar el post
+									    // Se actualiza el post
+									    $query = "UPDATE phpforum_posts SET status = ".$status." WHERE id_post LIKE ".$id_post;									   
+							        $gesBD->update($query);
+									}
+									
+									// Se recoge el id del tema padre del post 
+									$query = "SELECT id_theme FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+									if ($gesBD->selectOne($query, "id_theme"))
+									{
+									    // Si existe el tema
+									    // Se redirige al usuario al tema desde el que solicitó la acción
+									    header("Location: index.php?accion=ShowTheme&id=".$gesBD->getObj());
+									}									
+									else
+									{
+									    // Si no existe el tema
+									    // Se redirige al usuario a la página de error
+									    header("Location: error.php");
+									}
+							}
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}
+?>

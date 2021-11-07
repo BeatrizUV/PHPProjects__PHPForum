@@ -1,0 +1,96 @@
+<?
+  /**
+   * Clase que se encarga de eliminar grupos de usuarios del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class DeleteGroup
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_deleteGroup.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function DeleteGroup(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	 				     				     
+				     // Si hay sesión de administrador
+				     // Se recoge el id del grupo
+				     $id_group = $_POST["rank"];
+				     		
+				     // Se recoge el nombre		
+		         $query = "SELECT name FROM phpforum_ranks WHERE id_rank LIKE ".$id_group;
+		         if ($gesBD->selectOne($query, "name"))
+		         {
+		             // Si existe el grupo
+		             // Se recoge el nombre
+		             $name = $gesBD->getObj();
+		             // Se elimina el grupo
+		             $query = "DELETE FROM phpforum_ranks WHERE id_rank LIKE ".$id_group;
+		             if ($gesBD->delete($query))
+		             {
+		                 // Se actualizan todos los usuarios que pertenezcan al grupo eliminado y se establece para ellos como nuevo grupo el de "Usuario"
+		                 $query = "UPDATE phpforum_users SET rank = 1 WHERE rank LIKE ".$id_group;
+		                 $gesBD->update($query);
+		                 // Se indica el éxito de la operación mediante un mensaje emergente y se redirige al usuario a la página de eliminar grupos
+		                 echo "<SCRIPT>";
+		                 echo "alert('Grupo \"".$name."\" eliminado correctamente.');";
+		                 echo "location.href='index.php?accion=ShowGroups&pagina=admin_deleteGroup';";
+		                 echo "</SCRIPT>";
+								 }
+								 else
+								 {
+								     // Si no se elimina correctamente
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");	
+								 }
+						 }
+						 else
+						 {
+						     // Si no existe el grupo
+						     // Se redirige al usuario a la página de error
+						     header("Location: error.php");	
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

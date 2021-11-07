@@ -1,0 +1,249 @@
+<? include("templates/Default/str/header.str"); ?>
+<SCRIPT type="text/javascript" src="includes/js/editorWysiwyg.js">
+    // Variable para la selección de texto del textarea
+    var sel;
+    var campo = "body";
+</SCRIPT>
+<SCRIPT>
+// Función para redimensionar imágenes
+function resizeImg(imgname)
+{
+    var w = document.getElementById(imgname).width;
+    if (w > 350)
+    {
+        document.getElementById(imgname).width = "350";
+		}    				
+}
+
+// Función para generar una vista previa del mensaje
+function vistaPrevia()
+{
+    document.getElementById('texto').value = document.getElementById('body').value;
+    document.getElementById("fpreview").submit();
+}
+
+// Función para buscar un usuario
+function findUser()
+{
+ 		window.open("index.php?accion=ShowUsers&pagina=user_finder", "userFinder", "width=350px,height=525px,top=50px,left=450px,scrollbars=no,resizable=no,directories=no,location=no,menubar=no,status=no,toolbar=no");		 
+}
+</SCRIPT>
+<?	
+   // Página para crear mps y que mustra los datos del usuario al que se responde 
+  $error = $modelo["error"];
+     
+	if (isset($_GET["act"]))
+	{
+	    if ($_GET["act"] == "responder")
+	    {   
+	        if (isset($error))
+	        {
+	            $mp = unserialize($_SESSION["mpToResponse"]);
+					}
+					else
+					{
+					    $mp = $modelo["modelo"];					    
+					    $_SESSION["mpToResponse"] = serialize($mp);
+					}
+	        
+	        $titleRe = $mp->getTitle();
+			    $titleRe = replaceCharsToHTML($titleRe);
+			    if (ereg("RE: ", $titleRe))
+					{
+					    $titleRe = substr($titleRe, 4, strlen($titleRe));
+					}
+					else
+					{
+					    $titleRe = "RE: ".$titleRe;
+					}
+			    $bodyRe = $mp->getBody();								    
+	        $box = $_GET["box"];
+	        if ($box == "in")
+			    {
+			        $userReceptor = $mp->getFrom();			        
+			        $responseTo = $userReceptor->getLogin();  			             
+			    }		
+			    else if ($box == "out")
+			    {			        
+			        $userReceptor = $mp->getTo();
+			        $responseTo = $userReceptor->getLogin();			        
+			    }
+			    
+			    $bodyRe = "[QUOTE=".$responseTo."]".$bodyRe."[/QUOTE]";
+			    $responseTo = replaceCharsToHTML($responseTo);
+			}
+			else if ($_GET["act"] == "responderUser")
+			{
+			    $query = "SELECT login FROM phpforum_users WHERE id_user LIKE ".$_GET["idu"];
+			    if ($gesBD->selectOne($query, "login"))
+			    {
+			        $responseTo = $gesBD->getObj();
+			        $responseTo = replaceCharsToHTML($responseTo);
+					}
+			}
+	}
+?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>																														
+																											   <TD width="25px"></TD>
+ 	 																										   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR>
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Escribiendo un Mensaje Privado
+																																			</TD>																																			
+																																	</TR>	
+<?  
+	if (isset($error))	
+	{		    
+?> 
+	 																																<TR>
+   																																    <TD colspan="3" height="10px"></TD>
+																																	</TR>	
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+																																	</TR>																																																																
+<?	  	    	    	
+	}	
+?>																																	
+                                                                  <TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																																				   <TABLE class="tabla_acoplada">												                			       
+																										                			       <TR>
+																														                	   	   <TD>
+																														                	   	   		 <FORM action="index.php?accion=CreateMP" method="POST" name="formCreateMP" id="formCreateMP">																																						             																																																																						
+																				                                             </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>																														                	   	   	   
+																														                	   	   	   <BR>Para mandar un mensaje privado, debe rellenar el siguiente formulario:
+																														                	   	   </TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD height="10"></TD>
+																														                	   </TR>
+																														                	   <TR>
+																														                	   	   <TD>													                	   	   	   							   
+																														                	   	   	   <TABLE class="tabla_acoplada">																														                	   	   	        
+																														                	   	   	   		  <TR>
+																																													 		    <TD colspan="2" height="10px"></TD>																														                	   	   	   		  	  
+																														                	   	   	   		  </TR>
+														  															  						 			 				      <TR>
+																																													 		    <TD class="align_right" width="123px">Asunto&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="378px"> <INPUT class="input" type="text" name="mptitle" id="mptitle" value="<?=$titleRe?>" maxlength="50" size="34"/></TD>
+																														                	   	   	   		  </TR>
+																														                	   	   	   		  <TR>
+																														                	   	   	   		  	  <TD class="align_right" width="123px">Para&nbsp;&nbsp;:&nbsp;&nbsp;</TD>
+																														                	   	   	   		  	  <TD class="align_left" width="378px"> <INPUT class="input" type="text" name="to" id="to" value="<?=$responseTo?>" maxlength="15" size="34"/> <INPUT class="button" type="button" name="findTo" id="findTo" value="Buscar" onClick="findUser()"/></TD>
+																														                	   	   	   		  </TR>			
+																																															<TR>
+																																													 		    <TD colspan="2" height="10px"></TD>																														                	   	   	   		  	  
+																														                	   	   	   		  </TR>	 																											    								  						
+																														                	   	   	   		  <TR>
+																																																	<TD colspan="2" class="celda_acoplada">
+																																																	    Mensaje&nbsp;&nbsp;:
+																																																	    <TABLE class="tabla_acoplada">
+																																																	    		<TR>	
+																																																					    <TD style="width: 15px;"></TD>																																																    				
+																																																	    				<TD style="width: 500px;">
+																																																	    				    <TABLE class="celda_profile" style="width: 500px; padding: 10px;">
+																																																											<TR>
+																																																													<TD style="height: 10px;"></TD>																																																	
+																																																											</TR>																																																			        	
+																																																											<TR>
+																																																													<TD class="celda_acoplada" style="text-align: center;">																																																													    
+																																																													    <TABLE class="tabla_acoplada" style="width: 500px;">
+																																																													        <TR>
+																																																													            <TD class="tabla_marco_foro" style="text-align: left; height: 150px; width: 500px;">																																																													            		
+																																																													                <IFRAME name="preview" id="preview" src="index.php?accion=Navigate&destino=preview" style="overflow-x: hidden;" width="500px" height="150px" marginwidth="0" marginheight="5" frameborder="0" scrolling="auto"></IFRAME>
+																																																													            </TD>																																																													            
+																																																																	</TR>
+																																																															</TABLE>																																																														
+																																																													</TD>																																																	
+																																																											</TR>		
+																																																											<TR>
+																																																													<TD style="height: 10px;"></TD>																																																	
+																																																											</TR>	
+																																										                	   	   	   		  <TR>																														                	   	   	   		  	  
+																																										                	   	   	   		  	  <TD class="celda_acoplada" >
+																																										                	   	   	   		  	     <TABLE class="tabla_acoplada">
+																																						                	   	   	   		  	     				     <TR>
+																																						                	   	   	   		  	     				     		 <TD class="align_center">																																																								 		
+																																																																				 <? $field = "body";?>																									                	   	   	   		  	     				     		     
+																																																																		     <? include("templates/Default/str/bbc_menu.str"); ?>																										                	   	   	   		  	     				     		 
+																																						                	   	   	   		  	     				     		 </TD>
+																																						                	   	   	   		  	     				     </TR>
+																																																																 <TR>	 
+																																						                	   	   	   		  	     				     		 <TD class="align_center">																										                	   	   	   		  	     				     		     
+																																						                	   	   	   		  	     				     		     <TEXTAREA class="input_textarea" name="body" id="body" rows="10" cols="100" style="width: 500px;" wrap="virtual"><?=$bodyRe?></TEXTAREA></FORM>																																						                	   	   	   		  	     				     		     
+																																						                	   	   	   		  	     				     		     <FORM method="post" name="fpreview" id="fpreview" action="index.php?accion=Navigate&destino=preview" target="preview">
+																																																																						 <INPUT type="hidden" name="texto" id="texto" value="" />
+																																																																						 <INPUT type="button" name="ver" class="button" value="Vista Previa" onClick="vistaPrevia()" />&nbsp;&nbsp;<INPUT class="button" onClick="document.getElementById('body').value=''" type="button" name="boton" value="Borrar" />
+																																																																				 </FORM>	
+																																						                	   	   	   		  	     				     		 </TD>
+																																						                	   	   	   		  	     				     </TR>
+																																										                	   	   	   		  	     </TABLE>																																																		 
+																																																													</TD>	 
+																																										                	   	   	   		  </TR>
+																																																							    </TABLE>
+																																																							</TD>	
+																																																							<TD style="width: 15px;"></TD>																																																		    				
+																																																					</TR>	 
+																																																	    </TABLE>
+																																																	</TD>
+																																															</TR>																														                	   	   	   		 																											                	   	   	   		  
+																																					                	  <TR>
+																																                	   	            <TD class="align_center" colspan="2">	 																															                	   	            		
+																																																			<INPUT class="button" type="button" onClick="valFormCreateMP()" name="Aceptar" value="Aceptar" />
+																																																	</TD>            	   	   	   		  	  
+																																						   	   	   		    </TR>
+																																						   	   	   		</TABLE>    
+																																								 		 </TD>
+																																								 </TR>
+																																					 </TABLE>																																																				 							 							    		
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>										
+																										 <TR>
+								       		 													 		 <TD height="10" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>	

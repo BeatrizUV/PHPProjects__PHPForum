@@ -1,0 +1,128 @@
+<?
+  /**
+   * Clase que se encarga de eliminar estilos para el foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class DeleteTemplate
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_templates.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function DeleteTemplate(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	 				 
+				     // Si hay sesión de administrador
+						 // Se recoge el nombre del template    				     
+				     $name = $_POST["templateToDelete"];
+				     		
+				     // Se comprueba que el template no esté activo		
+		         $query = "SELECT name FROM phpforum_templates WHERE name LIKE '".$name."' AND is_active LIKE 1";
+		         if (!$gesBD->selectOne($query, "name"))
+		         {
+		             // Si no lo está
+								 // Se elimina 
+		             $query = "DELETE FROM phpforum_templates WHERE name LIKE '".$name."'";
+				         if ($gesBD->delete($query))
+				         {
+				             // Si se elimina correctamente
+				             // Se elimina del servidor
+				             if (deleteTemplateDir($name))
+				             {
+				                 // Si se elimina correctamente
+				                 // Se indica
+				                 $val = true;
+										 }
+										 else
+										 {
+										     // Si no se elimina correctamente
+										     // Se vuelve a insertar el template en la base de datos
+										     $query = "INSERT INTO phpforum_templates (name) VALUES ('".$name."')";
+								         if ($gesBD->insert($query))
+								         {
+								             // Si se inserta correctamente
+								             // Se indica que no se ha podido eliminar el template mediante un mensaje de error
+												     $this->error = "No se ha podido eliminar el estilo.";
+												 }
+												 else
+												 {
+												     // Si no se inserta correctamente
+												     // Se redirige al usuario a la página de error
+												     header("Location: error.php");
+												 }    
+										 }
+										 
+										 // Se listan los templates
+										 if ($gesBD->listarTemplates())
+										 {
+										     // Si se lista correctamente
+										     // Se guardan los templates en el modelo
+										     $this->modelo = $gesBD->getObj();
+										     // Y se eliminan los datos relacionados con los templates de la sesión
+										     unset($_SESSION["templates"]);
+										 }
+										 else
+										 {
+										     // Si no se listan correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");
+										 }
+								 }
+								 else
+								 {
+								     // Si no se elimina correctamente
+								     // Se redirige al usuario a la página de error
+								     header("Location: error.php");
+								 }
+						 }
+						 else
+						 {
+						     // Si el template sí está activado
+						     // Se indica mediante un mensaje de error
+						     $this->error = "No puede eliminar el estilo que est&aacute; siendo utilizado en el foro actualmente.";
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+				     // Se redirige al usuario a la página de inicio del foro
+				     header("Location: ../index.php");
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

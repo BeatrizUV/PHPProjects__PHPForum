@@ -1,0 +1,489 @@
+<?   
+  /**
+   * Clase que se encarga de editar un usuario.
+   * By Beatriz Urbano Vega [Masane].
+   */ 
+	class EditUser
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_edituser.str";
+			// Variable que guarda el error
+			var $error;
+			
+			// Constructor de la clase
+			function EditUser() 
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{			   
+			    // Se recogen los valores enviados 			    			    
+					$login = $_POST["login"];
+					$opasswd = $_POST["old_passwd"];
+					$npasswd = $_POST["new_passwd"];
+					$npasswd2 = $_POST["new_passwd2"];
+					$name = $_POST["name"];
+					$email = $_POST["email"];
+					$msn = $_POST["msn"];
+					$web = $_POST["web"];					
+					$avatarFile = $_FILES["avyfile"];
+					$avatarUrl = $_POST["avyurl"];
+					$id = $_GET["id"];
+					$sex = $_POST["sex"];		
+					$site = $_POST["site"];	
+					$sign = $_POST["sign"];															
+					$flag = true;				
+					$cont = 0;				
+					$deleteAvatar = false;	
+					$newPasswd = false;
+										
+					if (isset($_SESSION["haySesion"]))
+					{
+					    // Si hay sesión
+					    // Se recoge el usuario conectado de la sesión
+					    $user = unserialize($_SESSION["userlog"]);
+					    if (!empty($id))
+					    {
+					        // Si la id tiene algún valor
+					        if ($id != $user->getId_user())
+							    {	
+							        // Si la id no es la misma que la del usuario conectado
+							        if ($user->getRank() != -2)
+									    {
+									        // Si el usuario no es administrador
+									        // Se redirige al usuario a la página de inicio del foro
+									        header("Location: index.php");									        
+											}
+									}
+									else
+									{
+									    // Si la id es la misma que la del usuario conectado
+									    if (!empty($opasswd))
+									    {
+											    // Si la clave actual tiene algún valor					        
+									        if ($user->getPasswd() != md5($opasswd))
+									        {		
+									            // Si la clave actual no es la misma que la clave del usuario conectado
+									            // Se indica mediante un mensaje de error
+													    $flag = false;
+													    $this->error = "<B>CLAVE ACTUAL</B> incorrecta.";
+													}
+									    }
+									    else
+									    {
+									        // Si la clave actual no tiene ningún valor
+									        // Se indica mediante un mensaje de error
+									        $flag = false;
+													$this->error = "Debe introducir su <B>CLAVE ACTUAL</B>.";
+											}
+									}
+									
+									// Si no ha habido ningún error
+									if ($flag)
+									{
+									    // Se monta el query para la actualización del usuario
+									    $query = "UPDATE phpforum_users SET";
+									    $n = 0;
+											/***** Chequeamos los campos *****/
+											// Chequeamos el login
+											if (!empty($login))
+											{											    
+									        if ($id == $user->getId_user())
+									        {
+									            if ($login != $user->getLogin())
+									            {
+									                $query .= " login = '".$login."',";
+											            $n++;
+															}
+													}
+													else
+													{
+													    if ($user->getRank() == -2)
+													    {
+													        $query2 = "SELECT id_user FROM phpforum_users WHERE login LIKE ".$login;
+													        if ($gesBD->selectOne($query, "id_user"))
+													        {
+													            if ($id != $gesBD->getObj())
+													            {
+													                $flag = false;
+													                $this->error = "El <B>LOGIN</B> que ha indicado ya existe.";
+																			}
+																	}
+																	else
+																	{
+																	    $query .= " login = '".$login."',";
+											                $n++;
+																	}
+															}
+													}																									
+											}
+											
+											// Chequeamos el nombre
+											if (!empty($name))
+											{
+											    $query .= " name = '".$name."',";
+											    $n++;
+											}			
+											
+											// Chequeamos el email
+											if (!empty($email))
+											{
+											    if (valEmail($email))
+											    {
+											        if ($id == $user->getId_user())
+											        {
+											            if ($email != $user->getEmail())
+											            {
+											                $query .= " email = '".$email."',";
+													            $n++;
+																	}
+															}
+															else
+															{
+															    if ($user->getRank() == -2)
+															    {
+															        $query2 = "SELECT id_user FROM phpforum_users WHERE email LIKE ".$email;
+															        if ($gesBD->selectOne($query, "id_user"))
+															        {
+															            if ($id != $gesBD->getObj())
+															            {
+															                $flag = false;
+															                $this->error = "El <B>E-MAIL</B> que ha indicado ya existe.";
+																					}
+																			}
+																			else
+																			{
+																			    $query .= " email = '".$email."',";
+													                $n++;
+																			}
+																	}
+															}
+													}
+													else
+													{
+													    $flag = false;
+					                		$this->error = "<B>E-MAIL</B> incorrecto.";
+													}
+											}										
+											
+											// Chequeamos la situación
+											if (!empty($site))
+											{											   
+											    $query .= " site = '".$site."',";
+											    $n++;
+											}					
+											
+											// Chequeamos el msn
+											if (!empty($msn))
+											{
+											    $query .= " msn = '".$msn."',";
+											    $n++;
+											}
+											
+											// Chequeamos la firma
+											if (!empty($sign))
+											{
+											    if (strlen($sign) <= 250)
+											    {
+											        $query .= " sign = '".$sign."',";
+											    		$n++;
+													}		
+													else
+													{
+													    $flag = false;
+													    $this->error = "La firma sobrepasa los 250 caracteres.";
+													}									    
+											}				
+											else
+											{
+											    $query .= " sign = '',";
+									    		$n++;
+											}
+											
+											// Chequeamos el sexo
+											if ($sex == "NoSex")
+											{
+											    $query .= " sex = '',";
+											    $n++;
+											}
+											else
+											{
+											    $query .= " sex = '".$sex."',";
+											    $n++;
+											}	
+											
+											// Chequeamos la web
+											if (!empty($web))
+											{
+											    if (substr($web, 0, 7) != "http://")
+											    {
+											        $web = "http://".$web;
+													}
+													
+													$query .= " web = '".$web."',";
+													$n++;
+											}	
+											
+											// Chequeamos la nueva clave
+											if ((!empty($npasswd)) && (!empty($npasswd2)))
+											{
+											    if ($npasswd == $npasswd2)
+											    {
+											        $query .= " passwd = '".md5($npasswd)."',";
+											        $clave = $npasswd;
+											        $newPasswd = true;
+											        $n++;
+													}
+													else
+													{
+													    $flag = false;
+													    $this->error = "Claves nuevas diferentes.";
+													}
+											}
+											/*********************************/								
+											
+											// Chequeamos el avatar desde el pc
+											if (!empty($avatarFile["name"]))
+		  								{  
+									        if (is_uploaded_file($avatarFile["tmp_name"]))
+											    {						   
+											        $this->error = checkAvatar($avatarFile);
+											        if ($this->error == null)
+											        {		   
+															    /***** Buscar el avatar anterior *****/ 
+															    $query2 = "SELECT avatar FROM phpforum_users WHERE id_user LIKE ".$id;
+																	if ($gesBD->selectOne($query2, "avatar"))
+																	{
+																	    $id_avatar = $gesBD->getObj();
+																	    if ($id_avatar != -1)
+																	    {
+																	        $query2 = "SELECT name FROM phpforum_avatars WHERE id_avatar LIKE ".$id_avatar;
+																	        if ($gesBD->selectOne($query2, "name"))
+																	        {
+																	            $avyToDelete = $gesBD->getObj();
+																							$deleteAvatar = true;																	            
+																					}																	        
+																			}
+																	} 
+																	/*************************************/
+																	
+									                $formato = substr($avatarFile["type"],6,strlen($avatarFile["type"]));
+									                
+									                if ($formato == "pjpeg")
+															    {
+															        $formato = "jpg";
+																	}																	
+																	if ($formato == "x-png")
+															    {
+															        $formato = "png";
+																	}
+																	
+									                $avyPath = "users/avatars/";
+									                $avyName = "av_".time().".".$formato;							                
+									            		if (move_uploaded_file($avatarFile["tmp_name"], $avyPath.$avyName))
+									            		{	          		    
+									            		    $query2 = "INSERT INTO phpforum_avatars (name) VALUES ('".$avyPath.$avyName."')";
+									            		    if ($gesBD->insert($query2))
+									            		    {	
+																					$query2 = "SELECT id_avatar FROM phpforum_avatars WHERE name LIKE '".$avyPath.$avyName."'";
+													            		$gesBD->selectOne($query2, "id_avatar");											            		
+																					$avy = $gesBD->getObj();
+									            		        $tipo = "file";
+									            		        $cont++;
+									            		        
+									            		        /***** Borrar el avatar anterior *****/ 
+									            		        if ($deleteAvatar)
+									            		        {
+									            		            $query2 = "DELETE FROM phpforum_avatars WHERE id_avatar LIKE ".$id_avatar;																	        
+																	        		if ($gesBD->delete($query2))
+																							{
+																							    // Esto pa porsi el avatar esta alojado en el servidor ;)
+																							    unlink($avyToDelete);
+																							}
+																					}
+																	        /*************************************/
+																			}
+																			else
+																			{
+																			    $flag = false;
+																			    $this->error = "Ha habido un error al intentar acceder a la base de datos.<BR>Int&eacute;telo m&aacute;s tarde.";
+																			}
+																	}
+																	else
+																	{
+																	    $flag = false;
+																	    $this->error = "No se ha podido copiar la imagen del avatar en el servidor.";
+																	}						            
+															}
+															else
+															{
+															    $flag = false;
+															}
+													}
+											}		
+																						
+											// Chequeamos el avatar desde URL													    
+									    if (!empty($avatarUrl))
+									    {		
+											    if ($cont == 0)
+													{
+													    /***** Borrar el avatar anterior *****/ 
+													    $query2 = "SELECT avatar FROM phpforum_users WHERE id_user LIKE ".$id;
+															if ($gesBD->selectOne($query2, "avatar"))
+															{
+															    $id_avatar = $gesBD->getObj();
+															    if ($id_avatar != -1)
+															    {
+															        $query2 = "SELECT name FROM phpforum_avatars WHERE id_avatar LIKE ".$id_avatar;
+															        if ($gesBD->selectOne($query2, "name"))
+															        {
+															            $avyToDelete = $gesBD->getObj();	
+																					$deleteAvatar = true;															            
+																			}															        
+																	}
+															} 
+															/*************************************/
+																	
+													    $query2 = "INSERT INTO phpforum_avatars (name) VALUES ('".$avatarUrl."')";											        
+											        if ($gesBD->insert($query2))
+											        {	          
+											            $query2 = "SELECT id_avatar FROM phpforum_avatars WHERE name LIKE '".$avatarUrl."'";
+									            		$gesBD->selectOne($query2, "id_avatar");
+									            		$tipo = "url";
+																	$avy = $gesBD->getObj();
+																	
+																	/***** Borrar el avatar anterior *****/ 
+					            		        if ($deleteAvatar)
+					            		        {
+					            		            $query2 = "DELETE FROM phpforum_avatars WHERE id_avatar LIKE ".$id_avatar;																	        
+													        		if ($gesBD->delete($query2))
+																			{
+																			    // Esto pa porsi el avatar esta alojado en el servidor ;)
+																			    unlink($avyToDelete);
+																			}
+																	}
+													        /*************************************/
+															}
+															else
+															{	
+															    $flag = false;
+															    $this->error = "Ha habido un error al intentar acceder a la base de datos.<BR>Int&eacute;telo m&aacute;s tarde.";
+															}
+													}		
+													else
+													{
+													    $flag = false;
+													    $this->error = "No puede ingresar dos avatares.<BR>Debe elegir entre usar uno de su PC o de Internet.";
+													    if (unlink($avyPath.$avyName))
+													    {
+													        $query2 = "DELETE FROM phpforum_avatars WHERE id_avatar LIKE ".$avy;
+																	$gesBD->delete($query2);													    
+															}															
+													}	
+											}				    					    							       
+											 
+											// Si no ha habido errores de chequeo de campos 
+											if ($flag)
+											{					
+											    if ($n > 0)
+													{
+													    // Si hay algún dato que cambiar													    
+													    if (isset($avy))
+													    {
+													        // Si se ha editado el avatar
+													        $query .= " avatar = ".$avy.",";
+															}
+													    $query = substr($query, 0, (strlen($query) - 1));
+													    $query .= " WHERE id_user LIKE ".$id;	
+															
+															// Se actualiza el usuario
+													    if ($gesBD->update($query))
+													    {
+													        // Si se actualiza correctamente
+													        if ($id == $user->getId_user())
+																	{
+																	    // Si la id es la misma que la del usuario conectado
+																	    // Seleccionamos los datos del usuario conectado
+																	    $query = "SELECT * FROM phpforum_users WHERE id_user LIKE '".$id."'";
+																			$gesBD->selectUser($query);											
+																			// Y actualizamos sus datos de la sesión								
+																			$_SESSION["userlog"] = serialize($gesBD->getObj()); 					   
+																	}		                              
+													        
+													        // Eliminamos de la sesión los datos del usuario mostrados en la página de edición del perfil
+													        unset($_SESSION["profileToEdit"]);
+													        
+													        if (($newPasswd) && ($id == $user->getId_user()))
+													        {
+													            // Si el usuario cambia de contraseña y el perfil editado corresponde con el del usuario conectado
+													            // Eliminamos todos los datos de la sesión
+													            session_unset();
+													            // Y cerramos la sesión
+													            session_destroy();
+																	}
+																	// Redirigimos al usuario a la página del perfil del usuario actualizado
+											            header("Location: index.php?accion=ShowUser&id=".$id);								    								    
+															}
+															else
+															{				
+															    // Si no se actualiza correctamente
+																	// Eliminamos cualquier dato asociado a su nuevo avatar							    
+															    if ($tipo == "file")
+															    {															      
+															        if (unlink($avyPath.$avyName))
+																	    {
+																	        $query2 = "DELETE FROM phpforum_avatars WHERE id_avatar LIKE ".$avy;
+																					$gesBD->delete($query2);													    
+																			}	
+																	}
+															    $gesBD->delete($query);
+															    $flag = false;
+															    $this->error = "No se ha podido editar el usuario.<BR>Int&eacute;telo m&aacute;s tarde.";															    
+															}		
+													}											    									    
+											}				
+									}			
+							}	
+							else
+							{
+							    // Si la id no tiene ningún valor
+							    // Se redirige al usuario a la página de inicio del foro
+							    header("Location: index.php");							    
+							}				    
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");					    
+					}
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuele la acción realizada
+			function getAct() {
+			}
+	}
+?>

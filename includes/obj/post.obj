@@ -1,0 +1,176 @@
+<?
+  	/**
+     * Clase que se encarga de encapsular los datos de los posts.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class Post {
+        
+        var $msgs;
+        var $title;        
+        var $id_theme;
+        var $totalMsgs;
+        var $status;
+        var $is_fixed;
+        var $is_read;        
+        var $id_post;	
+				var $lastMsg;
+				var $num_views;
+        
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function Post($id_post, $title, $id_theme, $status, $msgs, $totalMsgs, $is_read, $is_fixed, $lastMsg, $num_views){
+            
+            $this->id_post = $id_post;            
+            $this->title = $title;
+            $this->id_theme = $id_theme;            
+            $this->status = $status;        
+            $this->msgs = $msgs;              
+            $this->totalMsgs = $totalMsgs;            
+            $this->is_read = $is_read;
+            $this->is_fixed = $is_fixed;           
+						$this->lastMsg = $lastMsg;			
+						$this->num_views = $num_views;			
+        }       
+        
+        /**
+         * Metodo que se encarga de asignar la lista de msgs del post.         
+         */
+        function setMsgs($msgs){
+            $this->msgs = $msgs;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el title del post.         
+         */
+        function setTitle($title){
+            $this->title = $title;
+        }  
+        
+        /**
+         * Metodo que se encarga de asignar el numero total de respuestas del post.         
+         */
+        function setTotalMsgs($totalMsgs){
+            $this->totalMsgs = $totalMsgs;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el status del post.         
+         */
+        function setStatus($status){
+            $this->status = $status;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el numero de identificacion del post.         
+         */
+        function setId_post($id_post){
+            $this->id_post = $id_post;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el title del theme al que pertenece el post.         
+         */
+        function setId_theme($id_theme){
+            $this->id_theme = $id_theme;
+        }
+        
+        /**
+         * Metodo que se encarga de asignar el estado de lectura del post.         
+         */
+        function setIs_read($is_read){
+            $this->is_read = $is_read;
+        }
+				
+				/**
+         * Metodo que se encarga de asignar si el post es fijo o no.         
+         */
+        function setIs_fixed($is_fixed){
+            $this->is_fixed = $is_fixed;
+        }    
+				
+				/**
+         * Metodo que se encarga de asignar el id del ultimo mensaje del post.         
+         */
+        function setLastMsg($lastMsg){
+            $this->lastMsg = $lastMsg;
+        }
+				
+				/**
+         * Metodo que se encarga de asignar el numero de vistas mensaje del post.         
+         */
+        function setNum_views($num_views){
+            $this->num_views = $num_views;
+        }      
+        
+        /**
+         * Metodo que se encarga de devolver la lista del msgs del post.         
+         */
+        function getMsgs(){
+            return $this->msgs;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el title del post.         
+         */
+        function getTitle(){
+            return $this->title;
+        }  
+        
+        /**
+         * Metodo que se encarga de devolver el numero total de respuestas del post.         
+         */
+        function getTotalMsgs(){
+            return $this->totalMsgs;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el status del post.         
+         */
+        function getStatus(){
+            return $this->status;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el numero de identificacion del post.         
+         */
+        function getId_post(){
+            return $this->id_post;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el title del theme al que pertenece el post.
+         */
+        function getId_theme(){
+            return $this->id_theme;
+        }
+        
+        /**
+         * Metodo que se encarga de devolver el estado de lectura del post.
+         */
+        function getIs_read(){
+            return $this->is_read;
+        }  
+				
+				/**
+         * Metodo que se encarga de devolver el id del ultimo mensaje del post.         
+         */
+        function getLastMsg(){
+            return $this->lastMsg;
+        }  
+        
+        /**
+         * Metodo que se encarga de devolver el numero de vistas mensaje del post.         
+         */
+        function getNum_views(){
+            return $this->num_views;
+        }  
+        
+        /**
+         * Metodo que se encarga de devolver si el post es fijo o no.         
+         */
+        function getIs_fixed(){
+            return $this->is_fixed;
+        }  
+    }
+?>

@@ -1,0 +1,2 @@
+&nbsp;<INPUT type="button" class="button" id="exportar" name="exportar" value="Exportar TXT" onClick="saveLogs()" />
+&nbsp;<INPUT type="button" class="button" id="reset" name="reset" value="Limpiar registros" onClick="resetLogs()" />

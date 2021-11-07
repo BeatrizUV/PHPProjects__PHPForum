@@ -1,0 +1,221 @@
+<?   
+  /**
+   * Clase que se encarga de editar un usuario del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class EditUser
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "admin_userProfile.str";
+			// Variable que guarda el error
+			var $error;	
+			
+			// Constructor de la clase
+			function EditUser() 
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{			    			    			    
+			    // Se recogen los datos enviados
+					$login = $_POST["login"];
+					$id_user = $_POST["id"];
+					$npasswd = $_POST["new_passwd"];
+					$npasswd2 = $_POST["new_passwd2"];
+					$name = $_POST["name"];
+					$email = $_POST["email"];
+					$msn = $_POST["msn"];
+					$web = $_POST["web"];	
+					$id = $_GET["id"];
+					$sex = $_POST["sex"];		
+					$site = $_POST["site"];	
+					$sign = $_POST["sign"];	
+					$alerts = $_POST["alerts"];
+					$votes = $_POST["votes"];
+					$rank = $_POST["rank"];
+					$is_banned = $_POST["ban"];				
+					$avatar = $_POSt["avatar"];										
+					$flag = true;				
+					$cont = 0;				
+					$deleteAvatar = false;	
+					$newPasswd = false;
+										
+					if (isset($_SESSION["haySesionAdmin"]))
+					{
+					   // Si hay sesión de administrador
+					   $user = unserialize($_SESSION["usuario"]);
+						 // Se validan los datos obligatorios 
+					   $this->error = valFormEditUserAdmin($login, $email);
+					   
+					   if ($this->error == null)
+					   {
+					       // Si la validación se ha ejecutado correctamente
+					       $flag = true;
+					       // Se busca que le nuevo login esté libre
+					       $query = "SELECT id_user FROM phpforum_users WHERE login LIKE ".$login;
+								 if ($gesBD->selectOne($query, "id_user"))
+								 {
+						         if ($id_user != $gesBD->getObj())
+										 {
+										     $flag = false;
+										 }    
+								 }
+								 
+								 if ($flag)
+								 {	 
+								     // Si el nuevo login está libre
+								     // Se busca que el nuevo email esté libre
+								     $query = "SELECT id_user FROM phpforum_users WHERE email LIKE ".$email;
+								     if ($gesBD->selectOne($query, "id_user"))
+								     {
+								         if ($id_user != $gesBD->getObj())
+								         {
+								             $flag = false;
+								         }
+										 }
+										 
+										 if ($flag)
+										 {
+										     // Si el nuevo email está libre
+										     
+										     /***** Se chequean el resto de los datos *****/
+										     // Se chequea el avatar
+						             if ($avatar == "on")
+						             {
+						                 $avatar = "-1";
+												 }
+												 else
+												 {
+												     $avatar = $user->getAvatar();
+												 }
+												 
+												 // Se chequean las alertas
+												 if (empty($alerts))
+												 {
+												     $alerts = "0";
+												 }
+												 
+												 // Se chequean los votos
+												 if (empty($votes))
+												 {
+												     $votes = "0";
+												 }
+												 
+												 // Se chequea el sexo
+												 if ($sex == "NoSex")
+												 {
+												     $sex = "";
+												 }
+												 
+												 // Se chequea la web
+												 if (!empty($web))
+												 {
+												     if (substr($web, 0, 7) != "http://")
+												     {
+												         $web = "http://".$web;
+														 }
+												 }	
+												 
+												 // Se chequea la nueva clave
+												 $pass = false;
+												 if ((!empty($npasswd)) && (!empty($npasswd2)))
+												 {
+												     if ($npasswd == $npasswd2)
+												     {
+												         $pass = true;
+														 }
+														 else
+														 {
+														     $flag = false;
+														     $this->error = "Claves nuevas diferentes.";
+														 }
+												 }																
+												 /*********************************************/
+												 // Dependiendo de si se cambia la clave o no, se monta un query u otro
+												 if ($pass)
+												 {
+												     $query = "UPDATE phpforum_users SET login = '".$login."', passwd = '".md5($npasswd)."', email = '".$email."', rank = ".$rank.", alerts = ".$alerts.", is_banned = ".$is_banned.", votes = ".$votes.", name = '".$name."', site = '".$site."', msn = '".$msn."', web = '".$web."', sex = '".$sex."', avatar = ".$avatar.", sign = '".$sign."' WHERE id_user LIKE ".$id_user;
+												 }
+												 else
+												 {
+												     $query = "UPDATE phpforum_users SET login = '".$login."', email = '".$email."', rank = ".$rank.", alerts = ".$alerts.", is_banned = ".$is_banned.", votes = ".$votes.", name = '".$name."', site = '".$site."', msn = '".$msn."', web = '".$web."', sex = '".$sex."', avatar = ".$avatar.", sign = '".$sign."' WHERE id_user LIKE ".$id_user;
+												 } 
+												 
+												 // Se actualiza el usuario  
+										     if ($gesBD->update($query))
+										     {
+										         // Si se actualiza correctamente
+										         // Se eliminan todos los datos relacionados con la edición del usuario
+										         unset($_SESSION["usuario"]);
+										         unset($_SESSION["usuarios"]);
+										         // Se indica al usuario mediante un mensaje emergente, se redirecciona a la página de editar usuarios y se cierra el popup
+										         echo "<SCRIPT>";
+										         echo "alert('Usuario editado correctamente.');";																         
+										         echo "window.opener.location.href='index.php?accion=ShowUsers&pagina=admin_editUser';";
+										         echo "window.close();";
+										         echo "</SCRIPT>";
+												 }
+												 else
+												 {
+												     // Si no se actualiza correctamente
+												     // Se cierra el popup
+												     unset($_SESSION["usuario"]);
+										         echo "<SCRIPT>";	
+										         echo "window.close();";
+										         echo "</SCRIPT>";
+												 }
+										 }
+										 else
+										 {
+										     // Si el nuevo email no está libre
+										     // Se indica mediante un mensaje de error
+										     $this->error = "El <B>E-MAIL</B> que ha indicado ya existe para otro usuario.<BR>Elija otro e-mail diferente, por favor.";
+										 }		 
+								 }
+								 else
+								 {
+								     // Si el nuevo login no está libre
+								     // Se indica mediante un mensaje de error
+								     $this->error = "El <B>LOGIN</B> que ha indicado ya existe para otro usuario.<BR>Elija otro login diferente, por favor.";
+								 }
+							}			    
+					}
+					else
+					{
+					    // Si no hay sesión de administrador
+					    // Se cierra el popup
+					    unset($_SESSION["usuario"]);
+		          echo "<SCRIPT>";	
+		          echo "window.close();";
+		          echo "</SCRIPT>";				    
+					}
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}
+?>

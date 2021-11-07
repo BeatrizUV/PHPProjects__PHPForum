@@ -1,0 +1,109 @@
+<TR>
+    <TD height="10px" colspan="3">
+        <TABLE>
+        		<TR>
+        				<TD style="width: 133px;"></TD>						
+								<TD clas="celda_porcentaje_MPs">
+<?
+  // Esto es un contador de mensajes con una barra de estado 
+	include("templates/Default/img/contador.inc");
+	
+	$contp = 0;
+	$encontrado = false;
+	$img;
+	
+	while (($contp <= 100) && (!$encontrado))
+	{
+	    if ($contp >= 10)
+	    {
+	        if (($porcentaje > ($contp - 10)) && ($porcentaje < $contp))
+			    {			        
+							if ($contp == 100)
+							{
+							    $img = $contador["full"];   
+							 	  $encontrado = true;				
+							}    
+							else
+							{
+							    if (($contp > 0) && ($contp <= 30))
+							    {
+							        if ($contp <= 10)
+							        {
+							            $img = $contador[1];   
+													$encontrado = true;
+											}
+											else if (($contp > 10) && ($contp <= 20))
+											{
+											    $img = $contador[2];   
+													$encontrado = true;  
+											}
+											else if (($contp > 20) && ($contp <= 30))
+											{
+											    $img = $contador[3];   
+													$encontrado = true;
+											}
+									}
+									else if (($contp > 30) && ($contp <= 60))
+									{
+									    if ($contp <= 40)
+							        {
+							            $img = $contador[4];   
+													$encontrado = true;
+											}
+											else if (($contp > 40) && ($contp <= 50))
+											{
+											    $img = $contador[5];   
+													$encontrado = true;  
+											}
+											else if (($contp > 50) && ($contp <= 60))
+											{
+											    $img = $contador[6];   
+													$encontrado = true;
+											}
+																		
+									}
+									else if (($contp > 60) && ($contp < 100))
+									{
+									    if ($contp <= 70)
+							        {
+							            $img = $contador[7];   
+													$encontrado = true;
+											}
+											else if (($contp > 70) && ($contp <= 80))
+											{
+											    $img = $contador[8];   
+													$encontrado = true;  
+											}
+											else if (($contp > 80) && ($contp < 100))
+											{
+											    $img = $contador[9];   
+													$encontrado = true;
+											}
+									}
+							}
+					}
+			}
+			else if ($contp == 0)
+			{
+			    if ($porcentaje == $contp)
+			    {
+			        $img = $contador["empty"];   
+							$encontrado = true;
+					}
+			}	    
+			
+			$contp+=10;
+	}	
+	
+	$porcentaje = str_replace(".", ",", $porcentaje);
+	$porcentaje = substr($porcentaje, 0, 4);	
+?>								
+										Porcentaje ocupado: <?=$porcentaje?>%
+										<BR>					
+									  <IMG src="<?=$img?>" width="257px" height="11px" title="Porcentaje ocupado" />
+								</TD>
+						    <TD style="width: 133px;"></TD>
+						</TR>    
+        </TABLE>
+		</TD>																																			
+</TR>

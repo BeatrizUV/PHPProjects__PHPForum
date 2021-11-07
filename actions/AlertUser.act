@@ -1,0 +1,117 @@
+<? 
+	/**
+   * Clase que se encarga de añadir o sustraer alertas de un usuario.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class AlertUser
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_post.str";
+			// Variable que guarda el error
+			var $error;	
+			
+			// Constructor de la clase
+			function AlertUser()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{								
+					$flag = true;						
+					
+					if (isset($_SESSION["haySesion"]))
+					{	 
+					    // Si hay sesión
+					    // Se recogen los datos enviados
+					    $id_post = $_GET["idp"];
+					    $id_user = $_GET["idu"];
+					    $option = $_GET["op"];
+					    
+					    // Se establece el tipo de alerta (positivo o negativo)
+					    if ($option == "positive")
+					    {
+					        $alert = "alerts + 1";
+							}
+							else if ($option == "negative")
+							{
+							    $alert = "alerts - 1";
+							}
+							
+							// Se actualiza el usuario
+							$query = "UPDATE phpforum_users SET alerts = (".$alert.") WHERE id_user LIKE ".$id_user;
+							if ($gesBD->update($query))
+							{
+							    // Si se actualiza correctamente
+							    // Se recogen las alertas del usuario alertado
+							    $query = "SELECT alerts FROM phpforum_users WHERE id_user LIKE ".$id_user;
+							    if ($gesBD->selectOne($query, "alerts"))
+							    {
+							        // Si se ejecuta correctamente
+							        // Se recogen las alertas
+							        $alerts = $gesBD->getObj();
+							        if (($alerts > 0) && (($alerts % 3) == 0))
+							        {
+							            // Si el número de alertas el mayor que 0 y divisible por 3
+							            // Se banea al usuario automáticamente
+							            $query = "UPDATE phpforum_users SET is_banned = 1 WHERE id_user LIKE ".$id_user;
+							            if (!$gesBD->update($query))
+							            {
+							                // Si no se actualiza correctamente
+							                // Se redirige al usuario a la página de error
+							                header("Location: error.php");
+													}
+											}
+											
+											// Y se regirige al usuario al post desde el que solicitó la acción
+											header("Location: index.php?accion=ShowPost&id=".$id_post);
+									}
+									else
+									{
+									    // Si no se ejecuta correctamente
+									    // Se redirige al usuario a la página de error
+									    header("Location: error.php");
+									}
+							}
+							else
+							{
+							    // Si no se actualiza correctamente
+							    // Se redirige al usuario a la página de error
+							    header("Location: error.php");
+							}	
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve le modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción
+			function getAct() {
+			}
+	}
+?>

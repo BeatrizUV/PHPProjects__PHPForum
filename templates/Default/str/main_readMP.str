@@ -1,0 +1,228 @@
+<? include("templates/Default/str/header.str"); ?>
+<SCRIPT>
+// Función que redimensiona imágenes
+function resizeImg(imgname)
+{
+    var w = document.getElementById(imgname).width;
+    var h = document.getElementById(imgname).height;
+    if (w > 375)
+    {
+        document.getElementById(imgname).width = "375";
+		} 
+		else if (h > 200)
+		{
+		    document.getElementById(imgname).height = "200";
+		}  	
+}
+</SCRIPT>
+<?
+    // Página en la que se leen MPs
+    $mp = $modelo["modelo"];
+    $id_mp = $mp->getId_mp();
+    $title = $mp->getTitle();
+    $title = replaceCharsToHTML($title);
+    $body = $mp->getBody();
+    $body = replaceBBCodeToHTML(replaceCharsToHTML($body));
+    $date = $mp->getDate();
+    $box = $_GET["box"];
+    if ($box == "in")
+    {
+        $userFrom = $mp->getFrom();
+        $userTo = unserialize($_SESSION["userlog"]);
+        $para = $userTo->getLogin();   
+        $loc = "Entrada";     
+    }		
+    else if ($box == "out")
+    {
+        $userFrom = unserialize($_SESSION["userlog"]);
+        $userTo = $mp->getTo();
+        $para = $userTo->getLogin();
+        $loc = "Salida";
+    }
+    
+    $para = replaceCharsToHTML($para);
+    $id_userMP = $userFrom->getId_user();
+		$loginMP = $userFrom->getLogin();
+		$loginMP = replaceCharsToHTML($loginMP);
+		$rankMP = $userFrom->getRank();
+		$rankNameMP = $userFrom->getRankName();
+		$rankNameMP = replaceCharsToHTML($rankNameMP);
+		$avatarMP = $userFrom->getUrlAvatar();
+		$signMP = $userFrom->getSign();
+		$signMP = replaceBBCodeToHTML(replaceCharsToHTML($signMP));
+		$num_msgsMP = $userFrom->getNum_msgs();
+		$emailMP = $userFrom->getEmail();
+		$msnMP = $userFrom->getMsn();
+		$siteMP = $userFrom->getSite();
+		$siteMP = replaceCharsToHTML($siteMP);
+		$sexMP = $userFrom->getSex();
+		$votesMP = $userFrom->getVotes();
+		$webMP = $userFrom->getWeb();
+		$alertsMP = $userFrom->getAlerts();
+		$is_bannedMP = $userFrom->getIs_banned();	
+    
+?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / <A HREF="index.php?accion=ShowMPs&box=<?=$box?>" class="link_path">Bandeja de <?=$loc?></A> / Leyendo Mensaje Privado
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="20px" colspan="3"></TD>																																			
+																																	</TR>	
+																																	<? include("templates/Default/str/actionsInOneMP.inc"); ?>
+																			 							 							<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">																			 							 							    					 
+										 						 	 											 					              <TR>
+							                                                                     <TD colspan="2" class="celda_nombre_cat">
+							                                                                     		 <SPAN class="flechitas_cat">&gt;&gt;</SPAN> <?=$title?>
+							                                                                     </TD>
+							                                                                  </TR>   
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD class="celda_autor">
+																																												AUTOR
+																																										</TD>																																	 		
+																																								 		<TD class="celda_mensaje">
+																																										 		MENSAJE
+																																										</TD>																																								 		
+																																								</TR>	   
+																 										 	 													<TR>
+																 										 	 													    <TD class="celda_autor_msg" style="vertical-align: top; background-color: #D0D0D0;">
+																																												<TABLE class="tabla_acoplada">
+																																														<TR>
+																																																<TD class="celda_profile_oscura" style="height: 23px;">
+<?
+        if ($loginMP == "An&oacute;nimo")
+        {
+?>
+				 	 									 																																				<?=$loginMP?>
+<?        
+				}
+				else
+				{
+?>
+				 										 																																				<A HREF="index.php?accion=ShowUser&id=<?=$id_userMP?>" class="link_cuerpo" title="Ver perfil"><?=$loginMP?></A>
+<?				
+				}
+?>																																																																																																		
+																																																</TD>	
+																																														<TR>																																																	
+<?
+				if ($is_bannedMP == 1)
+				{
+?>
+				 	 											 	 																													<TR>
+				 	 											 	 																															<TD class="celda_profile_oscura" style="background-color: #000000; height: 15px;">
+				 	 											 	 																																	<B>BANEADO</B>
+				 	 											 	 																															</TD>
+		 	 											 	 																															</TR>
+<?				
+				}																																																							
+?>																																															
+																																														<TR>		
+																																																<TD class="celda_profile" style="height: 15px; padding: 3px;"><?=$rankNameMP?></TD>
+																																														</TR>
+																																														<TR>		
+																																																<TD class="celda_profile_oscura" style="height: 15px; padding: 3px;"><IMG src="<?=$avatarMP?>" width="95px" height="95px" /></TD>
+																																														</TR>
+																																														<TR>		
+																																																<TD class="celda_profile" style="text-align: left; height: 15px; padding: 3px;">MENSAJES: <?=$num_msgsMP?></TD>
+																																														</TR>																																																
+<?
+	      if (!empty($sexMP))
+	      {
+?>						 	 																																									
+																																														<TR>
+				 	 																																											<TD class="celda_profile_oscura" style="height: 15px; text-align: left; padding: 3px;">SEXO: <IMG src="templates/Default/img/<?=$sexMP?>.jpg" width="10px" height="12px" /></TD>
+				 	 																																									</TR>																																																
+<?	      
+				}
+				
+	      if (!empty($siteMP))
+	      {
+?>				 	 											 																														
+																																														<TR>
+				 	 																																											<TD class="celda_profile" style="height: 15px; text-align: left; padding: 3px;">UBICACI&Oacute;N: <?=$siteMP?></TD>
+				 	 																																									</TR>		
+<?	      
+				}
+?>																																													
+																																														<TR>		
+																																																<TD class="celda_profile_oscura" style="height: 15px; text-align: left; padding: 3px;">VOTOS: <?=$votesMP?></TD>
+																																														</TR>
+																																														<TR>		
+																																																<TD class="celda_profile" style="height: 15px; text-align: left; padding: 3px;">ALERTAS: <?=$alertsMP?></TD>
+																																														</TR>
+																																														<TR>
+																																																<TD class="celda_profile_oscura" style="height: 23px; text-align: left; padding: 1px; vertical-align: middle;">																																																		
+																																																		<? include("templates/Default/str/panelProfile.inc"); ?>																																																		
+																																																</TD>
+																																														</TR>
+																																												</TABLE>
+																																										</TD>	
+																																				 		        <TD class="celda_msg">
+																																				 		            <TABLE class="tabla_acoplada">
+																																				 		            		<TR>
+																																				 		            		    <TD class="celda_profile_oscura" style="height: 23px;">
+																																				 		            		    		<TABLE class="tabla_acoplada">
+																																				 		            		    		   <TR>
+																																				 		            		    		   		 <TD style="widht: 60%; height: 17px; text-align: left; padding: 3px;">&nbsp;Enviado el: <?=$date?></TD>
+																																				 		            									 <TD style="width: 40%; height: 17px; text-align: right; padding: 3px;">Para: <?=$para?></TD>
+																																				 		            		    		   </TR>
+																																				 		            		    		</TABLE>
+																																				 		            		    </TD>
+																																														</TR>	 
+																																														<TR>
+																																																<TD id="<?=$id_mp?>" class="celda_profile" style="height: 252px; padding: 5px; text-align: left; vertical-align: top;  font-size: 11px;"><?=$body?></TD>
+																																														</TR>
+<?
+      if (!empty($signMP))
+			{
+?>
+			 	 											 																															<TR>
+																																																<TD class="celda_profile_oscura" style="text-align: left; padding: 3px; height: 0px;"><?=$signMP?></TD>
+																																														</TR>
+<?			
+			}																																											
+?>
+																																				 		            </TABLE>
+																																										</TD>	
+																																								</TR>																																																																														
+																																	        </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>	
+																																	<? include("templates/Default/str/actionsInOneMP.inc"); ?>																																																											
+																																	<TR>
+   																																    <TD height="30px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																										 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>														 		 

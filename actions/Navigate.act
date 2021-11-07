@@ -1,0 +1,116 @@
+<?
+  /**
+   * Clase que se encarga mandar al usuario de una página a otra.
+   * By Beatriz Urbano Vega [Masane].
+   */ 
+	class Navigate
+	{	    
+	    // Variable que guarda la vista
+	    var $vista;
+	    // Variable que guarda la acción realizada
+	    var $act;	    
+	    
+	    // Constructor de la clase
+	    function Navigate($act)	    
+	    {
+	        // Se le asigna valor a la acción realizada
+	        $this->act= $act;
+			}
+			
+			// Función que ejecuta el código 
+			function ejecutar($gesBD)
+			{
+			    // Se recoge la página de destino enviada
+          $destiny = $_GET["destino"];
+          
+          // Se hacen comprobaciones con la sesión y la página de destino
+          
+					if (($destiny == "main_edituser") && (!isset($_SESSION["haySesion"])))
+					{
+					    header("Location: index.php");
+					}
+					
+					if (($destiny == "main_login") && (isset($_SESSION["haySesion"])))
+					{
+					    header("Location: index.php");
+					}
+					
+					if (($destiny == "main_register") && (isset($_SESSION["haySesion"])))
+					{
+					    header("Location: index.php");
+					}
+					
+					if (($destiny == "main_newpass") && (isset($_SESSION["haySesion"])))
+					{
+					    header("Location: index.php");
+					}	
+					
+					if (($destiny == "main_writeMP") && (!isset($_SESSION["haySesion"])))
+			    {
+			        header("Location: index.php");
+					}
+					
+					if ($destiny == "main_writeMsg")
+			    {			        
+			        if (!isset($_SESSION["haySesion"]))
+			        {			            
+			            $_SESSION["idp"] = $_GET["id"];			            
+							    header("Location: index.php?accion=Navigate&destino=main_login&ac=Navigate&dest=".$destiny."&act=".$_GET["act"]); 
+							}			        
+							else
+							{
+							    if (!isset($_SESSION["locSesion"]))
+							    {
+							        header("Location: index.php");
+									}
+							}
+							
+							if (isset($_GET["act"]))
+							{
+							    if (($_GET["act"] != "crearMsg") && ($_GET["act"] != "crearPost"))
+							    {
+							        header("Location: index.php");
+									}
+							}
+							else
+							{
+							    header("Location: index.php");
+							}
+					}	
+					
+					if (($destiny == "admin_login") && (!isset($_SESSION["haySesion"])))
+					{
+					    header("Location: index.php");
+					}
+					
+					// Se establece la vista a partir de la página de destino
+					$this->vista = $destiny.".str";
+					// Se establece la acción realizada a partir de la página de destino
+			    $this->act = "navegar_".$destiny;
+			    // Y se indica que todo ha ido bien
+					$encontrado = true;					
+          
+          return $encontrado;
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo() {
+			}
+			
+			// Función que devuelve el error
+			function getError() {
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+          return $this->vista;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct()
+			{
+			    return $this->act;
+			}
+	}
+?>

@@ -1,0 +1,89 @@
+<?		
+	  /**
+     * Clase que se encarga de elegir el tipo de accion a realizar.
+     * By Beatriz Urbano Vega [Masane].
+     */
+    class AdminAccion{       			    
+            
+        /**
+         * Metodo constructor de la clase.
+         */        
+        function AdminAccion()
+				{                             
+        }   
+        
+        /**
+         * Metodo que se encarga de crear la accion necesaria.         
+         */
+        function getAccion($admin_email, $forum_title, $forum_path, $act)
+				{
+            $accion = null;           
+            
+            if (($act == null) || ($act == ""))
+            {
+               // accion predeterminada
+               $act = "Navigate";
+						}
+						
+						// Se ejecuta la acción determinada
+						switch($act)
+						{
+						    case "ShowForum": $accion = new ShowForum();
+						                      break;   																					                      
+						    case "Navigate": $accion = new Navigate($act);
+						                     break;								
+								case "CreateUser": $accion = new CreateUser($admin_email, $forum_title, $forum_path);
+						                       break;  
+							  case "ShowUsers": $accion = new ShowUsers();
+						                      break;
+						    case "ShowUser": $accion = new ShowUser();
+						                     break;
+								case "ShowTheme": $accion = new ShowTheme();
+						                      break;								          
+						    case "EditUser": $accion = new EditUser($admin_email, $forum_title, $forum_path);
+						                     break;                  
+								case "ShowGroups": $accion = new ShowGroups();
+						                       break;
+								case "ShowTemplates": $accion = new ShowTemplates();
+						                   				break;
+						    case "CreateTemplate": $accion = new CreateTemplate();
+						                   				 break;
+								case "DeleteTemplate": $accion = new DeleteTemplate();
+						                   				 break;											                				
+								case "EditForumInfo": $accion = new EditForumInfo();
+						                   				break;
+								case "SendMail": $accion = new SendMail();
+						                   					 	 break;
+								case "CreateCategorie": $accion = new CreateCategorie();
+						                   					 	 				break;								
+								case "EditCategorie": $accion = new EditCategorie();
+						                   					 	 			break;
+								case "DeleteCategorie": $accion = new DeleteCategorie();
+						                   					 	 				break;
+								case "CreateTheme": $accion = new CreateTheme();
+						                   								break;		
+								case "EditTheme": $accion = new EditTheme();
+						                   							break;
+								case "DeleteTheme": $accion = new DeleteTheme();
+						                   								break;
+								case "DeleteUser": $accion = new DeleteUser();
+						                   							 break;
+								case "CreateGroup": $accion = new CreateGroup();
+						                   							 	break;						
+								case "EditGroup": $accion = new EditGroup();
+						                   							break;					
+								case "DeleteGroup": $accion = new DeleteGroup();
+						                   							  break;
+								case "ShowLogs": $accion = new ShowLogs();
+						                   						 break;					
+								case "ExportLogs": $accion = new ExportLogs();
+						                   						 break;
+								case "ResetLogs": $accion = new ResetLogs();
+						                   						 break;																																						 														 																																						 															 																 																								 																		 																										 							 		  																				 		  									  										  									                
+								default: $accion = new Navigate($act);						                     																										                  
+						}		
+						
+						return $accion; 
+        }      
+    }
+?>

@@ -1,0 +1,139 @@
+<?
+  /**
+   * Clase que se encarga de mostrar los usuarios conectados durante los últimos 10 minutos.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowConnectedUsers
+	{
+	  // Variable que guarda la vista
+		var $vista = "main_control_users_extended.str";
+		// Variable que guarda el modelo	
+		var $modelo;
+		// Variable que guarda el error
+		var $error;		
+		
+		// Constructor de la clase
+		function ShowConnectedUsers() {
+		}
+		
+		// Función que ejecuta el código de la acción requerida
+		function ejecutar($gesBD)
+		{
+		    $encontrado = false;
+		    $error = 0;
+		    
+		    // Usuarios registrados
+		    $query = "SELECT id_user FROM phpforum_logs WHERE fecha BETWEEN DATE_SUB((SELECT NOW()), INTERVAL 10 MINUTE) AND (SELECT NOW()) AND id_user NOT LIKE -1 GROUP BY id_user";
+		    $variables[0] = "id_user";
+		    if ($gesBD->selectMore($query, $variables))
+		    {
+		        // Si hay usuarios registrados conectados
+		        // Se extraen sus ids
+		        $filas = $gesBD->getObj();
+		        $contf = 0;
+		        $sizef = count($filas);
+		        
+		        for ($contf = 0; $contf < $sizef; $contf++)
+		        {
+		            $fila = $filas[$contf];
+		            // Se recoge el último log de cada usuario
+		    				$query = "SELECT * FROM phpforum_logs WHERE id_user LIKE ".$fila[0]." ORDER BY fecha DESC LIMIT 1";		    				
+								if ($gesBD->selectLog($query))
+								{
+								    // Si existe el log indicado
+								    // Se guarda en una lista de logs de usuarios registrados
+								    $listaRegistrados[$contf] = $gesBD->getObj();		
+								}
+								else
+						    {
+						        // Si no existe el log indicado
+						        // Se indica que no hay usuarios en línea
+						    	  $this->error = "No hay usuarios en l&iacute;nea.";
+						    	  $error++;
+						    }        
+						}
+						// Se guarda la lista de usuarios registrados conectados en el modelo
+						$this->modelo["registered"] = $listaRegistrados;
+				}
+				else
+				{
+				    // Si no hay usuarios registrados conectados
+				    // Se indica que no hay usuarios en línea
+				    $this->error = "No hay usuarios en l&iacute;nea.";
+						$error++;
+				}
+		    
+		    // Usuarios anonimos
+		    // Se extraen sus ips
+		    $query = "SELECT ip FROM phpforum_logs WHERE fecha BETWEEN DATE_SUB((SELECT NOW()), INTERVAL 10 MINUTE) AND (SELECT NOW()) AND id_user LIKE -1 GROUP BY ip";
+		    $variables[0] = "ip";
+		    if ($gesBD->selectMore($query, $variables))
+		    {
+		        // Si hay usuarios anónimos visitando el foro
+		        // Se extraen sus ips
+		        $filas = $gesBD->getObj();
+		        $contf = 0;
+		        $sizef = count($filas);
+		        for ($contf = 0; $contf < $sizef; $contf++)
+		        {
+		            $fila = $filas[$contf];
+		            // Se recoge el log de cada usuario anónimo
+		    				$query = "SELECT * FROM phpforum_logs WHERE id_user LIKE -1 AND ip LIKE '".$fila[0]."' ORDER BY fecha DESC LIMIT 1";		    			
+						    if ($gesBD->selectLog($query))
+						    {		        
+						        // Si existe el log indicado
+						        // Se guarda en una lista de logs de usuarios anónimos
+						        $listaAnonimos[$contf] = $gesBD->getObj();						        
+								}
+								else
+						    {
+						        // Si no existe el log indicado
+						        // Se indica que no hay usuarios en línea
+						    	  $this->error = "No hay usuarios en l&iacute;nea.";
+						    	  $error++;
+						    }
+						}
+						// Se guarda la lista de usuarios anónimos en el modelo  
+						$this->modelo["anonymous"] = $listaAnonimos;
+				}	
+				else
+				{
+				    // Si no hay usuarios anónimos visitando el foro
+				    // Se indica que no hay usuarios en línea
+				    $this->error = "No hay usuarios en l&iacute;nea.";
+						$error++;
+				}	
+		    
+		    if ($error < 2)
+		    {
+		        // Si no se ha producido más de un error (o hay usuarios registrados conectados o hay anónimos visitando el foro)
+		        // Se indica que todo ha ido bien
+		        $encontrado = true;
+				}
+		    
+		    return $encontrado;
+		}
+		
+		// Función que devuelve el modelo
+		function getModelo()
+		{
+  			return $this->modelo;
+		}
+		
+		// Función que devuelve la vista
+		function getVista()
+		{
+			  return $this->vista;
+		}
+		
+		// Función que devuelve el error
+		function getError()
+		{
+			  return $this->error;
+		}
+		
+		// Función que devuelve la acción realizada
+		function getAct() {
+		}
+	}
+?>

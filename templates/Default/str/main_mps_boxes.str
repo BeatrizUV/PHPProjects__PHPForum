@@ -1,0 +1,246 @@
+<? include("templates/Default/str/header.str"); ?>
+<? 
+   // Página para mostrar los MPs de las bandejas de los usuarios
+   $accion = "ShowMPs";
+   $porcentaje = 0;
+	 $box = $_GET["box"];
+	 if ($box == "in")
+	 {
+	     $goToButton = "out";
+	     $loc = "Entrada";
+	     $locGoTo = "Salida";
+	     $boxGoTo = "out";
+	     $columna = "DE";
+	 }   
+	 else if ($box == "out")
+	 {
+	     $goToButton = "in";
+	     $loc = "Salida";
+	     $locGoTo = "Entrada";
+	     $boxGoTo = "in";
+	     $columna ="PARA";
+	 }	 
+	 
+	 $error = $modelo["error"];
+	 if (!isset($error))
+	 {	    
+	     $listaMPs = $modelo["modelo"];
+			 $sizelmp = count($listaMPs);					
+			 $porcentaje = ($sizelmp * 100) / 75;			 
+   }
+?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																											      <FORM action="index.php?accion=DeleteMP&box=<?=$box?>" method="post" name="formDeleteMPs">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Bandeja de <?=$loc?>
+																																			</TD>																																			
+																																	</TR>
+<?
+   $mensajeOk = $_GET["msgOk"];
+	 if (isset($mensajeOk))
+	 {
+?>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"><?=$mensajeOk?></TD>																																			
+																																	</TR>
+<?	 
+	 } 
+?>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>
+																																	<? include("templates/Default/str/mps_boxes_content.str"); ?>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>
+																																	<TR>
+																																      <TD width="10px"></TD>
+																																      <TD width="530px" class="align_left">
+																																      		<A HREF="index.php?accion=ShowMPs&box=<?=$boxGoTo?>" class="link_cuerpo">Ir a Bandeja de <?=$locGoTo?></A>
+																																			</TD>
+																																      <TD width="10px"></TD>
+																																  </TR>																																
+																																	<TR>
+																																      <TD width="10px"></TD>
+																																      <? include("templates/Default/str/actionsInMPBoxes.inc"); ?>																																																																				
+																																			<TD width="10px"></TD>
+																																	</TR>		
+																			 							 							<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD colspan="2" class="celda_cabecera_tabla_usuarios" style="width: 255px;">
+																																												ASUNTO
+																																										</TD>																																	 		
+																																								 		<TD class="celda_cabecera_tabla_usuarios" style="width: 125px;">
+																																										 		<?=$columna?>
+																																										</TD>
+																																								 		<TD colspan="2" class="celda_cabecera_tabla_usuarios" style="width: 150px;">
+																																										 		FECHA
+																																										</TD>																																								 		
+																																								</TR>	                                                                     				
+<?		                			
+	 if (isset($error))
+	 {	     
+?>
+												 	 										 																	<TR>
+							                                                                      <TD colspan="5" style="height: 25px;">							                                                                          
+							                                                                         	Bandeja vac&iacute;a.
+							                                                                      </TD>
+							                                                                  </TR>					 	 										 					 					 				 
+<?			
+	 }
+	 else
+	 {			   	   
+	    $listaMPs = $modelo["modelo"];
+			$contlmp = 0;
+			$sizelmp = count($listaMPs);
+			
+			for($contlmp = 0; $contlmp < $sizelmp; $contlmp++)
+			{
+			    $mp = $listaMPs[$contlmp];			
+					$id_mp = $mp->getId_mp();				
+					$body = $mp->getBody();
+					$body = replaceBBCodeToHTML(replaceCharsToHTML($body));
+					$date = $mp->getDate();
+					$is_read = $mp->getIs_read();
+					$title = $mp->getTitle();
+					$title = replaceCharsToHTML($title);					
+					
+					if ($box == "in")
+					{
+					    $user = $mp->getFrom();
+					}
+					else if ($box == "out")
+					{
+					    $user = $mp->getTo();
+					}
+					
+					$login_user = $user->getLogin();
+					$id_user = $user->getId_user();
+					$rank_user = $user->getRank();
+					if ($rank_user == -2)
+					{
+					    $class = "link_admin_user";
+					}
+					else 
+					{
+					    if ($rank_user == -1)
+					    {
+					        $class = "link_mode_user";
+							}
+							else
+							{
+							    $class = "link_default_user";
+							}							    
+					}			
+					
+					$login_user = replaceCharsToHTML($login_user);
+?>
+																 										 	 													<TR>
+																 										 	 													    <TD class="celda_icono">
+																																												<IMG widht="15px" height="15px" src="templates/Default/img/iconread_<?=$is_read?>.gif" />
+																																										</TD>	
+																																				 		        <TD class="celda_nombre_tema" style="width: 230px;">
+																																				 		            <A HREF="index.php?accion=ShowMP&id=<?=$id_mp?>&box=<?=$box?>" class="link_nombretema"><?=$title?></A>
+																																										</TD>																													 		
+<?
+		      if ($login_user == "An&oacute;nimo")
+		      {
+?>
+									 	 								 	 																              <TD class="celda_clara"  style="width: 135px;"><?=$login_user?></TD>
+<?                     
+					}
+					else
+					{							
+?>
+							 																																			<TD class="celda_clara"  style="width: 135px;">																																										 	
+																 																												<A HREF="index.php?accion=ShowUser&id=<?=$id_user?>" class="<?=$class?>"><?=$login_user?></A>
+																 																										</TD>		
+<?										
+          }
+?>																																			 																																												
+																																										<TD class="celda_oscura"  style="width: 90px;">
+																																				 		            <?=$date?>
+																																										</TD>
+																																										<TD class="celda_clara"  style="width: 50px; vertical-align: middle;">
+																																										    <INPUT type="button" class="button" style="width: 17px; font-weight: bold; font-size: 9px;" name="mp" value=" X " onClick="deleteMP('<?=$id_mp?>', '<?=$box?>')" title="Borrar Mensaje" />
+																																				 		            <INPUT type="checkbox" name="<?=$id_mp?>" value="" />
+																																										</TD>
+																																								</TR>
+<?	
+      }				
+	}
+?>																																																																															
+																																	        </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>	
+	 																																<TR>
+																																      <TD width="10px"></TD>
+																																      <? include("templates/Default/str/actionsInMPBoxes.inc"); ?>																																																																				
+																																			<TD width="10px"></TD>
+																																	</TR>		
+  																																<TR>
+  																																		<TD width="10px"></TD>
+   																																    <TD class="celda_marcar_como_leidos">
+   																																    		<A HREF="index.php?accion=ShowAllAsRead&box=<?=$box?>" class="link_cuerpo">Marcar todos los mensajes como le&iacute;dos.</A>
+																																			</TD>
+																																			<TD width="10px"></TD>
+																																	</TR>																											
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+                                                            </FORM>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>	
+																										 <TR>
+								       		 													 		 <TD height="25px" colspan="3"></TD>
+											 															 </TR>									
+																                	   <TR>
+								       		 													 		 <TD width="25px"></TD>
+								       		 													 		 <TD>
+								       		 													 		     <TABLE class="tabla_acoplada">
+								       		 													 		         <TR>
+								       		 													 		             <TD width="150px"></TD>
+								       		 													 		             <TD class="align_right"><IMG src="templates/Default/img/iconread_0_full.gif" width="25px" height="25px" /></TD>
+																																		 <TD valign="middle">&nbsp;Hay&nbsp;mensajes&nbsp;nuevos.</TD>
+																																		 <TD width="90px"></TD>
+								       		 													 		             <TD class="align_left"><IMG src="templates/Default/img/iconread_1_full.gif" width="25px" height="25px" /></TD>
+																																		 <TD valign="middle">&nbsp;No&nbsp;hay&nbsp;mensajes&nbsp;nuevos.</TD>
+																																		 <TD width="150px"></TD>
+								       		 													 		         </TR>
+																														 </TABLE>
+																												 </TD>
+								       		 													 		 <TD width="25px"></TD>
+											 															 </TR>
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>														 		 

@@ -1,0 +1,121 @@
+<?
+  /**
+   * Clase que se encarga de crear grupos  de usuarios en el foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class CreateGroup
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_createGroup.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+				
+		 // Constructor de la clase			
+	   function CreateGroup(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción realizada
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	 	
+				     // Si hay sesión de administrador
+				     // Se recogen los datos enviados
+				     $name = $_POST["name"];
+				     $comment = $_POST["comment"];
+				     $can_read = $_POST["can_read"];
+				     $can_write = $_POST["can_write"];
+				     
+				     // Se validan los datos obligatorios
+				     $this->error = valFormCreateGroup($name, $comment);
+				     
+				     if ($this->error == null)
+				     {
+				         // Si se validan correctamente
+								 // Se comprueba que el nombre del grupo esté libre  
+				         $query = "SELECT id_rank FROM phpforum_ranks WHERE name LIKE '".$name."'";
+				         if (!$gesBD->selectOne($query, "id_rank"))
+				         {
+				             // Si el nombre está libre
+				             // Se establecen sus permisos de lectura y escritura
+				             if ($can_read == "on")
+				             {
+				                 $can_read = "1";
+										 }
+										 else
+										 {
+										     $can_read = "0";
+										 }
+										 
+										 if ($can_write == "on")
+				             {
+				                 $can_write = "1";
+										 }
+										 else
+										 {
+										     $can_write = "0";
+										 }
+										 
+										 // Se inserta el grupo
+		                 $query = "INSERT INTO phpforum_ranks (name, description, can_read, can_write) VALUES ('".$name."', '".$comment."', ".$can_read.", ".$can_write.")";
+										 if ($gesBD->insert($query))
+										 {
+										    // Si se inserta correctamente
+										    // Se indica mediante un mensaje emergente y se redirige al usuario a la página de crear grupos
+										     echo "<SCRIPT>";
+										     echo "alert('Grupo \"".$name."\" creado correctamente.');";
+										     echo "location.href='index.php?accion=Navigate&destino=admin_createGroup';";
+										     echo "</SCRIPT>";
+										 }
+										 else
+										 {
+										     // Si no se inserta correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");	
+										 }
+								 }
+								 else
+								 {
+								     // Si el nombre no está libre
+								     // Se indica mediante un mensaje de error
+								 		 $this->error = "El <B>NOMBRE</B> que ha indicado para el nuevo grupo ya existe.<BR>Elija otro nombre, por favor.";
+								 }	
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+						 // Se redirige al usuario a la página de inicio del foro
+						 header("Location: ../index.php");	
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

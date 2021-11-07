@@ -1,0 +1,55 @@
+<?
+   // Función que loguea al usuario a partir de una cookie
+   function getCookieData($gesBD)
+   {      
+			if (!isset($_SESSION["haySesion"]))
+			{
+			   // Si no hay sesión
+			   // Recogemos la cookie
+			 	 $_cookie = $_COOKIE["prfinal3asi"];
+			 	 if (isset($_cookie))
+			 	 {
+			 	    // Si hay cookie
+						// Leemos la cookie
+			 	 		$pos = strpos($_cookie, "#");
+		        $id_user = base64_decode(substr($_cookie, 0, $pos));
+	 		      $randCookieCode = substr($_cookie, ($pos+1), strlen($_cookie));	 	 		 
+				
+				    // Conectamos con la base de datos
+	          if ($gesBD->connect())
+          	{
+          	    // Si se conecta a la base de datos
+          	    // Cargamos el usuario de la cookie en la sesión
+					 	 		$query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$id_user." AND rand_cookie_code LIKE ".$randCookieCode." AND use_cookie LIKE 1"; 	 		
+					 	 		if ($gesBD->selectUser($query))
+					 	 		{										 
+									 $userBD = $gesBD->getObj();	
+									 if ($userBD->getIs_banned() == 0)
+									 {							
+									     // Si el usuario no está baneado
+											 // Lo logueamos		     
+							 	 		   $_SESSION["userlog"] = serialize($userBD);
+							 	 		   $_SESSION["haySesion"] = "si";
+							 	 		   global $_admin;
+		 	 		   					 if (isset($_admin))
+		 	 		   					 {
+		 	 		   					     // Y si está en el panel de administracióm
+		 	 		   					     // Lo indicamos
+		 	 		   					     $_SESSION["haySesionAdmin"] = "si";
+											 }
+									 }
+								}
+								
+								// Desconectamos la base de datos
+								$gesBD->disconnect();
+	          } 
+						else
+						{
+						    // Si no conecta la base de datos
+						    // Redirigimos al usuario a la página de error
+						    header("Location: error.php");
+						}	 		
+				 }	 	 
+			}
+	 }
+?>

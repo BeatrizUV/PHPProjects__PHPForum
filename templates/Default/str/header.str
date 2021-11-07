@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+
+<HTML>
+			<HEAD>
+						<TITLE>:: <?=$forum_title?> Foros ::</TITLE>			
+						<META content="www.proyecto-final-beatrizuv.es.kz" name="Title" />
+						<META content="ryokojoe@yahoo.es" name="Author" />
+						<META content="Spanish" name="Language" />		
+						<LINK rel="stylesheet" type="text/css" href="templates/Default/stylesheet/style.css" />	
+						<LINK rel="stylesheet" type="text/css" href="includes/errores.css" />		
+						<SCRIPT type="text/javascript" src="includes/js/valForms.js"></SCRIPT>
+						<SCRIPT type="text/javascript" src="includes/js/actions.js"></SCRIPT>						
+						<SCRIPT language="JavaScript">
+						        // Función de reloj
+										var reloj=0;
+										var frecuencia=1000;
+              			function relojfechahora()
+										{
+												var ahora= new Date();
+												
+												var dia = ahora.getDate();
+												if (dia < 10)
+												{
+												 	 dia = "0" + dia;
+												}
+												
+												var mes = ahora.getMonth();
+												mes += 1;
+												if (mes < 10)
+												{
+												 	 mes = "0" + mes;
+												}
+												
+												var anio = ahora.getFullYear();
+												
+												var hora = ahora.getHours();
+												if (hora < 10)
+												{
+												 	 hora = "0" + hora;
+												}
+												
+												var minutos = ahora.getMinutes();
+												if (minutos < 10)
+												{
+												 	 minutos = "0" + minutos;
+												}
+												
+												var segundos = ahora.getSeconds();
+												if (segundos < 10)
+												{
+												 	 segundos = "0" + segundos;
+												}
+												
+												var fecha = dia + "/" + mes + "/" + anio + " - " + hora + ":" + minutos + ":" + segundos + "&nbsp;";												
+												var posicion = document.getElementById('capa_reloj');
+												posicion.innerHTML = fecha;
+												reloj = setTimeout("relojfechahora()",frecuencia);
+                    }
+						</SCRIPT>	
+						<SCRIPT>
+						    // Función que abre un popup para el acceso a la página de administración
+								function openAdminLogin()
+								{
+								 		window.open("index.php?accion=Navigate&destino=admin_login", "adminLogin", "width=500px,height=225px,top=150px,left=250px,scrollbars=no,resizable=no,directories=no,location=no,menubar=no,status=no,toolbar=no");												 
+								}
+						</SCRIPT>
+			</HEAD>
+
+			<BODY onLoad="relojfechahora()">
+<?
+  // Cabecera de las páginas del foro
+	session_start();
+?>			
+						<CENTER>												       
+										<TABLE class="tabla_principal" cellpadding="0" cellspacing="0">		
+										       <TR>
+										       		 <TD height="10"></TD>
+													 </TR>											 
+													 <TR>
+													 		 <TD class="celda_header_top">&nbsp;&nbsp;<SPAN style="font-size: 11px;">&gt;&gt;</SPAN>&nbsp;<A HREF="index.php" class="link_cuerpo"><?=$forum_title?> Foros</A></TD>
+													 </TR>													 
+<?
+	include("templates/Default/str/panels.str");
+	// pegar html del panel y llamar a $login y a $menu
+?>												 
+													 <TR>

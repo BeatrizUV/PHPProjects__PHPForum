@@ -1,0 +1,173 @@
+<? include("templates/Default/str/header.str"); ?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / Grupos
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>									                	   	   
+<?
+  // Página que lista los grupos de ususrarios
+  $error = $modelo["error"];
+  
+	if (isset($error))	
+	{		    
+?> 
+                                                                  <TR>
+  																																	 <TD class="align_center" colspan="3">																																         
+																																         <TABLE class="tabla_acoplada">
+																																                <TR>
+																																                		<TD width="100px"></TD>
+																																         						<TD class="align_center">
+																																         						    <TABLE class="tabla_errores">
+																																         						        <TR>
+																																         						        		<TD>
+																																         						        		    <?=$error?>
+																																         						        		</TD>
+																																         						        </TR>																																         						        
+																																         						    </TABLE>																																         								
+																																                    </TD>
+																																                		<TD width="100px"></TD>
+																																                </TR> 
+																																         </TABLE>																																         
+															                	   	   		 				 	 </TD>
+															                	   	   		 				 	 </TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD colspan="3" height="5px"></TD>
+																																	</TR>
+<?	  	    	    	
+	}	
+	else
+	{
+	    $listaGroups = $modelo["modelo"];
+	    $size = count($listaGroups);
+?>			
+																																	<TR>
+   																																    <TD colspan="3" height="5px">
+																																			Hay <?=$size?> grupos registrados.   																																    
+																																			</TD>
+																																	</TR>
+<?				    
+   	  $cont = 0;
+?>
+																 																	<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">
+																 																								<TR>																																 		
+																																								 		<TD class="celda_cabecera_tabla_usuarios">
+																																										 		NOMBRE
+																																										</TD>
+																																								 		<TD class="celda_cabecera_tabla_usuarios">
+																																										 		DESCRIPCI&Oacute;N
+																																										</TD>
+																																								 		<TD class="celda_cabecera_tabla_usuarios">
+																																										 		USUARIOS
+																																										</TD>																																										
+																																								</TR>			 
+<?	
+		  for ($cont = 0; $cont < $size; $cont++)
+		  {		       
+		      $grupo = $listaGroups[$cont];
+		      $group = $grupo["group"];
+		      $users = $grupo["users"];
+		      $id_group = $group->getId_group();
+		      $name = $group->getName();
+		      $name = replaceCharsToHTML($name);
+		      $comment = $group->getComment();	
+					$comment = replaceCharsToHTML($comment);	      
+		      
+		      
+					if (($cont % 2) == 0)
+					{
+					    $classCelda = "celda_clara";
+					}	      
+					else
+					{
+					    $classCelda = "celda_oscura";
+					}
+					
+					if ($id_group == -2)
+					{
+					    $classGroup = "admin_user";
+					}
+					else if ($id_group == -1)
+					{
+					    $classGroup = "mode_user";
+					}
+					else
+					{
+					    $classGroup = "default_user";
+					}    
+?>																			 							 							
+																			 							 							    					<TR>																																 		
+																																								 		<TD class="<?=$classCelda?>">
+																																										 		<SPAN class="<?=$classGroup?>"><?=$name?></SPAN>
+																																										</TD>
+																																								 		<TD class="<?=$classCelda?>" valign="bottom">
+																																										 		<?=$comment?>
+																																										</TD>
+																																								 		<TD class="<?=$classCelda?>" valign="bottom">
+																																												<?=$users?>
+																																										</TD>
+																																								</TR>
+<?			
+			}	
+?>
+			 																																	 </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>	
+<?
+	}
+?>																																		
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																						
+																																	<TR>
+   																																    <TD width="10px"></TD>
+																																	    <TD height="50px" width="530px" cellpadding="0" cellspacing="0">
+<? include("control_users.str"); ?>
+																																			</TD>																																
+   																																    <TD width="10px"></TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD width="10px"></TD>
+																																	    <TD width="530px" cellpadding="0" cellspacing="0" align="left">
+																																					<SPAN class="corchetes">[</SPAN> <SPAN class="admin_user">Administrador</SPAN> <SPAN class="corchetes">]</SPAN>&nbsp;&nbsp;&nbsp;<SPAN class="corchetes">[</SPAN> <SPAN class="mode_user">Moderador</SPAN> <SPAN class="corchetes">]</SPAN>
+																																			</TD>																																
+   																																    <TD width="10px"></TD>
+																																	</TR>																																	
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>																										 
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>																					 
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>							
+<? include("templates/Default/str/footer.str"); ?>																					

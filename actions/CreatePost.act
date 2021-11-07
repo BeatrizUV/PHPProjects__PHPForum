@@ -1,0 +1,160 @@
+<? 
+	/**
+   * Clase que se encarga de crear posts.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class CreatePost
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_writeMsg.str";
+			// Variable que guarda el error
+			var $error;	
+			
+			// Constructor de la clase
+			function CreatePost()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{			   	
+			    // Se recogen los valores enviados
+					$body = $_POST["body"];
+					$title = $_POST["ptitle"];
+					$id_theme = $_SESSION["idtheme"];							
+					$flag = true;						
+					
+					if (isset($_SESSION["haySesion"]))
+					{	 
+					    // Si hay sesión
+					    // Se validan los datos
+					    $this->error = valFormMsg($title, $body);				    
+					
+							if ($this->error == null)
+							{		
+							    // Si los datos tienen algún valor
+							    // Se comprueba que no exista ningún post con el mismo título en el mismo tema
+							    $query = "SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme." AND title LIKE '".$title."'";
+							    if (!$gesBD->selectOne($query, "id_post"))
+							    {
+							        // Si el título está libre
+							        // Se recoge el usuario conectado de la sesión
+							        $user = unserialize($_SESSION["userlog"]);
+							    
+							        // Se pregunta si el grupo del usuario tiene permisos de escritura
+							        $query = "SELECT can_write FROM phpforum_ranks WHERE id_rank LIKE ".$user->getRank();
+							    
+									    if ($gesBD->selectOne($query, "can_write"))
+									    {
+									        // Si se ejecuta correctamente
+									        // Se recoge el permiso de escritura
+									        $can_write = $gesBD->getObj();
+									        if ($can_write == 1)
+									        {
+									            // Si tiene permiso
+									            // Se establece si el tema es fijo o no
+									            $fix = 0; 
+									    
+													    if (isset($_POST["fix"]))
+													    {
+													        if ($_POST["fix"] == "si")
+													        {
+													            $fix = 1;									           
+																	}									        																						
+															}
+													    
+													    // Se crea el post
+													    if ($gesBD->createPost($id_theme, $title, $fix, $user->getId_user(), $body))
+													    {
+													        // Si se crea correctamente
+																	// Se eliminan de la sesión los datos relacionados con la creación de este post							       
+													        unset($_SESSION["idtheme"]);
+													        // Se recoge la id del nuevo post
+																	$query = "SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme." AND title LIKE '".$title."'";
+																	if ($gesBD->selectOne($query, "id_post"))
+																	{
+																	    // Si existe el post
+																	    // Se redirige al usuario al nuevo post
+																	    header("Location: index.php?accion=ShowPost&id=".$gesBD->getObj());
+																	}
+																	else
+																	{
+																	    // Si no existe el post
+																	    // Se redirige al usuario a la página de error
+																	    header("Location: error.php");
+																	}
+															}
+															else
+															{
+															    // Si el post no se crea
+															    // Se redirige al usuario a la página de error
+															    header("Location: error.php");
+															}
+									        }
+													else
+													{
+													    // Si el usuario no tiene permiso de escritura
+													    // Se indica mediante un mensaje emergente
+													    echo "<SCRIPT>";
+													    echo "alert('No puede crear posts porque el grupo al que pertenece no posee permisos de escritura sobre el foro.');";
+													    echo "location.href='index.php?accion=ShowTheme&id=".$id_theme."';";
+													    echo "</SCRIPT>";	
+													}
+											}
+											else
+											{
+											    // Si no se ejecuta correctamente
+											    // Se redirige al usuario a la página de error
+											    header("Location: error.php");
+											}	
+									}
+									else
+									{
+									    // Si el título del post no está libre
+									    // Se indica mediante un mensaje de error
+									    $flag = false;
+									    $this->error = "El <B>T&Iacute;TULO</B> que ha indicado ya existe para este foro, elija otro t&iacute;tulo diferente.";
+									}							    
+							}
+							else
+							{
+							    // Si los datos validados no tienen ningún dato
+							    // Se indica
+							    $flag = false;							    
+						  }	
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción
+			function getAct() {
+			}
+	}
+?>

@@ -1,0 +1,143 @@
+<? 
+	/**
+   * Clase que se encarga de borrar mensajes privados.
+   * By Beatriz Urbano Vega [Masane].
+   */   
+	class DeleteMP
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "main_mps_boxes.str";
+			// Variable que guarda el error
+			var $error;		
+			
+			// Constructor de la clase
+			function DeleteMP()
+			{
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{
+			    // Se recogen los valores enviados
+			   	$id_mp = $_GET["id"];
+					$all = $_GET["all"];
+					$box = $_GET["box"]; 						
+					$flag = true;						
+					
+					if (isset($_SESSION["haySesion"]))
+					{					    
+					    // Si hay sesión
+					    // Se monta el query para eliminar el/los mensajes privados dependiendo del tipo de borrado elegido por el usuario
+					    $query = "DELETE FROM phpforum_mps WHERE";
+					    // Se recoge el usuario conectado de la sesión
+					    $user = unserialize($_SESSION["userlog"]);
+					    if (!isset($id_mp))
+					    {
+					        if (!isset($all))
+					        {
+					            if ($box == "in")
+					            {
+					                $query2 = "SELECT id_mp FROM phpforum_mps WHERE box LIKE 'in' AND receptor LIKE ".$user->getId_user();
+											}
+											else if ($box == "out")
+											{
+											    $query2 = "SELECT id_mp FROM phpforum_mps WHERE box LIKE 'out' AND emisor LIKE ".$user->getId_user();
+											}
+											
+											$variables[0] = "id_mp";
+											
+											if ($gesBD->selectMore($query2, $variables))
+											{											    
+											    $filas = $gesBD->getObj();
+											    $sizef = count($filas);											   
+											    $contf = 0;
+											    
+							    				for ($contf = 0; $contf < $sizef; $contf++)
+											    {
+											        $fila = $filas[$contf];																								        
+											        if (isset($_POST[$fila[0]]))
+											        {								            
+											            $query .= " id_mp LIKE ".$fila[0]." OR";
+															}
+													}
+													
+													if ($contf > 0)
+													{
+													    $query = substr($query, 0, (strlen($query) - 3));
+													    $mensajeOk = "Su mensajes privados se han eliminado correctamente";
+													}											    
+											}
+											else
+											{
+											    header("Location: error.php");
+											}					             
+									}
+									else
+									{
+									    if ($box == "in")
+					            {
+					                $query .= " box LIKE 'in' AND receptor LIKE ".$user->getId_user();
+											}
+											else if ($box == "out")
+											{
+											    $query .= " box LIKE 'out' AND emisor LIKE ".$user->getId_user();
+											}
+											$mensajeOk = "Su mensajes privados se han eliminado correctamente";
+									}
+							}
+							else
+							{
+							    $query .= " id_mp LIKE ".$id_mp;
+							    $mensajeOk = "Su mensaje privado se ha eliminado correctamente";
+							}
+												
+							// Se eliminan el/los MP							
+							if ($gesBD->delete($query))
+							{		
+							    // Si se ejecuta correctamente
+							    // Se redirige al usuario a su bandeja
+							    header("Location: index.php?accion=ShowMPs&box=".$box."&msgOk=".$mensajeOk);
+							}
+							else
+							{
+							    // Si no se ejecuta correctamente
+							    // Se indica mediante un mensaje de error
+							    $flag = false;
+							    $this->error = "Se ha producido un error al intentar eliminar sus mensajes privados.<BR>Int&eacute;ntelo de nuevo m&aacute;s tarde.";
+							}
+					}
+					else
+					{
+					    // Si no hay sesión
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: index.php");
+					}		            
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}
+?>

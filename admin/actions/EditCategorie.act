@@ -1,0 +1,219 @@
+<?
+  /**
+   * Clase que se encarga de editar una categoría del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class EditCategorie
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "admin_orderCat.str";
+	 	 // Variable que guarda el error
+	 	 var $error;	 	 	 
+					
+		 // Constructor de la clase			
+	   function EditCategorie(){	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		 	  
+				 if (isset($_SESSION["haySesionAdmin"]))
+				 {	
+				     // Si hay sesión de administrador
+						 if (!isset($_GET["move"]))
+						 {
+						     // Si no se quiere mover la categoría
+						     // Se recogen los datos enviados
+						     $title = $_POST["ctitle"];
+						     $cat = $_POST["cat"];
+						     $visibility = $_POST["rank"];
+						     
+						     if (isset($title))
+						     {
+						         // Si el título tiene algún valor
+						         // Se recoge el id de la categoría a editar
+						         $query = "SELECT id_cat FROM phpforum_categories WHERE title LIKE '".$cat."'";	
+						         if ($gesBD->selectOne($query, "id_cat"))
+						         {						             
+						             // Si se ejecuta correctamente
+						             // Se recoge la id
+						             $id_cat = $gesBD->getObj();
+						             // Y se comprueba que el nuevo título esté libre
+						             $query = "SELECT id_cat FROM phpforum_categories WHERE title LIKE '".$title."'";		
+						             $flag = true;				             
+						             
+						             if ($gesBD->selectOne($query, "id_cat"))
+						             {
+						                 if ($id_cat != $gesBD->getObj())
+						                 {
+						                     $flag = false;														 
+														     $this->error = "El nuevo t&iacute;tulo que ha indicado para la categor&iacute;a \"".$cat."\" ya existe para otra categor&iacute;a.<BR>Elija otro t&iacute;tulo, por favor.";
+														 }
+												 }
+												 
+												 if ($flag)
+												 {
+												     // Si el nuevo título está libre
+												     // Se actualiza la categoría
+												     $query = "UPDATE phpforum_categories SET title = '".$title."', visibility = ".$visibility." WHERE id_cat LIKE ".$id_cat;												    
+								             if ($gesBD->update($query))
+								             {
+								                 // Si se actualiza correctamente
+								                 // Se eliminan de la sesión los datos relacionados con la edición de esta categoría
+								                 unset($_SESSION["categorias"]);
+								                 // Se muestra un mensaje de éxito mediante una ventana emergente y se redirecciona al usuario a la página de edición de categorías
+								                 echo "<SCRIPT>";
+								                 echo "alert('Categoría editada correctamente.');";
+								                 echo "location.href='index.php?accion=ShowForum&pagina=admin_editCat';";
+								                 echo "</SCRIPT>";
+														 }
+														 else
+														 {
+														     // Si no se actualiza correctamente
+														     // Se redirige al usuario a la página de error
+														     header("Location: error.php");	
+														 }
+												 }
+												 else
+												 {
+												     // Si el título no está libre
+												     // Se indica mediante un mensaje de error
+												     $this->error = "El <B>TÍTULO</B> que ha indicado ya existe para otra categor&iacute;a. Elija otro diferente, por favor.";
+												 }
+										 }
+										 else
+										 {
+										     // Si no se ejecuta correctamente
+										     // Se redirige al usuario a la página de error
+										     header("Location: error.php");	
+										 }
+								 }
+								 else
+								 {
+								     // Si el id no tiene ningún valor
+								     // Se redirecicona al usuario a la página de inicio del panel de administración
+								     header("Location: index.php");
+								 }
+						 }
+						 else
+						 {
+						     // Si sí se quiere mover la categoría
+						     // Se recogen los datos enviados
+						     $id_cat = $_GET["idc"];
+						     $move = $_GET["move"];
+						     
+						     if ((isset($id_cat)) && (isset($move)))
+						     {
+						         // Si los datos enviados tienen algún valor
+						         // Se monta el query con la nueva posición de la categoría
+						         $query = "SELECT position FROM phpforum_categories WHERE id_cat LIKE ".$id_cat;
+						     		 if ($gesBD->selectOne($query, "position"))
+										 { 
+										     $position = $gesBD->getObj();										     
+										     if ($move == "up")
+										     {
+										         $query = "SELECT id_cat FROM phpforum_categories WHERE position LIKE ".($position - 1);
+										         $newPosition = $position - 1;										         
+												 }
+												 else if ($move == "down")
+												 {
+												     $query = "SELECT id_cat FROM phpforum_categories WHERE position LIKE ".($position + 1);
+												     $newPosition = $position + 1;												     
+												 }	
+												 
+												 if ($gesBD->selectOne($query, "id_cat"))
+												 {
+												     $idc = $gesBD->getObj();
+												     // Se actualiza la categoría donde irá la categoría a mover
+												     $query = "UPDATE phpforum_categories SET position = ".$position." WHERE id_cat LIKE ".$idc;
+												     if ($gesBD->update($query))
+												     {
+												         // Se mueve la categoría a su nueva posición
+												         $query = "UPDATE phpforum_categories SET position = ".$newPosition." WHERE id_cat LIKE ".$id_cat;
+												         if ($gesBD->update($query))
+												         {
+												             // Si se actualiza correctamente
+												             // Se eliminan de la sesión los datos relacionados con la reordenación de las categorías
+												             unset($_SESSION["categorias"]);
+												             // Y se redirige al usuario a la página de reordenación de las categorías
+												             header("Location: index.php?accion=ShowForum&pagina=admin_orderCat");
+																 }
+																 else
+																 {
+																     // Si no se actualiza correctamente
+																     // Se vuelven a ordenar las categorías tal y como estaban antes
+																     $query = "UPDATE phpforum_categories SET position = ".$newPosition." WHERE id_cat LIKE ".$idc;
+																     if (!$gesBD->update($query))
+																     {
+																         // Si no se actualiza correctamente
+																         // Se redirige al usuario a la página de error
+																         header("Location: error.php");
+																		 }
+																 }
+														 }
+														 else
+														 {
+														     // Si no se actualiza correctamente
+												         // Se redirige al usuario a la página de error
+												         header("Location: error.php");
+														 }
+												 }
+												 else
+												 {
+												     // Si no se ejecuta correctamente
+										         // Se redirige al usuario a la página de error
+										         header("Location: error.php");
+												 }	
+										 }				
+										 else
+										 {
+										     // Si no se ejecuta correctamente
+								         // Se redirige al usuario a la página de error
+								         header("Location: error.php");
+										 }
+								 }
+								 else
+								 {
+								     // Si los datos enviados no tienen ningún valor
+								     // Se redirige al usuario a la página de inicio del panel de administración
+								     header("Location: index.php");
+								 }					 
+						 }
+				 }
+				 else			 
+				 {
+				     // Si no hay sesión de administrador
+						 // Se redirige al usuario a la página de inicio del foro
+						 header("Location: ../index.php");		     
+				 }
+				  
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

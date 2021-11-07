@@ -1,0 +1,101 @@
+<HTML>
+		<HEAD>
+		      <TITLE>Temas</TITLE>
+					<STYLE>
+						  BODY {
+						       background-color: #C0C0C0;
+									 color: #4F4F4F;
+				           font-size: 11px;
+				           font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+				           padding: 5px;				           
+								 	 scrollbar-arrow-color: #FFFFFF;
+									 scrollbar-3dlight-color: #FFFFFF;
+									 scrollbar-darkshadow-color: #FFFFFF;
+									 scrollbar-face-color: #C0C0C0;
+									 scrollbar-highlight-color: #C0C0C0;
+									 scrollbar-shadow-color: #C0C0C0;
+									 scrollbar-track-color: #C0C0C0;
+									 CURSOR: default;
+				      }
+				      .input {
+									border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+									border-left: #000000 1px solid; color: #EEEEEE; border-bottom: #FFFFFF 1px solid;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #999999; padding-left: 3px; 
+							}
+							.input:hover {
+									border-right: #FFFFFF 1px solid; border-top: #000000 1px solid; font-size: 11px;
+									border-left: #000000 1px solid; color: #555555; border-bottom: #FFFFFF 1px solid;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #CCCCCC; padding-left: 3px;
+							}
+							.inputError {
+							    border: #FF0000 1px solid; font-size: 11px; color: #EEEEEE;
+									font-family: Helvetica, Verdana, "Bitstream Vera Sans", Arial, sans-serif;
+									background-color: #999999; padding-left: 3px;
+							}
+					</STYLE>
+					<SCRIPT>
+					    // Función que elije un tema
+					    function setTheme()
+					    { 
+					        var theme = document.getElementById("theme").value;
+					        window.opener.document.getElementById("ttitle").value	= theme
+					        window.opener.document.getElementById("oldtitle").value	= document.getElementById("theme").value;
+					        window.opener.document.getElementById("comment").value = window.opener.document.getElementById(theme).value;
+					        window.close();
+							}
+					</SCRIPT>					
+		</HEAD>
+		<BODY leftmargin="0" rightmargin="0">	
+		<CENTER>		
+<?
+   // Popup de administración con la lista de temas
+  $userLogged = unserialize($_SESSION["userlog"]);  
+  if ($gesBD->selectCats($userLogged->getRank(), $userLogged->getId_user()))
+  {
+      $listaCats = $gesBD->getObj();
+      $id_catSelected = $_GET["idcat"];      
+      $cont = 0;
+      $size = count($listaCats);
+      
+      for ($cont = 0; $cont < $size; $cont++)
+			{
+			    $cat = $listaCats[$cont];
+			    if ($cat->getId_Cat() == $id_catSelected)
+			    {
+			        if ($cat->getContent() != 0)
+			        {
+?>
+          Temas: <?=replaceCharsToHTML($cat->getTitle())?>
+					<SELECT name="theme" id="theme" class="input" style="width: 200px;" size="5" onChange="setTheme()">
+<?
+	                $listaThemes = $cat->getThemes();
+									$contThemes = 0;
+									$sizeThemes = count($listaThemes);	
+									
+									for ($contThemes = 0; $contThemes < $sizeThemes; $contThemes++)
+									{
+									 		$theme = $listaThemes[$contThemes];
+?>
+								<OPTION value="<?=$theme->getTitle()?>"><?=replaceCharsToHTML($theme->getTitle())?></OPTION>			
+<?									 		
+									}					
+?>
+					</SELECT>
+<?			        
+							}
+							else
+							{
+?>
+							 		Esta categor&iacute;a no contiene temas para editar.
+							 		<BR>Elija otra categor&iacute;a.
+<?					
+							}
+					}
+			}      
+	}
+?>
+    </CENTER>
+	  </BODY>
+</HTML>

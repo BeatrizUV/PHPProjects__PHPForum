@@ -1,0 +1,2079 @@
+<?
+  /**
+   * Clase que se encarga de encapsular los datos de la BBDD de MySQL.
+   * By Beatriz Urbano Vega [Masane].
+   */
+  class GestionBD
+  {
+      // Variable que guarda el host de la base de datos
+   	  var $host;
+   	  // Variable que guarda el usuario de la base de datos
+   	  var $user;
+   	  // Variable que guarda la clave de la base de datos
+   	  var $passwd;
+   	  // Variable que guarda el nombre de la base de datos
+   	  var $name;
+   	  // Variable que guarda la conexión de la base de datos
+   	  var $conn;
+   	  // Variable que guarda los resultados de las operaciones ejecutadas en la clase
+   	  var $obj;
+   	  // Variable que guarda el error
+   	  var $error;
+   	  
+   	  // Constructor de la clase
+   	  function GestionBD($host, $user, $passwd, $name)
+   	  {
+   	      // Se asigna valor a la variable host
+   	   	  $this->host = $host;
+   	   	  // Se asigna valor a la variable user
+       	  $this->user = $user;
+       	  // Se asigna valor a la variable passwd
+       	  $this->passwd = $passwd;
+       	  // Se asigna valor a la variable name
+       	  $this->name = $name;
+   	  }
+   	  
+   	  // Función que conecta la base de datos
+   	  function connect()
+   	  {
+   	   	  $val;   	   	  
+   	   	  	  
+   	   	  // Conectamos la base de datos	  
+          $this->conn = @mysql_connect($this->host, $this->user, $this->passwd);    
+		    
+          if($this->conn)	  
+          {           	 
+              // Si se conecta correctamente
+		        	if (@mysql_select_db($this->name, $this->conn))
+		        	{		      	
+		        	    // Si se selecciona la base de datos
+		        	    // Se indica que todo ha ido bien
+    							$val = true;
+		        	}
+							else
+							{
+							    // Si no se selecciona la base de datos
+							    // Se indica que se ha producido un error al conectarse
+							    $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+							    $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>La base de datos indicada no existe.</SPAN>";
+							}        	   		  		     		     
+          }
+          else
+          {
+              // Si no se conecta correctamente
+              // Se indica que se ha producido un error al conectarse
+              $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+			        $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Datos de conexi&oacute;n incorrectos.</SPAN>";			        
+					}
+		            
+          return $val;
+   	  }     
+		 
+		  // Función que desconecta la base de datos
+	    function disconnect()
+	    {
+	   	    @mysql_close($this->conn);
+	    } 
+   	  
+   	  // Función que se encarga de crear las tablas de la base de datos
+   	  function createTables()
+   	  {
+		      $var = 0;
+		
+					// Se incluye el código con los datos a insertar   	 				 	  
+			 	  include("includes/config/sql/insert_tables.query");
+					
+					for ($cont = 0; $cont < count($lista); $cont++)
+					{
+					    // Se inserta cada tabla
+							$query = $lista[$cont];
+							if (!$this->insert($query))
+							{
+							   // Si no se inserta una tabla
+							   // Se aumenta el valor de la variable var en 1 para indicar el número de tablas que no se han insertado 
+					     	 $var++;
+						  }
+					} 	   	
+			
+					return $var;
+   	  }
+   	  
+   	  // Función que crea el usuario administrador del foro
+   	  function createDefaultUser($user)
+   	  { 					
+					// Se inserta el usuario administrador del foro 					
+   	   	  $query = "INSERT INTO phpforum_users (id_user, login, passwd, rank, email, fecha, avatar, ip) VALUES (-2, '".$user->getLogin()."', '".$user->getPasswd()."', -2, '".$user->getEmail()."', (SELECT NOW()), '-1', '".$user->getIp()."')";
+			    $val = $this->insert($query);
+   	   	  
+   	   	  if (!$val)
+					{
+					    // Si el usuario no se ha insertado
+					    // Se indica con un mensaje de error
+					 	  $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+              $this->error .= "No se ha podido crear el usuario administrador predeterminado.";             
+	        }
+	        else
+	        {
+	            // Si se ha insertado correctamente
+	            // Se le asigna un avatar por defecto
+	            $query  ="INSERT INTO phpforum_avatars (id_avatar, name) VALUES (-1, 'templates/Default/img/default_avatar.jpg')";
+							$val = $this->insert($query); 
+					}
+	        
+	        return $val;
+   	  } 
+   	  
+   	  // Función que crea un usuario anónimo
+   	  function createAnonymousUser()
+   	  {				  
+ 					$val = true;
+				
+					// Insertar el usuario por anónimo 					
+   	   	  $query = "INSERT INTO phpforum_users (id_user, login, passwd, rank, email, fecha, avatar, ip) VALUES (-1, 'Anónimo', '', '-3', '', (SELECT NOW()), -1, '')";
+   	   	  
+   	   	  if (!@mysql_query($query, $this->conn))
+					{
+					   // Si no se inserta correctamente
+						 // Se indica mediante un mensaje de error 
+					 	 $val = false;
+	 	         $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "No se ha podido crear el usuario an[o]nimo predeterminado.";             
+	        }
+	        
+	        return $val;
+   	  } 
+			 
+			//Función que crea el grupo de usuarios administradores 
+			function createAdminRank()
+   	  {				  
+ 					$val = true;
+				
+					// Se inserta el grupo					
+   	   	  $query = "INSERT INTO phpforum_ranks (id_rank, name, description) VALUES (-2, 'Administrador', 'Grupo para la administración del foro.')";
+   	   	  
+   	   	  if (!$this->insert($query))
+					{
+					   // Si no se inserta
+					   // Se indica mediante un mensaje de error
+					 	 $val = false;   
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>"; 
+						 $this->error .= "No se ha podido crear el grupo de usuario administrador.";         
+	        }
+	        
+	        return $val;
+   	  }
+   	  
+   	  // Función que crea el grupo de usuarios moderadores
+   	  function createModeRank()
+   	  {				  
+ 					$val = true;
+				
+					// Se inserta el grupo 					
+   	   	  $query = "INSERT INTO phpforum_ranks (id_rank, name, description) VALUES (-1, 'Moderador', 'Grupo para la moderación de todo el foro.')";
+   	   	  
+   	   	  if (!$this->insert($query))
+					{
+					   // Si no se inserta
+					   // Se indica mediante un mensaje de error
+					 	 $val = false;   
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>"; 
+						 $this->error .= "No se ha podido crear el grupo de usuario moderador.";         
+	        }
+	        
+	        return $val;
+   	  }
+   	  
+   	  // Función que crea el grupo de usuarios anónimos
+   	  function createAnonymousRank()
+   	  {				  
+ 					$val = true;
+				
+					// Se inserta el grupo 					
+   	   	  $query = "INSERT INTO phpforum_ranks (id_rank, name, description, can_write) VALUES (-3, 'Anónimo', 'Grupo de usuarios anónimos.', 0)";
+   	   	  
+   	   	  if (!$this->insert($query))
+					{
+					   // Si no se inserta
+					   // Se indica mediante un mensaje de error
+					 	 $val = false;   
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>"; 
+						 $this->error .= "No se ha podido crear el grupo de usuarios an[o]nimos.";         
+	        }
+	        
+	        return $val;
+   	  }
+			 
+			//  Función que crea el grupo de usuarios predeterminados
+			function createDefaultRank()
+   	  {				  
+ 					$val = true;
+				
+					// Se inserta el grupo
+   	   	  $query = "INSERT INTO phpforum_ranks (id_rank, name, description) VALUES (1, 'Usuario', 'Grupo para los usuarios sin privilegios.')";
+   	   	  
+   	   	  if (!$this->insert($query))
+					{
+					   // Si no se inserta
+					   // Se indica mediante un mensaje de error
+					 	 $val = false;
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>"; 
+						 $this->error .= "No se ha podido crear el grupo de usuario predeterminado."; 	            
+	        }
+	        
+	        return $val;
+   	  }    		
+   	  
+   	  // Función que crea un grupo determinado por el administrador del foro
+   	  function createRank($name, $comment, $read, $write, $mod, $admin)
+   	  {				  
+ 					$val = true;
+				
+					// Se inserta el grupo 					
+   	   	  $query = "INSERT INTO phpforum_ranks (name, description, can_read, can_write, can_mod, can_admin) VALUES ('".$name."', '".$comment."', ".$read.", ".$write.", ".$mod.", ".$admin.")";
+   	   	  
+   	   	  if (!$this->insert($query))
+					{
+					   // Si no se inserta
+					   // Se indica mediante un mensaje de error
+					 	 $val = false;
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al crear el grupo.</SPAN>";             
+	        }
+	        
+	        return $val;
+   	  } 
+			
+			// Función que crea una categoría con un tema, un post y un mensaje por defecto en el foro
+			function createForumContent()
+			{		      
+			    $val = false;
+			    
+		      // Se crea una categoria por defecto		      
+		      if ($this->createCategory("Categor&iacute;a de pruebas", -3))
+		      {   
+		       	 // Se selecciona el id de la categoria creada
+		       	 $query = "SELECT id_cat FROM phpforum_categories ORDER BY id_cat DESC LIMIT 1";
+		       	 
+		       	 if ($this->selectOne($query, "id_cat"))
+		       	 {		    
+		       	    $id_cat = $this->obj;
+		       	 		// Se crea un tema por defecto	
+										       	 		
+		       	 		if ($this->createTheme($id_cat, "Tema de prueba", "Tema de prueba para probar el foro", -3))
+		       	 		{
+		       	 		 	 // Se selecciona el id del tema creado
+		       	 		 	 $query = "SELECT id_theme FROM phpforum_themes ORDER BY id_theme DESC LIMIT 1";
+		       	 		 	 
+		       	 		 	 if ($this->selectOne($query, "id_theme"))
+		       	 		 	 {
+		       	 		 	    $id_theme = $this->obj;
+		       	 		 	 		// Se crea un post por defecto		       	 		 	 									      
+								      
+								      // Se recoge el usuario conectado de la sesión
+								      $user = unserialize($_SESSION["userlog"]);
+								      if (isset($user))
+								      {			       	 
+								         // Si existe el usuario
+								         // Se extrae su id
+								       	 $id_user = $user->getId_user();
+												 // Y se crea el post y el mensaje del post con esta id									       	 
+											   $val = $this->createPost($id_theme, "Post de prueba", 0, $id_user, "Mensaje de prueba");
+					            }
+								   }
+								}		       	 		
+			       }			       
+					}			
+																					
+					return $val;
+			}
+			
+			// Función que ejecuta un SELECT que devuelve un solo valor
+			function selectOne($query, $selection)
+			{		     
+		      $encontrado = false;
+		      // Se ejecuta el SELECT
+		      $result = @mysql_query($query, $this->conn);
+		      if (!$result)
+		      {		       	 
+		         // Si no se ejecuta correctamente
+		         // Se indica mediante un mensaje de error
+		       	 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+					}
+					else
+					{
+					    // Si sí se ejecuta correctamente 
+					    $variable;
+		      		      
+				      while(($reg = @mysql_fetch_assoc($result)) && (!$encontrado)) 
+				      {	
+				          // Se extrae el dato
+		              $variable = $reg[$selection];
+		              $encontrado = true;	
+									// Y se guarda en obj	              
+		              $this->obj = $variable;
+							}
+					}
+					
+					return $encontrado;
+			}
+			
+			// Función que ejecuta un SELECT multiresultado
+			function selectMore($query, $listaVariables)
+			{		      
+		      $encontrado;
+		      $lista;		      
+		      $contLista = 0;
+		      $contVariables = 0;
+		      // Se extrae el tamaño de la lista de variables a extraer
+		      $size = count($listaVariables);
+		      // Se ejecuta el SELECT
+		      $result = @mysql_query($query, $this->conn);
+		      if (!$result)
+		      {
+		         // Si no se ejecuta correctamente
+		         // Se indica mediante un mensaje de error
+		       	 $encontrado = false;
+		       	 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+					}		
+					else
+					{
+					    // Si se ejecuta correctamente
+					    $lista;
+				      $listaRegs;
+				      
+				      while($reg = @mysql_fetch_assoc($result)) 
+				      {					          
+				          // Se extraen los conjuntos de resultados 
+				          for($contVariables = 0; $contVariables<$size; $contVariables++)
+				          {		          
+				              // Se recoge el conjunto de resultados de cada fila de la tabla
+				              $lista[$contVariables] = $reg[$listaVariables[$contVariables]];																			 						                  
+									}										
+									// Se recoge cada fila
+									$listaRegs[$contLista] = $lista;									
+									$contLista++;
+									// Se indica que todo ha ido bien
+									$encontrado = true;
+							}
+							
+							// Y se guardan todas las filas con sus correspondientes datos en obj
+							$this->obj = $listaRegs;							
+					}
+					
+					return $encontrado;
+			}
+			
+			// Función que hace un recuento de filas de un SELECT
+			function selectCount($query)
+			{		      
+		      $cont = 0;
+		      $encontrado = false;	
+					// Se ejecuta el SELECT	      		     
+		      $result = @mysql_query($query, $this->conn);
+		      if (!$result)
+		      {		       	 
+		         // Si no se ejecuta correctamente
+		         // Se indica mediante un mensaje de error
+		       	 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+					}		
+					else
+					{					   
+					    // Si se ejecuta correctamente 
+				      while($reg = @mysql_fetch_assoc($result)) 
+				      {	
+				          // Se recuentan las filas
+				          $cont++;				
+							}
+							// Se indica que todo ha ido bien
+							$encontrado = true;							
+							// Y se guarda el recuento de filas en obj	
+							$this->obj = $cont;
+					}
+					
+					return $encontrado;
+			}
+			
+			// Función que ejecuta un INSERT 
+			function insert($query)
+			{
+			    // Se ejecuta el INSERT
+		      $val = @mysql_query($query, $this->conn);					
+					return $val;
+			}
+			
+			// Función que ejecuta un UPDATE
+			function update($query)
+			{
+			    // Se ejecuta el UPDATE
+		      $val = @mysql_query($query, $this->conn);					
+					return $val;
+			}
+			
+			// Función que ejecuta un DELETE
+			function delete($query)
+			{
+			    // Se ejecuta el DELETE
+		      $val = @mysql_query($query, $this->conn);
+		      return $val;
+			}
+			
+			// Función que formatea la base de datos
+			function reset()
+			{
+			    // Se listan las tablas a borrar
+		      $tables = array(
+										0 => "phpforum_users",
+										1 => "phpforum_msgs",
+										2 => "phpforum_posts",
+										3 => "phpforum_themes",
+										4 => "phpforum_categories",
+										5 => "phpforum_mps",
+										6 => "phpforum_templates",
+										7 => "phpforum_logs",
+										8 => "phpforum_logs_backup",
+										9 => "phpforum_ranks",
+										10 => "phpforum_avatars",		
+										11 => "phpforum_reads_control",	
+										);									
+										
+			    $cont = 0;
+			    
+			    for ($cont = 0; $cont < count($tables); $cont++)
+			    {
+			        // Y se borran las tablas una a una
+			     		$query = "DROP TABLE ".$tables[$cont];
+			     		$this->delete($query);
+					}
+			}
+			
+			// Función que recoge un usuario de la base de datos
+			function selectUser($query)
+			{	      		      
+		      $encontrado = false;
+		      // Se ejecuta el SELECT
+		      $result = @mysql_query($query, $this->conn);
+		      if (!$result)
+		      {		       	 		
+		         // Si no se ha ejecutado correctamente
+		         // Se indica mediante un mensaje de error
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";       	 
+					}	 
+					else
+					{
+					    // Si se ha ejecutado correctamente
+					    while(($reg = @mysql_fetch_assoc($result)) && (!$encontrado)) 
+				      {	
+				          // Se extraen los datos del la base de datos y se guardan en un objeto usuario
+				          $user = new Usuario("","","","","","","","","","","","","","","","","","","","","");
+		              $user->setLogin($reg["login"]);
+		              $user->setPasswd($reg["passwd"]);
+		              $user->setRank($reg["rank"]);
+		              /***** Preparar el nombre del rango *****/
+		              $query = "SELECT name FROM phpforum_ranks WHERE id_rank LIKE ".$user->getRank();
+	                if ($this->selectOne($query, "name"))
+	                {
+	                    $user->setRankName($this->obj);
+									}	
+									/******************************************/
+		              $user->setName($reg["name"]);
+		              $user->setEmail($reg["email"]);
+		              $user->setId_user($reg["id_user"]);		             
+		              $user->setAvatar($reg["avatar"]);		              
+									/***** Preparar el avatar *****/
+									$query = "SELECT name FROM phpforum_avatars WHERE id_avatar LIKE ".$reg["avatar"];
+								  if ($this->selectOne($query, "name"))
+								  {
+								   	 $user->setUrlAvatar($this->obj);								   	  
+									}   
+									/******************************/		             
+		              $user->setSign($reg["sign"]);
+		              $user->setDate($reg["fecha"]);
+		              $user->setAlerts($reg["alerts"]);
+		              $user->setIs_banned($reg["is_banned"]);		              
+		              $user->setSite($reg["site"]);
+		              $user->setMsn($reg["msn"]);
+		              $user->setIp($reg["ip"]);              
+		              $user->setNum_msgs($reg["num_msgs"]);
+		              $user->setSex($reg["sex"]);              
+		              $user->setVotes($reg["votes"]);
+		              $user->setWeb($reg["web"]);
+		              /***** Preparar la bandeja de entrada del usuario *****/
+		              $query = "SELECT id_mp FROM phpforum_mps WHERE box LIKE 'in' AND receptor LIKE ".$user->getId_user()." AND is_read LIKE 0";
+		              if ($this->selectCount($query))
+		              {
+		                  $user->setMpsUnread($this->obj);
+									}
+		              /******************************************************/		              
+		              $user->setUseCookie($reg["use_cookie"]);
+		              $user->setRandCookieCode($reg["rand_cookie_code"]);
+									// Se indica que todo ha ido bien		              
+		              $encontrado = true;
+		              
+		              // Y se guarda el usuario en obj
+		              $this->obj = $user;
+							}
+					}
+					
+					return $encontrado;
+			}
+			
+			// Función que recoge un grupo de la base de datos
+			function selectGroup($query)
+			{	      		      
+		      $encontrado = false;
+		      // Se ejecuta el SELECT
+		      $result = @mysql_query($query, $this->conn);
+		      if (!$result)
+		      {		       	 		
+		         // Si no se ha ejecutado correctamente
+		         // Se indica mediante un mensaje de error
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";       	 
+					}	 
+					else
+					{
+					    // Si se ha ejecutado correctamente 
+					    while(($reg = @mysql_fetch_assoc($result)) && (!$encontrado)) 
+				      {	
+				          // Se extraen los datos de la base de datos y se guardan en un objeto grupo
+				          $group = new Grupo("","","");
+		              $group->setId_Group($reg["id_rank"]);
+		              $group->setName($reg["name"]);
+		              $group->setComment($reg["description"]);
+									$group->setCan_read($reg["can_read"]);
+		              $group->setCan_write($reg["can_write"]);
+		              // Se indica que todo ha ido bien
+		              $encontrado = true;
+		              
+		              // Y se guarda el grupo en obj
+		              $this->obj = $group;
+							}
+					}
+					
+					return $encontrado;
+			}
+			
+			// Función que recoge la lista de usuarios de la base de datos
+			function selectUsers()
+			{
+			    // Se recogen las ids de todos los usuarios menos el usuario anónimo
+			    $query = "SELECT id_user FROM phpforum_users WHERE id_user NOT LIKE -1 ORDER BY id_user asc";
+			    $variables[0] = "id_user";
+			    $flag = false;
+			    $listaUsers;
+			    if ($this->selectMore($query, $variables))
+			    {
+			        // Si existen registros
+			        // Se recogen las ids
+			        $listaUserIds = $this->obj;
+			        // Se recoge el tamaño de la lista de ids
+			        $size = count($listaUserIds);			       
+			        $cont = 0;
+			        $contlu = 0;			        
+			        
+			        for ($cont = 0; $cont < $size; $cont++)
+			        {		 
+			            $fila = $listaUserIds[$cont];
+			            // Se recoge cada usuario
+			            $query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$fila[0];			           
+			            if ($this->selectUser($query))
+			            {			    
+									    // Si existe el usuario
+											// Se recoge el usuario            
+			                $user = $this->obj;		
+											// Se guarda cada usuario en una lista de usuarios	                				                
+			                $listaUsers[$contlu] = $user;
+			                $contlu++;
+			                // Se indica que todo ha ido bien
+			                $flag = true;
+									}	
+							}	
+							
+							// Y se guarda la lista de usuarios en obj
+							$this->obj = $listaUsers;						 
+					}										
+					
+					return $flag;					
+			}
+			
+			// Función que recoge la lista de usuarios de la base de datos
+			function selectGroups()
+			{
+			    // Se recogen las ids de todos los grupos
+			    $query = "SELECT id_rank FROM phpforum_ranks WHERE id_rank NOT LIKE -3 ORDER BY id_rank asc";
+			    $variables[0] = "id_rank";
+			    $flag = false;
+			    $listaGroups;
+			    if ($this->selectMore($query, $variables))
+			    {
+			        // Si existen registros
+			        // Se recogen las ids
+			        $listaGroupIds = $this->obj;
+			        // Se recoge el tamaño de la lista de ids
+			        $size = count($listaGroupIds);							 
+			        $cont = 0;
+			        $contlg = 0;			        
+			        
+			        for ($cont = 0; $cont < $size; $cont++)
+			        {			            
+			            $fila = $listaGroupIds[$cont];
+			            // Se recoge cada grupo 
+			            $query = "SELECT * FROM phpforum_ranks WHERE id_rank LIKE ".$fila[0];			           
+					        if ($this->selectGroup($query))
+					        {			             
+									    // Si existe el grupo
+											// Se recoge el grupo   
+			                $group = $this->obj;
+											// Se recoge el número de usuarios de cada grupo					                
+			                $query = "SELECT * FROM phpforum_users WHERE rank LIKE ".$fila[0];														                
+			                if ($this->selectCount($query))
+			                {
+			                    // Si existen registros
+			                    // Se recoge el número de usuarios del grupo
+			                    $users = $this->obj;			                  
+													// Y se guarda
+			                    $grupo["users"] = $users;			                    
+											}		
+											else
+											{
+											    // Si no existen registros
+											    // Se establece el número de usuarios del grupo a 0
+											    // Y se guarda
+											    $grupo["users"] = 0;
+											}						
+											// Se guarda el grupo				
+											$grupo["group"] = $group;
+											// Se guarda cada grupo en una de grupos		
+											$listaGroups[$contlg] = $grupo;
+	                		$contlg++;
+	                		// Se indica que todo ha ido bien
+	                		$flag = true;						
+									}
+							}	
+							
+							// Y se guarda la lista de grupos en obj
+							$this->obj = $listaGroups;						 
+					}										
+					
+					return $flag;					
+			}
+						
+			// Función que recoge un mensaje de la base de datos			
+			function selectMsg($id_msg, $rank)
+			{          					
+					$encontrado = false;
+					
+					// Se pregunta si el grupo de usuarios al que pertenece el usuario tiene permisos de lectura sobre el foro
+					$query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					if ($this->selectOne($query, "can_read"))
+					{					    
+					    // Si existe el grupo
+					    if ($this->obj == "1")
+					    { 
+					        // Si tiene permisos de lectura
+					        // Se recoge la id del post padre del mensaje
+					        $query = "SELECT id_post FROM phpforum_msgs WHERE id_msg LIKE ".$id_msg;
+					        if ($this->selectOne($query, "id_post"))
+					        {
+					            // Si existe el post
+					            // Se recoge la id
+					            $id_post = $this->obj;
+					            // Se recoge el id del tema padre del post
+					            $query = "SELECT id_theme FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+					            if ($this->selectOne($query, "id_theme"))
+					            {
+					                // Si existe el tema
+					                // Se recoge la id
+					                $id_theme = $this->obj;
+					                // Se recoge el id de la categoría padre del tema
+					                $query = "SELECT id_cat FROM phpforum_themes WHERE id_theme LIKE ".$id_theme;
+					                if ($this->selectOne($query, "id_cat"))
+					                {
+					                    // Si existe la categoría
+					                    // Se recoge la id
+					                    $id_cat = $this->obj;
+					                    // Se pregunta si el usuario tiene acceso o no a dicha categoría en función de su rango o grupo
+					                    if ($rank == -3)
+															{
+															    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND visibility LIKE -3 ORDER BY position ASC";
+															}
+															else if ($rank == -2)
+															{
+															    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." ORDER BY position ASC";
+															}
+															else if ($rank == -1)
+															{
+															    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND visibility NOT LIKE -2 ORDER BY position ASC";
+															}
+															else if ($rank == 1)
+															{
+															    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+															}
+															else
+															{
+															    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+															}
+																		
+															// Se ejecuta el SELECT			
+															$result = @mysql_query($query, $this->conn);
+														  if (!$result)
+														  {
+															    // Si no se ejecuta correctamente
+																	// Se indica	      
+														      $encontrado = false;
+															}
+															else
+															{
+															    // Si se ejecuta correctamente
+															    // Se pregunta si el usuario tiene acceso a dicho tema en función de su rango o grupo
+															    if ($rank == -3)
+																	{
+																	    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND visibility LIKE -3 ORDER BY position ASC";
+																	}
+																	else if ($rank == -2)
+																	{
+																	    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." ORDER BY position ASC";
+																	}
+																	else if ($rank == -1)
+																	{
+																	    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND visibility NOT LIKE -2 ORDER BY position ASC";
+																	}
+																	else if ($rank == 1)
+																	{
+																	    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+																	}
+																	else
+																	{
+																	    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+																	}
+																	
+																	// Se ejecuta el SELECT
+																	$result = @mysql_query($query, $this->conn);
+																  if (!$result)
+																  {				 
+																	    // Si no se ejecuta correctamente
+																			// Se indica     
+																      $encontrado = false;
+																	}
+																	else
+																	{		
+																	    // Si se ejecuta correctamente
+																	    // Se recogen todos los datos del mensaje a mostrar
+																			$query = "SELECT * FROM phpforum_msgs WHERE id_msg LIKE ".$id_msg;
+																			// Se ejecuta el SELECT
+																		  $result = @mysql_query($query, $this->conn);
+																		  if (!$result)
+																		  {				      
+																		      // Si no se ejecuta correctamente
+																		      // Se indica mediante un mensaje de error
+																		      $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+														              $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+																			}
+																			else
+																			{	 
+																			    // Si sí se ejecuta correctamente																			    
+																			    while ($reg = @mysql_fetch_assoc($result))
+																					{
+																					    // Se recogen los datos del mensaje
+																     			    $msg = new Mensaje("","","","","","","","");
+																     			    $msg->setId_msg($reg["id_msg"]);		     			    
+																     			    $author = $reg["id_author"];
+																     			    $msg->setExistAuthor($reg["exist_author"]);
+																     			    if ($msg->getExistAuthor() == 1)
+																     			    {
+																     			        // Si existe el autor
+																     			        // Se recogen los datos del autor del mensaje
+																     			        $query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$author;
+																     			     	  if ($this->selectUser($query))
+																     			     	  {	  			     	   	 												
+																										  // Si existe el usuario
+																											// Se recogen sus datos							 
+																     			     	      $msg->setAuthor($this->obj);		     			     	      
+																									}
+																							}
+																							else
+																							{
+																							    // Si no existe el autor
+																							    // Se recogen los datos del usuario anónimo
+																							 		$query = "SELECT * FROM phpforum_users WHERE id_user LIKE -1";
+																     			     	  if ($this->selectUser($query))
+																     			     	  {		         										     			 
+																										  // Si existe el usuario
+																											// Se recogen sus datos      	   	 																			 
+																     			     	      $msg->setAuthor($this->obj);		     			     	      
+																									}
+																							}      			    
+																     			    $msg->setBody($reg["body"]);
+																     			    $msg->setDate($reg["fecha"]);
+																     			    $msg->setId_post($reg["id_post"]);
+																     			    $msg->setIs_first($reg["is_first"]);
+																							$msg->setIs_last($reg["is_last"]);
+																							// Se indica que todo ha ido bien																							
+																							$encontrado = true;
+																          }
+																          
+																          // Y se guarda el mensaje en obj
+																          $this->obj = $msg;
+																			}
+																	}
+															} 
+													}
+											}
+									}
+							}
+					}						
+          
+          return $encontrado;
+			}
+			
+			// Función que recoge todos los mensajes de un post de la base de datos
+			function selectMsgs($id_post, $rank)
+			{          					
+					$encontrado;
+					
+					// Se pregunta si el grupo del usuario tiene permisos de lectura sobre el foro
+					$query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					if ($this->selectOne($query, "can_read"))
+					{					    
+					    // Si se ejecuta correctamente
+					    if ($this->obj == "1")
+					    {
+					        // Si el usuario tiene permisos de lectura
+					        // Se recogen todos los datos de todos los mensajes del post ordenados por su id ascendentemente
+									$query = "SELECT * FROM phpforum_msgs WHERE id_post LIKE ".$id_post." ORDER BY id_msg ASC";
+									// Se ejecuta el SELECT
+								  $result = @mysql_query($query, $this->conn);
+								  if (!$result)
+								  {
+								      // Si no se ejecuta correctamente
+								      // Se indica mediante un mensaje de error
+								      $encontrado = false; 
+								      $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+				              $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+									}
+									else
+									{
+									    // Si se ejecuta correctamente
+									    $listaMsgs;
+									    $cont = 0;
+									
+											while ($reg = @mysql_fetch_assoc($result))
+											{
+											    // Se recogen los datos de cada mensaje
+						     			    $msg = new Mensaje("","","","","","","","");
+						     			    $msg->setId_msg($reg["id_msg"]);     			    
+						     			    $msg->setExistAuthor($reg["exist_author"]);
+						     			    if ($msg->getExistAuthor() == 1)
+						     			    {
+						     			        // Si existe el autor
+						     			        $query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$reg["id_author"];
+						     			     	  if ($this->selectUser($query))
+						     			     	  {		                 
+																  // Si existe el usuario
+																	// Se recogen sus datos    										     			     	   	 																			 
+						     			     	      $msg->setAuthor($this->obj);		     			     	      
+															}
+													} 
+													else
+													{
+													    // Si no existe el autor
+													 		$query = "SELECT * FROM phpforum_users WHERE id_user LIKE -1";
+						     			     	  if ($this->selectUser($query))
+						     			     	  {		                 
+																  // Si existe el usuario
+																	// Se recogen sus datos     										     			     	   	 																			 
+						     			     	      $msg->setAuthor($this->obj);		     			     	      
+															}
+													}  
+						     			    $msg->setBody($reg["body"]);
+						     			    $msg->setDate($reg["fecha"]);     			    
+						     			    $msg->setIs_first($reg["is_first"]);
+													$msg->setIs_last($reg["is_last"]);
+													$msg->setId_post($reg["id_post"]);
+													// Se guarda cada mensaje en una lista de mensajes
+													$listaMsgs[$cont] = $msg;
+													$cont++;
+													// Se indica que todo ha ido bien
+													$encontrado = true; 
+						          }		          
+						          
+						          // Y se guarda la lista de mensajes en obj
+						          $this->obj = $listaMsgs;
+									}
+							}
+					}				
+          
+          return $encontrado;
+			}
+			
+			// Función que recoge todos los posts de un tema de la base de datos
+			function selectPosts($id_theme, $id_user, $rank)
+			{          					
+					$encontrado;
+					$noReads = 0;
+					
+					// Se pregunta si el grupo del usuario tiene permisos de lectura sobre el foro
+					$query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					if ($this->selectOne($query, "can_read"))
+					{					    
+					    // Si se ejecuta correctamente
+					    if ($this->obj == "1")
+					    {
+					        // Si tiene permisos de lectura
+					        // Se recogen todos los posts del tema
+							    $query = "SELECT * FROM phpforum_posts WHERE id_theme LIKE ".$id_theme." ORDER BY id_last_msg DESC";
+									// Se ejecuta el SELECT						
+								  $result = @mysql_query($query, $this->conn);
+								  if (!$result)
+								  {
+								      // Si no se ejecuta correctamente
+								      // Se indica mediante un mensaje de error
+								      $encontrado = false;
+								      $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+				              $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+									}
+									else
+									{					    
+									    // Si se ejecuta correctamente
+									    $listaPosts;
+									    $listaPostsFixed;
+									    $pList;
+									    $contlp = 0;
+									    $contlpf = 0;
+									    $contpl = 0;
+									
+											while ($reg = @mysql_fetch_assoc($result))
+											{						
+											    // Se recoge cada post	    
+						     			    $post = new Post("","","","","","","","","","");
+						     			    $post->setId_post($reg["id_post"]);
+						     			    $post->setId_theme($reg["id_theme"]);
+						     			    $post->setStatus($reg["status"]);		     			    
+						     			    $post->setTitle($reg["title"]);
+						     			    $post->setTotalMsgs($reg["total_msgs"]);		 
+													$post->setNum_views($reg["num_views"]);
+													$post->setIs_fixed($reg["is_fixed"]);    			    		     			    
+						     			    if ($this->selectMsg($reg["id_last_msg"], $rank))
+						     			    {
+						     			        // Se recoge el último mensaje del post
+						     			        $post->setLastMsg($this->obj);		     			        
+													}									
+						     			    if ($this->selectMsgs($post->getId_post(), $rank))
+						     			    {
+						     			        // Se recogen todos los mensajes del post
+						     			        $post->setMsgs($this->obj);
+		     			                // Se recoge el estado de lectura de cada post
+						     			        $post->setIs_read($this->isRead($post->getId_post(), $id_user));											
+															
+															if ($post->getIs_fixed() == 1)
+						     			        {
+						     			            // Si el post es fijo
+						     			            if ($post->getIs_read() == 0)
+															    {
+															        // Se registra si no está leído
+				    											    $noReadsFixed++;
+				    											}
+				    											// Se guarda el post en la lista de posts fijos
+						     			            $listaPostsFixed[$contlpf] = $post;
+						     			            $contlpf++;
+													    }
+													    else if ($post->getIs_fixed() == 0)
+													    {
+													        // Si el post no es fijo
+													        if ($post->getIs_read() == 0)
+															    {
+															        // Se registra si no está leído
+				    											    $noReads++;
+				    											}
+				    											// Se guarda el post en la lista de posts no fijos
+													        $listaPosts[$contlp] = $post;
+													        $contlp++;
+															}											
+																		
+															// Se indica que todo ha ido bien							
+															$encontrado = true;																			
+													}							    			  						   			    
+						          }
+						          
+											// Primero se guardan los posts fijos en la lista de posts		          
+						          for ($contlpf = 0; $contlpf < count($listaPostsFixed); $contlpf++)
+						          {
+						              $pList[$contpl] = $listaPostsFixed[$contlpf];
+						              $contpl++;
+											}
+											
+											// Y luego se guardan los posts no fijos en la lista de posts
+											for ($contlp = 0; $contlp < count($listaPosts); $contlp++)
+						          {
+						              $pList[$contpl] = $listaPosts[$contlp];
+						              $contpl++;
+											}
+						          
+						          if (($noReads > 0) || ($noReadsFixed > 0))
+						          {
+						              // Si hay posts sin leer
+						              // Se indica que hay posts sin leer
+						              $pList["reads"] = 0;
+											}
+											else
+											{
+											    // Si no hay posts sin leer
+											    // Se indica que no hay posts sin leer
+											    $pList["reads"] = 1;
+											}
+						          
+						          // Se guarda la lista de posts en obj
+						          $this->obj = $pList;
+									}
+					    }
+					}
+					
+          return $encontrado;
+			}
+			
+			// Función que recoge la lista de temas de una categoría
+			function selectThemes($id_cat, $rank, $id_user)
+			{          							
+					$encontrado;			
+					
+					// Se pregunta si el grupo del usuario tiene permisos de lectura sobre le foro
+					$query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					if ($this->selectOne($query, "can_read"))
+					{				
+					    // Si se ejecuta correctamente 	    
+					    if ($this->obj == "1")
+					    {		
+					        // Si el usuario tiene permisos de lectura
+					        // Se pregunta si el usuario tiene acceso a los temas en función de su rango o grupo
+							    if ($rank == -3)
+									{
+									    $query = "SELECT id_theme FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND visibility LIKE -3 ORDER BY position ASC";
+									}
+									else if ($rank == -2)
+									{
+									    $query = "SELECT id_theme FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." ORDER BY position ASC";
+									}
+									else if ($rank == -1)
+									{
+									    $query = "SELECT id_theme FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND visibility NOT LIKE -2 ORDER BY position ASC";
+									}
+									else if ($rank == 1)
+									{
+									    $query = "SELECT id_theme FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+									}
+									else
+									{
+									    $query = "SELECT id_theme FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+									}
+									
+									$variables[0] = "id_theme";
+									if ($this->selectMore($query, $variables))
+									{					
+									    // Si tiene permiso 
+											$listaThemes;
+											$contt = 0;
+											$cont = 0;
+											// Se recoge la lista de ids de los temas
+											$filas = $this->obj;
+											// Se recoge el tamaño de la lista de ids de temas
+											$size = count($filas);
+											
+											for ($contt = 0; $contt < $size; $contt++)
+											{							    
+											    $fila = $filas[$contt]; 
+											    $id_theme = $fila[0];	
+													// Se recoge cada tema												   
+						     			    if ($this->selectTheme($id_theme, $id_user, $rank))
+													{
+													    // Si existe el tema
+													    // Se guarda cada tema en la lista de temas
+													    $listaThemes[$cont] = $this->obj;
+													    $cont++;
+													    // Se indica que todo ha ido bien
+													    $encontrado = true;	
+													}						    
+						          }
+											
+											// Y se guarda la lista de temas en obj
+											$this->obj = $listaThemes;  
+									}
+							}
+					}		        
+          
+          return $encontrado;
+			}		
+			
+			// Función que recoge todas las categorías de la base de datos
+			function selectCats($rank, $id_user)
+			{          				
+					$encontrado;			
+					
+					// Se pregunta si el grupo del usuario tiene permisos de lectura sobre el foro
+					$query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					if ($this->selectOne($query, "can_read"))
+					{					    
+					    // Si se ejecuta correctamente
+					    if ($this->obj == "1")
+					    {
+					        // Si el usuario tiene permisos de lectura
+					        // Se recogen todas las categorías sobre las que tiene acceso
+									if ($rank == -3)
+									{
+									    $query = "SELECT * FROM phpforum_categories WHERE visibility LIKE -3 ORDER BY position ASC";
+									}
+									else if ($rank == -2)
+									{
+									    $query = "SELECT * FROM phpforum_categories ORDER BY position ASC";
+									}
+									else if ($rank == -1)
+									{
+									    $query = "SELECT * FROM phpforum_categories WHERE visibility NOT LIKE -2 ORDER BY position ASC";
+									}
+									else if ($rank == 1)
+									{
+									    $query = "SELECT * FROM phpforum_categories WHERE (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+									}
+									else
+									{
+									    $query = "SELECT * FROM phpforum_categories WHERE (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+									}		 
+									
+									// Se ejecuta el SELECT
+								  $result = @mysql_query($query, $this->conn);
+								  
+								  if (!$result)
+								  {
+								      // Si no se ejecuta correctamente
+								      // Se indica
+								      $encontrado = false;
+									}
+									else
+									{
+									    // Si se ejecuta correctamente
+									    $cont = 0;
+											$listaCats;
+																		
+											while($reg = @mysql_fetch_assoc($result)) 
+											{
+											    // Se recoge cada categoría
+						     			    $cat = new Categoria("","","","","","");
+						     			    $cat->setId_cat($reg["id_cat"]);									     			   
+						     			    $cat->setTitle($reg["title"]);
+						     			    $cat->setVisibility($reg["visibility"]);
+						     			    $cat->setPosition($reg["position"]);
+													      			    
+						     			    if ($this->selectThemes($cat->getId_cat(), $rank, $id_user))
+						     			    {
+						     			        // Si la categoría tiene temas
+						     			        // Se establece que sí tiene contenido a mostrar
+						     			        $cat->setContent(1);
+						     			        $cat->setThemes($this->obj);
+													}							    			
+													else
+													{
+													    // Si no tiene temas
+													    // Se establece que no tiene contenido a mostrar
+													    $cat->setContent(0);
+													}   						
+													
+													// Se guarda cada categoría en la lista de categorías
+													$listaCats[$cont] = $cat;									
+													$cont++;							
+													// Se indica que todo ha ido bien
+													$encontrado = true;      			    
+						          }   
+											
+											// Y se guarda la lista de categorías en obj
+											$this->obj = $listaCats; 
+									} 
+							}	
+							else
+							{
+							    // Si no tiene permisos de lectura sobre le foro
+							    // Se indica mediante un mensaje de error
+							    $this->error = "No tiene permisos de lectura sobre el foro.<BR>Para m&aacute;s informaci&oacute;n, consulte con el administrador del foro.";
+							}						
+					}
+					
+          return $encontrado;
+			}		
+			
+			// Función que recoge el estado de lectura de un post
+			function isRead($id_post, $id_user)			
+			{
+			    if ($id_user == -1)
+			    {
+			        // Si el usuario es anónimo
+			        // Se ponen todos los mensajes sin leer
+			        $status = 0;
+					}
+					else
+					{
+					    // Si el usuario no es un anónimo
+					    // Se recoge el estado de lectura del de este usuario
+					    $query = "SELECT status FROM phpforum_reads_control WHERE id_post LIKE ".$id_post." AND id_user LIKE ".$id_user;
+					    
+					    if ($this->selectOne($query, "status"))
+					    {
+					        // Si existen registros
+					        // Se guarda el estado de lectura
+					        $status = $this->obj;
+							}
+							else
+							{
+							    // Si no existen registros
+							    // Se crea un registro de estado de lectura a "sin leer"
+							    $status = 0;
+							    $query = "INSERT INTO phpforum_reads_control (id_post, id_user, status) VALUES (".$id_post.", ".$id_user.", 0";
+							    $this->insert($query);
+							}
+					}
+					
+					return $status;
+			}
+			
+			// Función que recoge la lista de templates de la base de datos
+			function listarTemplates()
+			{
+			    // Se recogen todos los templates del foro ordenados por nombre ascendentemente
+			    $query = "SELECT * FROM phpforum_templates ORDER BY name ASC";
+			    $cont = 0;
+			    
+			    // Se ejecuta el SELECT
+			    $result = @mysql_query($query, $this->conn);
+			    
+			    if (!$result)
+			    {
+			        // Si no se ejecuta correctamente
+			        // Se indica mediante un mensaje de error
+			        $flag = false;
+			        $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+              $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+					}
+					else
+					{
+					    // Si se ejecuta correctamente
+					    $cont = 0;
+					    while($reg = @mysql_fetch_assoc($result)) 
+				      {	  
+				          // Se recogen los datos de cada template
+							    $template["name"] = $reg["name"];
+									$template["is_active"] = $reg["is_active"];
+									// Se guarda cada template en la lista de templates 
+									$listaTemplates[$cont] = $template;
+									// Se indica que todo va bien
+									$encontrado = true; 
+									$cont++;  
+							}					
+							
+							// Y se guarda la lista de templates en obj
+							$this->obj = $listaTemplates;
+					}				
+					
+					return $encontrado;
+			}
+					
+			// Función que devuelve los resultados de las operaciones de la clase
+			function getObj()
+			{
+			   return $this->obj;
+			}
+			
+			// Función que devuelve el error
+			function getError()
+			{
+			    return $this->error;
+			}
+			
+			// Función que recoge los logs de la base de datos
+			function selectLogs($query)
+			{	      
+		      $flag = true;
+		      $encontrado = false;
+		      $cont = 0;
+		      // Se ejecuta el SELECT
+		      $result = @mysql_query($query, $this->conn);
+		      if (!$result)
+		      {
+		         // Si no se ejecuta correctamente
+		         // Se indica mediante un mensaje de error
+		       	 $flag = false;		
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";       	 
+					}	 
+					else
+					{
+					    // Si sí se ejecuta correctamente
+					    $listaLogs;
+					    
+					    while($reg = @mysql_fetch_assoc($result)) 
+				      {	
+				          // Se recogen los datos de cada log
+				          $log = new Log("","","","","","");
+		              $log->setId_log($reg["id_log"]);
+		              $log->setDate($reg["fecha"]);
+		              $log->setIp($reg["ip"]);
+		              $log->setAction($reg["action"]);			              
+										              		              
+									/***** Preparar el usuario *****/
+									$query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$reg["id_user"];
+								  if ($this->selectUser($query))
+								  {								  
+								     // Si existe el usuario
+								     // Se recogen sus datos
+								   	 $log->setUser($this->obj);																	   	  
+									}   
+									/******************************/	
+							
+							    // Se indica que todo ha ido bien												              
+		              $encontrado = true;
+		              
+		              // Se guarda cada log en la lista de logs
+		              $listaLogs[$cont] = $log;
+		              $cont++;
+							}
+							
+							// Se guarda la lista de logs en obj
+							$this->obj = $listaLogs;							
+					}
+					
+					return $encontrado;
+			}
+			
+			// Función que recoge un log de la base de datos
+			function selectLog($query)
+			{	      
+		      $flag = true;
+		      $encontrado = false;
+		      $cont = 0;
+		      // Se ejecuta el SELECT
+		      $result = @mysql_query($query, $this->conn);
+		      if (!$result)
+		      {
+		         // Si no se ejecuta correctamente
+		         // Se indica mediante un mensaje de error
+		       	 $flag = false;		
+						 $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+             $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";       	 
+					}	 
+					else
+					{
+					    // Si se ejecuta correctamente 
+					    $listaLogs;
+					    
+					    while($reg = @mysql_fetch_assoc($result)) 
+				      {	
+				          // Se recogen los datos de cada log
+				          $log = new Log("","","","","","");
+		              $log->setId_log($reg["id_log"]);
+		              $log->setDate($reg["fecha"]);
+		              $log->setIp($reg["ip"]);
+		              $log->setAction($reg["action"]);			              
+										              		              
+									/***** Preparar el usuario *****/
+									$query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$reg["id_user"];
+								  if ($this->selectUser($query))
+								  {								  
+								     // Si existe el usuario
+								     // Se recogen sus datos
+								   	 $log->setUser($this->obj);																	   	  
+									}   
+									/******************************/	
+													
+									// Se indica que todo ha ido bien										              
+		              $encontrado = true;
+		              $cont++;
+							}
+							
+							// Y se guarda el log en obj
+							$this->obj = $log;							
+					}
+					
+					return $encontrado;
+			}
+			
+			// Función que crea un mensaje en la base de datos
+			function createMsg($id_post, $id_author, $body, $is_first, $is_last)
+			{
+			    $val = false;
+			    
+			    // Se selecciona el id del último mensaje del post
+			    $query = "SELECT id_msg FROM phpforum_msgs WHERE id_post LIKE ".$id_post." AND is_last LIKE 1";			    
+			    if ($this->selectOne($query, "id_msg"))
+			    {
+			        // Si existe el mensaje
+							// Se recoge la id 
+			        $id_last_msg = $this->obj;			        
+					}
+			    
+			    // Se inserta el mensaje en la base de datos
+			    $query = "INSERT INTO phpforum_msgs (id_post, id_author, body, is_first, is_last, fecha) VALUES (".$id_post.", ".$id_author.", '".$body."', ".$is_first.", ".$is_last.", (SELECT NOW()))";
+		      if ($this->insert($query))
+					{
+					    // Si se inserta correctamente
+					    // Se actualiza el último mensaje y se establece que ya no es el último mensaje
+					    $query = "UPDATE phpforum_msgs SET is_last = 0 WHERE id_msg LIKE ".$id_last_msg;
+					    $this->update($query);
+					    // Se recoge el id del nuevo mensaje
+					    $query = "SELECT id_msg FROM phpforum_msgs WHERE id_post LIKE ".$id_post." AND is_last LIKE 1";
+					    if ($this->selectOne($query, "id_msg"))
+							{
+							    // Si existe el mensaje
+							    // Se recoge el id
+							    $id_msg = $this->obj;
+							    // Se actualiza el id del último mensaje y el número total de mensajes del post padre
+							    $query = "UPDATE phpforum_posts SET total_msgs = (total_msgs + 1), id_last_msg = ".$id_msg." WHERE id_post LIKE ".$id_post;
+							 	  if ($this->update($query))
+							 	  {
+							 	      // Si se actualiza correctamente
+							 	      // Se recoge la id del tema padre del post
+							 	      $query = "SELECT id_theme FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+							 	      if ($this->selectOne($query, "id_theme"))
+							 	      {		
+							 	          // Si se ejecuta correctamente
+							 	          // Se recoge la id
+							 	          $id_theme = $this->obj;
+							 	          // Se actualiza el número total de mensajes y el id del último mensaje del tema padre
+							 	          $query = "UPDATE phpforum_themes SET total_msgs = (total_msgs + 1), id_last_msg = ".$id_msg." WHERE id_theme LIKE ".$id_theme;
+							 	          if ($this->update($query))
+													{
+													    // Si se actualiza correctamente
+													    // Se actualiza el numero de mensajes escritos del usuario creador del mensaje
+													 		$query = "UPDATE phpforum_users SET num_msgs = (num_msgs + 1) WHERE id_user LIKE ".$id_author;											 		
+															if (!$this->update($query))
+															{							     											     									 		   
+															     // Si no se actualiza correctamente
+															     // Se indica
+															 		 $error++;	 
+															}	
+															
+															// Se listan todos los usuarios
+													 		if ($this->selectUsers())
+													 		{						 		 
+															    // Si existen registros
+																	// Se recogen los usuarios   					    							 		    
+													 		    $listaUsers = $this->obj;
+													 		    $cont = 0;
+													 		    // Se recoge el tamaño de la lista de usuarios
+															 		$size = count($listaUsers);
+															 															 		
+															 		// Insertamos los nuevos registros para todos los usuarios
+														 			for ($cont = 0; $cont < $size; $cont++)
+															 		{												    									
+																	    // Se recoge cada usuario					    											 		    
+																	    $usr = $listaUsers[$cont];
+																			// Se extrae la id de cada usuario	
+																	    $id_user = $usr->getId_user();
+																	    // Se establece como "no leido" este post para cada usuario
+																			$this->setPostAsNoRead($id_user, $id_post);
+																	}
+															}	
+															else
+															{
+															    // Si no existen registros
+															    // Se indica
+															    $error++;
+															}													
+															
+															if ($error == 0)
+															{
+															    // Si no hay errores
+																	// Se indica que todo ha ido bien				    
+																  $val = true;																			 	 																			 	 
+															} 																	 
+													}
+													else
+													{			
+													    // Si no se actualiza correctamente
+															// Se elimina el mensaje y cualquier otra actualización que lo mencione						   
+													 		$query = "DELETE FROM phpforum_msgs WHERE id_msg LIKE ".$id_msg;
+													 		if ($this->delete($query))
+													 		{
+													 		    $query = "UPDATE phpforum_posts SET total_msgs = (total_msgs - 1) WHERE id_post LIKE ".$id_post;
+				          					 			$this->update($query);													 
+															}									 		
+													}		 					 	          
+											}												 	      
+									}
+									else
+									{						
+									    // Si no se actualiza correctamente
+											// Se elimina el mensaje	   
+									 		$query = "DELETE FROM phpforum_msgs WHERE id_msg LIKE ".$id_msg;
+									 		$this->delete($query);
+									}
+							}
+							else
+							{
+							    // Si no hay registros
+									// Se elimina el mensaje 
+							    $query = "DELETE FROM phpforum_msgs WHERE id_post LIKE ".$id_post." AND is_last LIKE 1";
+									$this->delete($query);
+							}						
+					}				
+								
+					return $val;
+			}			
+			
+			// Función que se encarga de crear un post en la base de datos
+			function createPost($id_theme, $title, $is_fixed, $id_author, $body)
+			{
+			    // Se inserta el post en la base de datos
+			    $query = "INSERT INTO phpforum_posts (id_theme, title, is_fixed) VALUES (".$id_theme.", '".$title."', ".$is_fixed.")";			    
+		      if ($this->insert($query))
+					{		
+					    // Si se inserta correctamente
+					    // Se selecciona su id
+					    $query = "SELECT id_post FROM phpforum_posts WHERE id_theme LIKE ".$id_theme." AND title LIKE '".$title."'";					    
+					    $this->selectOne($query, "id_post");
+					    $id_post = $this->obj;
+											   
+					    // Y se crea el mensaje inicial del post
+					 	  if ($this->createMsg($id_post, $id_author, $body, 1, 1))
+							{			    
+							    // Si se crea correctamente
+							    // Se actualiza el numero total de posts del tema padre del post
+							    $query = "UPDATE phpforum_themes SET total_posts = (total_posts + 1) WHERE id_theme LIKE ".$id_theme;							    
+	                $val = $this->update($query);
+	                // Y se indica que todo ha salido bien
+									$val = true;									
+							} 							
+							else
+							{			  
+							    // Si no se inserta correctamente
+									// Se borra el post y todos los updates relacionados con el  
+							    $query = "DELETE FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+									if ($this->delete($query))
+									{						    
+									    $query = "UPDATE phpforum_themes SET total_posts = (total_posts - 1) WHERE id_theme LIKE ".$id_theme;
+		          				$this->update($query);													 
+									}									 		
+							}		
+								
+					}				
+						
+					return $val;
+			}
+			
+			// Función que inserta un tema en la base de datos
+			function createTheme($id_cat, $title, $description, $visibility)
+			{			    			    			 
+			    // Se inserta el tema en la base de datos   
+			    $query = "INSERT INTO phpforum_themes (id_cat, title, description, visibility) VALUES (".$id_cat.", '".$title."', '".$description."', ".$visibility.")";
+			    
+		      $val = $this->insert($query);					
+								
+					return $val;
+			}
+			
+			// Función que crea una categoría en la base de datos
+			function createCategory($title, $visibility)
+			{			    			    
+			    // Se inserta la categoría en la base de datos			    
+			    $query = "INSERT INTO phpforum_categories (title, visibility) VALUES ('".$title."', ".$visibility.")";
+			    
+		      $val = $this->insert($query);					
+								
+					return $val;
+			}
+			
+			// Función que crea un template ne la base de datos
+			function createTemplate($name, $is_active)
+			{
+			    // Se inserta el template en la base de datos
+			    $query = "INSERT INTO phpforum_templates (name, is_active) VALUES ('".$name."', ".$is_active.")";
+			    
+			    $val = $this->insert($query);
+			    
+			    return $val;
+			}
+			
+			// Función que recoge un tema de la base de datos
+			function selectTheme($id_theme, $id_user, $rank)
+			{          							
+					$encontrado;			
+					
+					// Se pregunta si el grupo del usuario tiene permisos de lectura sobre el foro
+					$query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					if ($this->selectOne($query, "can_read"))
+					{					    
+					    // Si se ejecuta correctamente
+					    if ($this->obj == "1")
+					    {
+					        // Si tiene permisos de lectura
+					        // Se recoge el id de la categoría padre del tema
+					        $query = "SELECT id_cat FROM phpforum_themes WHERE id_theme LIKE ".$id_theme;	
+					        if ($this->selectOne($query, "id_cat"))
+					        {
+					            // Si existe la categoría
+					            // Se recoge la id
+					            $id_cat = $this->obj;
+					            // Se pregunta si el usuario tiene acceso a la categoría padre en función de sus permisos de acceso
+					            if ($rank == -3)
+											{
+											    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND visibility LIKE -3 ORDER BY position ASC";
+											}
+											else if ($rank == -2)
+											{
+											    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." ORDER BY position ASC";
+											}
+											else if ($rank == -1)
+											{
+											    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND visibility NOT LIKE -2 ORDER BY position ASC";
+											}
+											else if ($rank == 1)
+											{
+											    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+											}
+											else
+											{
+											    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+											}				
+														
+											// Se ejecuta el SELECT											
+											$result = @mysql_query($query, $this->conn);
+										  if (!$result)
+										  {				      
+										      // Si no se ejecuta correctamente
+										      // Se indica
+										      $encontrado = false;
+											}
+											else
+											{
+											    // Si se ejecuta correctamente
+											    // Se recogen todos los datos del tema en función de los permisos de acceso del usuario
+											    if ($rank == -3)
+													{
+													    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND visibility LIKE -3 ORDER BY position ASC";
+													}
+													else if ($rank == -2)
+													{
+													    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." ORDER BY position ASC";
+													}
+													else if ($rank == -1)
+													{
+													    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND visibility NOT LIKE -2 ORDER BY position ASC";
+													}
+													else if ($rank == 1)
+													{
+													    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+													}
+													else
+													{
+													    $query = "SELECT * FROM phpforum_themes WHERE id_theme LIKE ".$id_theme." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+													}		
+													
+													// Se ejecuta el SELECT
+												  $result = @mysql_query($query, $this->conn);
+												  if (!$result)
+												  {				      
+												      // Si no se ejecuta correctamente
+												      // Se indica
+												      $encontrado = false;
+													}
+													else
+													{		
+													    // Si se ejecuta correctamente
+													    $listaPosts;							
+															$cont = 0;											
+															
+															while ($reg = @mysql_fetch_assoc($result))
+															{															
+															    // Se recogen los datos del tema y se guardan en un objeto tema    
+										     			    $theme = new Tema("","","","","","","","","","","","");
+										     			    $theme->setId_theme($id_theme);	
+										     			    $theme->setId_cat($reg["id_cat"]);
+										     			    $theme->setVisibility($reg["visibility"]);     			    
+										     			    $theme->setPosition($reg["position"]);
+										     			    $theme->setComment($reg["description"]);    			    
+										     			    $theme->setTitle($reg["title"]);
+										     			    $theme->setTotalMsgs($reg["total_msgs"]);
+										     			    $theme->setTotalPosts($reg["total_posts"]);									     			    	     			    
+										     			    if ($this->selectMsg($reg["id_last_msg"], $rank))
+										     			    {		     			        
+										     			        // Si existe el mensaje
+										     			        // Se recoge el último mensaje del tema
+										     			        $theme->setLastMsg($this->obj);		     			       
+																	}	
+										     			    if ($this->selectPosts($theme->getId_theme(), $id_user, $rank))
+										     			    {
+										     			        // Si existen los posts
+										     			        // Se establece que el tema contiene datos a mostrar
+										     			        $theme->setContent(1);
+										     			        // Se recogen los posts
+										     			        $theme->setPosts($this->obj);		     			        
+										     			        $listaPosts = $theme->getPosts();     			        
+										     			        if ($listaPosts["reads"] == 0)
+										     			        {
+										     			            // Si hay posts sin leer
+										     			            // Se establece que el tema está sin leer
+										     			            $theme->setIs_read(0);
+																			}
+																			else
+																			{
+																			    // Si no hay posts sin leer
+																			    // Se establece que el tema está leído
+																			    $theme->setIs_read(1);
+																			}		
+																	}							    			
+																	else
+																	{
+																	    // Si no existen los posts para este tema
+																	    // Se establece que el tema no contiene datos a mostrar
+																	    $theme->setContent(0);
+																	} 
+																	
+																	// Se indica que todo ha ido bien
+																	$encontrado = true;	   
+										          }	        
+															
+															// Y se guarda el tema en obj
+															$this->obj = $theme;  
+													}		          
+		                  }
+									}
+              }
+					}
+							    
+          return $encontrado;
+			}	
+			
+			// Función que recoge un post de la base de datos
+			function selectPost($id_post, $id_user, $rank)
+			{          					
+					$encontrado;
+					$noReads = 0;
+					
+					// Se pregunta si el grupo del usuario tiene permisos de lectura sobre el foro
+					$query = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					if ($this->selectOne($query, "can_read"))
+					{					    
+					    // Si se ejecuta correctamente
+					    if ($this->obj == "1")
+					    { 
+					        // Si tiene permisos de lectura
+					        // Se recoge la id del tema padre del post
+					        $query = "SELECT id_theme FROM phpforum_posts WHERE id_post LIKE ".$id_post;
+					        if ($this->selectOne($query, "id_theme"))
+					        {					            
+					            // Si existe el tema
+					            // Se recoge la id
+					            $id_theme = $this->obj;
+					            // Se recoge la id de la categoría padre del tema
+					            $query = "SELECT id_cat FROM phpforum_themes WHERE id_theme LIKE ".$id_theme;
+											if ($this->selectOne($query, "id_cat"))
+											{
+											    // Si existe la categoría
+											    // Se recoge la id
+											    $id_cat = $this->obj;
+											    // Se pregunta si el usuario tiene acceso a dicha categoría
+											    if ($rank == -3)
+													{
+													    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND visibility LIKE -3 ORDER BY position ASC";
+													}
+													else if ($rank == -2)
+													{
+													    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." ORDER BY position ASC";
+													}
+													else if ($rank == -1)
+													{
+													    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND visibility NOT LIKE -2 ORDER BY position ASC";
+													}
+													else if ($rank == 1)
+													{
+													    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+													}
+													else
+													{
+													    $query = "SELECT * FROM phpforum_categories WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+													}		 
+																
+													// Se ejecuta el SELECT			
+													$result = @mysql_query($query, $this->conn);
+												  if (!$result)
+												  {				 
+													    // Si no se ejecuta correctamente
+															// Se indica     
+												      $encontrado = false;
+													}
+													else
+													{			
+													    // Si se ejecuta correctamente
+															// Se pregunta si el usuario tiene acceso al tema padre del post	
+													    if ($rank == -3)
+															{
+															    $query = "SELECT * FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND visibility LIKE -3 ORDER BY position ASC";
+															}
+															else if ($rank == -2)
+															{
+															    $query = "SELECT * FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." ORDER BY position ASC";
+															}
+															else if ($rank == -1)
+															{
+															    $query = "SELECT * FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND visibility NOT LIKE -2 ORDER BY position ASC";
+															}
+															else if ($rank == 1)
+															{
+															    $query = "SELECT * FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+															}
+															else
+															{
+															    $query = "SELECT * FROM phpforum_themes WHERE id_cat LIKE ".$id_cat." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3) ORDER BY position ASC";
+															}		
+															
+															// Se ejecuta el SELECT
+															$result = @mysql_query($query, $this->conn);
+														  if (!$result)
+														  {				      
+														      // Si no se ejecuta correctamente
+														      // Se indica
+														      $encontrado = false;
+															}
+															else
+															{
+															    // Si sí se ejecuta correctamente
+															    // Se recogen los datos del post
+																	$query = "SELECT * FROM phpforum_posts WHERE id_post LIKE ".$id_post;	
+																	// Se ejecuta el SELECT				
+																  $result = @mysql_query($query, $this->conn);
+																  if (!$result)
+																  {
+																      // Si no se ejecuta correctamente
+																      // Se indica mediante un mensaje de error
+																      $encontrado = false;
+																      $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+												              $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+																	}
+																	else
+																	{			
+																	    // Si sí se ejecuta correctamente
+																			while ($reg = @mysql_fetch_assoc($result))
+																			{					
+																			    // Se recogen todos los datos del post		    
+														     			    $post = new Post("","","","","","","","","","");
+														     			    $post->setId_post($reg["id_post"]);
+														     			    $post->setId_theme($reg["id_theme"]);
+														     			    $post->setStatus($reg["status"]);		     			    
+														     			    $post->setTitle($reg["title"]);	
+																					$post->setTotalMsgs($reg["total_msgs"]); 	     			    								
+														     			    if ($this->selectMsgs($post->getId_post(), $rank))
+														     			    {
+														     			        // Si existen mensajes para este post 
+														     			        // Se recogen los mensajes del post
+														     			        $post->setMsgs($this->obj);					
+																							// Se marca como leído el post
+																							$this->setPostAsRead($id_user, $post->getId_post());
+																							// Se aumenta el número de lecturas en 1 para este post
+																							$query = "UPDATE phpforum_posts SET num_views = (num_views + 1) WHERE id_post like ".$post->getId_post();																																						
+																							$this->update($query); 											
+																							// Se indica que todo ha ido bien
+																							$encontrado = true;   
+																					}							    			  						   			    
+														          }
+														          
+														          // Y se guarda el post en obj
+														          $this->obj = $post;
+																	}
+															}
+													}
+											} 
+									}
+					    }
+          }
+					
+          return $encontrado;
+			}
+			
+			// Función que se encarga de marcar como leído un post para un usuario
+			function setPostAsRead($id_user, $id_post)
+			{
+			    // Se recoge el estado de lectura de un post para un usuario
+			    $query = "SELECT * FROM phpforum_reads_control WHERE id_user LIKE ".$id_user." AND id_post LIKE ".$id_post;	
+					if ($this->selectOne($query, "status"))
+					{
+					    // Si existe el registro
+					    // Se actualiza a "leído" dicho registro
+					    $query = "UPDATE phpforum_reads_control SET status = 1 WHERE id_user LIKE ".$id_user." AND id_post LIKE ".$id_post;
+					 		$this->update($query);							 																			 		
+					}		
+					else
+					{
+					    // Si no existe el registro
+					    // Se crea como "leído"
+					    $query = "INSERT INTO phpforum_reads_control (id_user, id_post, status) VALUES (".$id_user.", ".$id_post.", 1)";
+					 		$this->insert($query);							 																			 		
+					}
+			}
+			
+			// Función que se encarga de marcar como no leído un post para un usuario
+			function setPostAsNoRead($id_user, $id_post)
+			{
+			    // Se recoge el estado de lectura de un post para un usuario
+			    $query = "SELECT * FROM phpforum_reads_control WHERE id_user LIKE ".$id_user." AND id_post LIKE ".$id_post;	
+					if ($this->selectOne($query, "status"))
+					{
+					    // Si existe el registro
+					    // Se actualiza a "no leído" dicho registro
+					    $query = "UPDATE phpforum_reads_control SET status = 0 WHERE id_user LIKE ".$id_user." AND id_post LIKE ".$id_post;
+					 		$this->update($query);							 																			 		
+					}		
+					else
+					{
+					    // Si no existe el registro
+					    // Se crea como "no leído"
+					    $query = "INSERT INTO phpforum_reads_control (id_user, id_post, status) VALUES (".$id_user.", ".$id_post.", 0)";
+					 		$this->insert($query);							 																			 		
+					}
+			}
+			
+			// Función que recoge la lista de mensajes privados de una bandeja de un usuario de la base de datos
+			function selectMPs($id_user, $box)
+			{
+			    $flag = false;
+			    $val = false;
+			    
+			    // Se recogen las ids de los mensajes privados de la bandeja de entrada o de la de salida, dependiendo de la bandeja que se haya indicado
+			    if ($box == "in")
+			    {			        
+			        $query = "SELECT id_mp FROM phpforum_mps WHERE box LIKE 'in' AND receptor LIKE ".$id_user." ORDER BY fecha DESC";
+					}
+					else if ($box == "out")
+					{					    
+					    $query = "SELECT id_mp FROM phpforum_mps WHERE box LIKE 'out' AND emisor LIKE ".$id_user." ORDER BY fecha DESC";
+					}
+								  
+					// Se ejecuta el SELECT				  
+					$result = @mysql_query($query, $this->conn);				
+				  if (!$result)
+				  {				  
+					    // Si no se ejecuta correctamente
+							// Se indica mediante un mensaje de error    
+				      $flag = false;		
+						  $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+              $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+					}
+					else
+					{
+					    // Si se ejecuta correctamente
+					    $listaMPs;
+					    $contlmp = 0;
+					    while ($reg = @mysql_fetch_assoc($result))
+							{							    
+							    // Se recoge cada id de cada mensaje privado
+							    $id_mp = $reg["id_mp"];
+							    
+							    // Y se recoge el mensaje privado
+							    if ($this->selectMP($id_mp, $box))
+							    {
+							        // Si existe el mensaje privado
+							        // Se guarda en la lista de mensajes privados
+							        $listaMPs[$contlmp] = $this->obj;							        
+											$contlmp++;
+											// Se indica que todo ha ido bien
+											$flag = true;											
+									}							
+							}							
+						
+						  // Y se guarda la lista de mensajes privados en obj
+							$this->obj = $listaMPs;
+					}
+					
+					return $flag;
+			}
+			
+			// función que recoge un mensaje privado de la base de datos
+			function selectMP($id_mp, $box)
+			{
+			    $flag = false;
+			    // Se recogen los datos del mensaje privado  
+			    $query = "SELECT * FROM phpforum_mps WHERE id_mp LIKE ".$id_mp;
+					// Se ejecuta el SELECT						
+					$result = @mysql_query($query, $this->conn);
+					
+				  if (!$result)
+				  {				      
+				      // Si no se ejecuta correctamente
+				      // Se indica mediante un mensaje privado
+				      $flag = false;		
+						  $this->error = "Se ha producido un error al intentar acceder a la base de datos.<BR>";
+              $this->error .= "<SPAN style='font-size: 18px; font-weight: bold;'>Error al ejecutar la b&uacute;squeda</SPAN>";
+					}
+					else
+					{				
+					    // Si sí se ejecuta correctamente	    
+					    while ($reg = @mysql_fetch_assoc($result))
+							{				
+							    // Se recoge el mensaje privado y se guarda en un objeto MP			    
+							    $mp = new MP("","","","","","","","");
+							    $mp->setId_mp($reg["id_mp"]);	
+									$mp->setIs_read($reg["is_read"]);	     			    
+		     			    $mp->setbox($reg["box"]);		     			    
+		     			    $mp->setTitle($reg["title"]);	
+									$mp->setBody($reg["body"]);
+									$mp->setTo($reg["receptor"]);								
+									$mp->setFrom($reg["emisor"]);									
+									$mp->setDate ($reg["fecha"]);									
+									if ($box == "in")
+		     			    { 		     			 
+									    // Si el mensaje pertenece a la bandeja de entrada
+											// Se recogen los datos del usuario emisor      
+		     			        $query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$mp->getFrom();		     			       
+		     			     	  if ($this->selectUser($query))
+		     			     	  {		    				
+												  // Si existe el emisor
+													// Se recoge el emisor								 		     	   	 																			 
+		     			     	      $mp->setFrom($this->obj);		     			     	      
+											}
+											else
+											{											   
+											    // Si no existe el emisor
+											    // Se recogen los datos del usuario anónimo
+											    $query = "SELECT * FROM phpforum_users WHERE id_user LIKE -1";
+				     			     	  if ($this->selectUser($query))
+				     			     	  {		   								
+														  // Si existe el usuario
+															// Se recoge el usuario 						                 										     			     	   	 																			 
+				     			     	      $mp->setFrom($this->obj);		     			     	      
+													}
+											}
+									}
+									else if ($box == "out")
+									{							
+									    // Si el mensaje pertenece a la bandeja de salida
+											// Se recogen los datos del receptor			 		
+											$query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$mp->getTo();		     			       
+		     			     	  if ($this->selectUser($query))
+		     			     	  {		    												 		
+												  // Si existe el receptor
+													// Si recoge el receptor     	   	 																			 
+		     			     	      $mp->setTo($this->obj);		     			     	      
+											}
+											else
+											{											   
+											    // Si no existe el receptor
+											    // Se recoge los datos del usuario anónimo
+											    $query = "SELECT * FROM phpforum_users WHERE id_user LIKE -1";
+				     			     	  if ($this->selectUser($query))
+				     			     	  {		   		
+														  // Si existe el usuario
+															// Se recoge el usuario												                 										     			     	   	 																			 
+				     			     	      $mp->setTo($this->obj);		     			     	      
+													}
+											}
+									}									
+									
+									// Se guarda el mensaje privado en obj
+									$this->obj = $mp;
+									// Y se indica que todo ha ido bien
+									$flag = true;									
+							}
+					}
+					
+					return $flag;
+			}
+  }
+?>

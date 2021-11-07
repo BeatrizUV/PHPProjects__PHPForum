@@ -1,0 +1,244 @@
+<? include("templates/Default/str/header.str"); ?>
+<?
+   // Página que muestra el contenido de un tema
+   $accion = "ShowTheme";
+   $cat = $modelo["modelo"];
+	 $catTitle = $cat->getTitle();
+	 $catTitle = replaceCharsToHTML($catTitle);
+	 $id_cat = $cat->getId_cat();
+	 $theme = $cat->getThemes();	 
+	 $id_theme = $theme->getId_theme();
+	 $themeTitle = $theme->getTitle();
+	 $themeTitle = replaceCharsToHTML($themeTitle);	 
+?>
+													 		 <TD class="celda_cuerpo" style="vertical-align: top;">		
+																	  <TABLE class="tabla_acoplada">
+																		     <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR>                      
+						                			       <TR>						                			           
+																				 		 <TD valign="top">                                  
+																                <TABLE class="tabla_acoplada">												                			       
+																											<TR>	
+																											   <TD width="25px"></TD>			
+																											   <TD class="align_center">
+																													  <TABLE class="tabla_marco_foro" valign="top">		
+																														      <TR> 
+																																	    <TD class="celda_path" colspan="3">
+																																	    		<SPAN class="flechitas_path">&gt;&gt;</SPAN> <A HREF="index.php" class="link_path">Inicio</A> / <?=$catTitle?>
+																																			</TD>																																			
+																																	</TR>
+																																	<TR>
+																																	    <TD height="10px" colspan="3"></TD>																																			
+																																	</TR>	
+<?
+	$_SESSION["locSesion"] = "<A HREF='index.php?accion=ShowTheme&id=".$id_theme."' class='link_path'>".$themeTitle."</A>";
+?>																																	
+																																	<? include("templates/Default/str/actionsInTheme.inc"); ?>																																		
+																			 							 							<TR>
+																			 							 							    <TD width="10px"></TD>
+																			 							 							    <TD class="align_center" valign="top">
+																			 							 							        <FORM action="index.php?accion=DeletePost&idt=<?=$id_theme?>" id="formDeletePosts" name="formDeletePosts" method="POST">
+																			 							 							    		<TABLE class="tabla_foro" cellpadding="0" cellspacing="0">																			 							 							    					 
+										 						 	 											 					              <TR>
+							                                                                     <TD colspan="5" class="celda_nombre_cat">
+							                                                                     		 <SPAN class="flechitas_cat">&gt;&gt;</SPAN> <?=$themeTitle?>
+							                                                                     </TD>
+							                                                                  </TR>   
+																																								<TR>																			 							 							    					 		 
+																																				 		        <TD colspan="2" class="celda_foro" style="width: 290px;">
+																																												ASUNTO
+																																										</TD>																																	 		
+																																								 		<TD class="celda_num_temas" style="width: 65px;">
+																																										 		MENSAJES
+																																										</TD>
+																																								 		<TD class="celda_num_msgs" style="width: 65px;">
+																																										 		LECTURAS
+																																										</TD>
+																																								 		<TD class="celda_ultimo_msg">
+																																										 		&nbsp;&nbsp;&Uacute;LTIMO&nbsp;MENSAJE&nbsp;&nbsp;
+																																										</TD>
+																																								</TR>	                                                                     				
+<?		                			
+	 if ($theme->getContent() == 0)
+	 {
+?>
+												 	 										 																	<TR>
+							                                                                      <TD colspan="5" style="height: 25px;">
+							                                                                         	Sin posts para mostrar.
+							                                                                      </TD>
+							                                                                  </TR>					 	 										 					 					 				 
+<?			
+	 }
+	 else
+	 {	
+	    $listaPosts = $theme->getPosts();
+			$contlp = 0;
+			$sizelp = count($listaPosts);
+			$sizelp--;
+			
+			for($contlp = 0; $contlp < $sizelp; $contlp++)
+			{
+			    $post = $listaPosts[$contlp];			
+					$id_post = $post->getId_post();	
+					$postTitle = $post->getTitle();
+					$postTitle = replaceCharsToHTML($postTitle);
+					$status = $post->getStatus();
+					$is_fixed = $post->getIs_fixed();
+					$is_read = $post->getIs_read();		
+					if ($status == 1)
+					{
+					    $icon = $is_fixed."_".$is_read;
+					}
+					else
+					{
+					    $icon = "closed_".$is_fixed;
+					}						    
+					$totalMsgs = $post->getTotalMsgs();
+					$num_views = $post->getNum_views();
+					$lastMsg = $post->getLastMsg();
+					$lastMsgDate = $lastMsg->getDate();
+					$existAuthor = $lastMsg->getExistAuthor();
+					$lastMsgAuthor = $lastMsg->getAuthor();											
+					$loginLastMsgAuthor = $lastMsgAuthor->getLogin();
+					$loginLastMsgAuthor = replaceCharsToHTML($loginLastMsgAuthor);
+					$idLastMsgAuthor = $lastMsgAuthor->getId_user();
+?>
+																 										 	 													<TR>
+																 										 	 													    <TD class="celda_icono">
+																																												<IMG widht="15px" height="15px" src="templates/Default/img/posticon_<?=$icon?>.gif" />
+																																										</TD>	
+																																				 		        <TD class="celda_nombre_tema">
+																																				 		            <A HREF="index.php?accion=ShowPost&id=<?=$id_post?>" class="link_nombretema"><?=$postTitle?></A>
+																																				 		            <BR>
+																																				 		            <? include("templates/Default/str/actionsInOnePost.inc") ?>
+																																										</TD>																																	 		
+																																								 		<TD class="celda_clara">
+																																										 		<?=$totalMsgs?>
+																																										</TD>
+																																								 		<TD class="celda_oscura">
+																																										 		<?=$num_views?>
+																																										</TD>																																	 		
+<?
+		      if ($existAuthor == 0)
+		      {
+?>
+									 	 								 	 																              <TD class="celda_clara"><?=$loginLastMsgAuthor?></TD>
+<?                     
+					}
+					else
+					{							
+?>
+							 																																			<TD class="celda_clara">
+																																										 		<SPAN size="9"><?=$lastMsgDate?></SPAN>
+																																										 		<BR>
+																 																												<A HREF="index.php?accion=ShowUser&id=<?=$idLastMsgAuthor?>" class="link_user">&nbsp;<?=$loginLastMsgAuthor?>&nbsp;</A>
+																 																										</TD>		
+<?									
+        	}
+?>																																			 																																												
+																																								</TR>	
+<?
+      }				
+	}
+?>
+																																	        </TABLE>
+																																      </TD>
+																																      <TD width="10px"></TD>
+																																  </TR>				 		
+	 																																<? include("templates/Default/str/actionsInTheme.inc"); ?>																																	 	
+  																																<TR>
+  																																		<TD width="10px"></FORM></TD>
+   																																    <TD class="celda_marcar_como_leidos">
+   																																    		<A HREF="index.php?accion=ShowAllAsRead&id=<?=$id_theme?>" class="link_cuerpo">Marcar todos los temas como le&iacute;dos.</A>
+																																			</TD>
+																																			<TD width="10px"></TD>
+																																	</TR>																				
+																																	<TR>
+   																																    <TD width="10px"></TD>
+																																	    <TD height="50px" width="530px" cellpadding="0" cellspacing="0">
+<? include("control_users.str"); ?>
+																																			</TD>																																
+   																																    <TD width="10px"></TD>
+																																	</TR>
+																																	<TR>
+   																																    <TD width="10px"></TD>
+																																	    <TD width="530px" cellpadding="0" cellspacing="0" align="left">
+																																					<SPAN class="corchetes">[</SPAN> <SPAN class="admin_user">Administrador</SPAN> <SPAN class="corchetes">]</SPAN>&nbsp;&nbsp;&nbsp;<SPAN class="corchetes">[</SPAN> <SPAN class="mode_user">Moderador</SPAN> <SPAN class="corchetes">]</SPAN>
+																																			</TD>																																
+   																																    <TD width="10px"></TD>
+																																	</TR>																												
+																																	<TR>
+   																																    <TD height="20px" colspan="3"></TD>																																    			
+																																	</TR>																												
+                                                            </TABLE>
+																												 </TD>																                	   	 
+																												 <TD width="25px"></TD>
+																                	   </TR>	
+																										 <TR>
+								       		 													 		 <TD height="25px" colspan="3"></TD>
+											 															 </TR>									
+																                	   <TR>
+								       		 													 		 <TD width="25px"></TD>
+								       		 													 		 <TD>
+								       		 													 		     <TABLE class="tabla_acoplada">
+								       		 													 		         <TR>
+								       		 													 		             <TD width="15px"></TD>
+								       		 													 		             <TD class="align_right" width="20px">
+																																				<IMG src="templates/Default/img/posticon_1_0_full.gif" width="25px" height="25px" />
+																																		 </TD>
+																																		 <TD valign="middle" align="left" width="170px">
+																																		 		 &nbsp;Hay&nbsp;mensajes&nbsp;fijos&nbsp;nuevos.
+																																		 </TD>
+																																		 <TD class="align_right" width="25px">																																					
+																																				<IMG src="templates/Default/img/posticon_0_0_full.gif" width="25px" height="25px" />
+																																		 </TD>		 
+																																		 <TD valign="middle" align="left" width="150px">																																					 		 
+																																		 		 &nbsp;Hay&nbsp;mensajes&nbsp;nuevos.
+																																		 </TD>
+																																		 <TD class="align_right" width="25px">
+																																				<IMG src="templates/Default/img/posticon_closed_0_full.gif" width="25px" height="25px" />
+																																		 </TD>
+																																		 <TD valign="middle" align="left" width="75px">
+																																		 		 &nbsp;Tema&nbsp;cerrado.
+																																		 </TD>
+																																		 <TD width="15px"></TD>
+								       		 													 		         </TR>
+								       		 													 		         <TR>
+								       		 													 		             <TD width="15px"></TD>
+								       		 													 		             <TD class="align_right" width="25px">
+																																				<IMG src="templates/Default/img/posticon_1_1_full.gif" width="25px" height="25px" />
+																																		 </TD>
+																																		 <TD valign="middle" align="left" width="170px">
+																																		 		 &nbsp;No&nbsp;hay&nbsp;mensajes&nbsp;fijos&nbsp;nuevos.
+																																		 </TD>
+																																		 <TD class="align_right" width="25px">																																					
+																																				<IMG src="templates/Default/img/posticon_0_1_full.gif" width="25px" height="25px" />
+																																		 </TD>		 
+																																		 <TD valign="middle" align="left" width="150px">																																					 		 
+																																		 		 &nbsp;No&nbsp;hay&nbsp;mensajes&nbsp;nuevos.
+																																		 </TD>
+																																		 <TD class="align_right" width="25px">
+																																				<IMG src="templates/Default/img/posticon_closed_1_full.gif" width="25px" height="25px" />
+																																		 </TD>
+																																		 <TD valign="middle" align="left" width="75px">
+																																		 		 &nbsp;Tema&nbsp;fijo&nbsp;cerrado.
+																																		 </TD>
+																																		 <TD width="15px"></TD>
+								       		 													 		         </TR>
+																														 </TABLE>
+																												 </TD>
+								       		 													 		 <TD width="25px"></TD>
+											 															 </TR>
+																										 <TR>
+								       		 													 		 <TD height="10px" colspan="3"></TD>
+											 															 </TR> 						                	   			 
+																                </TABLE>	
+																						 </TD>
+																				 </TR>
+																				 <TR>
+											                	     <TD colspan="3" height="10"></TD>
+											                	 </TR> 
+																		</TABLE>													          
+													 		 </TD>
+<? include("templates/Default/str/footer.str"); ?>														 		 

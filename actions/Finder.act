@@ -1,0 +1,301 @@
+<?
+  /**
+   * Clase que se encarga de mostrar las búsquedas del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class Finder
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_finder.str";
+	 	 // Variable que guarda el error
+	 	 var $error; 
+		
+		 // Constructor de la clase			
+	   function Finder() {	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = true;	
+				 
+				 // Se recogen los datos enviados
+				 $_key = $_POST["key"]; 
+				 $param = $_POST["param"];
+				 $order = $_POST["order"];	
+				 $cont = 0;			 
+				 
+				 // Se limpia de espacios el patrón de la búsqueda
+				 $key = trim($_key);
+				 
+				 if (isset($_SESSION["haySesion"]))
+				 {
+				     // Si hay sesión
+				     // Se recoge el usuario conectado de la sesión
+				     $userLogged = unserialize($_SESSION["userlog"]);
+				     // Se extrae su rango
+				 	   $rank = $userLogged->getRank();
+				 	   // Se extrae su id
+				 	   $id_user = $userLogged->getId_user();
+				 	   // Y se pregunta si el grupo de este usuario tiene permisos de lectura sobre el foro
+					   $query2 = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					   if ($gesBD->selectOne($query2, "can_read"))
+					   {
+					       // Si se ejecuta correctamente
+					       // Se recoge el permiso de lectura
+					       $can_read = $gesBD->getObj();
+					   }
+					   else
+					   {
+					       // Si no se ejecuta correctamente
+					       // Se establece el permiso a 0 (sin permiso de lectura)
+					       $can_read = 0;
+					   }
+				 }
+				 else
+				 {
+				     // Si no hay sesión
+				     // Se establecen el rango y la id del usuario anónimo
+					   $rank = -3;
+					   $id_user = -1;
+					   // Se pregunta si el usuario anónimo tiene permisos de lectura sobre el foro
+					   $query2 = "SELECT can_read FROM phpforum_ranks WHERE id_rank LIKE ".$rank;
+					   if ($gesBD->selectOne($query2, "can_read"))
+					   { 
+					       // Si se ejecuta correctamente
+					       // Se recoge el permiso de lectura
+					       $can_read = $gesBD->getObj();
+					   }
+					   else
+					   {
+					       // Si no se ejecuta correctamente
+					       // Se establece el permiso de lectura a 0 (sin permiso de lectura)
+					       $can_read = 0;
+						 }
+				 }
+				 
+				 // Se valida el patrón de búsqueda
+				 $this->error = valFormFinder($key);
+				 
+				 if ($this->error == null)
+				 {
+				     // Si tiene algún valor
+				     // Se monta el query para realizar la búsqueda			         
+		         $query = "SELECT * FROM phpforum_msgs m, phpforum_posts p, phpforum_users u1 WHERE (m.body LIKE '%".$key."%' OR p.title LIKE '%".$key."%')";
+		         $query .= " AND m.id_post LIKE p.id_post AND m.id_author LIKE u1.id_user";
+						 						 
+				     $val = false;						     
+				     
+				     switch ($param)
+						 {
+						     case "fecha": $query .= " ORDER BY m.fecha";
+						     							 break;						     
+								 case "asunto": $query .= " ORDER BY p.title";
+						     							 break;
+								 case "author": $query .= " ORDER BY u1.login";
+						     							 break;																							 
+						 }
+						 
+						 $contModelo = 0;
+						 $query .= " ".$order;	
+						 $variables[0] = "id_msg";
+						 // Se ejecuta la búsqueda								 
+						 if ($gesBD->selectMore($query, $variables))
+						 {							
+						     // Si se encuentra alguna coincidencia
+						     // Se recoge
+						     $filasa = $gesBD->getObj();
+						     $conta = 0;
+						     // Se recoge el tamaño de la lista de las coincidencias encontradas
+						     $sizea = count($filasa);
+						     for ($conta = 0; $conta < $sizea; $conta++)
+						     {
+						         $filaa = $filasa[$conta];
+										 // Se recoge cada mensaje con coincidencias								         
+						         if ($gesBD->selectMsg($filaa[0], $rank))
+						         {    
+						             // Si existe el mensaje
+						             // Se recoge el mensaje encontrado
+										     $foundMsg = $gesBD->getObj();
+										     /***** Formateando el cuerpo del mensaje *****/
+										     $body = $foundMsg->getBody();	
+										     if (ereg($key, $body))
+										     {		
+													    $pos = strpos($body, $key);			
+															if ($pos >= 25)
+															{
+															 	 $pos -= 25;
+															}	   
+															else
+															{
+															   $pos = 0;
+															} 
+														  $body = "... ".substr($body, $pos, 50)."...";												
+															$body = str_replace($key, "<SPAN class='texto_resaltado'>".$key."</SPAN>", $body);
+															$body = replaceCharsToHTML2($body);
+															$foundMsg->setBody($body);
+												 }								 											      	
+										     /*********************************************/
+										     	
+												 // Se extrae el id del post padre del mensaje	 											     
+										     $id_post = $foundMsg->getId_post();
+										     // Y se recoge la id del primer mensaje del post padre del mensaje encontrado
+										     $query = "SELECT id_msg FROM phpforum_msgs WHERE id_post LIKE ".$id_post." AND is_first LIKE 1";
+										     if ($gesBD->selectOne($query, "id_msg"))
+										     {
+										         // Si existe el mensaje
+										         // Se recoge la id
+										         $idfm = $gesBD->getObj(); 
+										         // Se recoge el primer mensaje del post
+								             if ($gesBD->selectMsg($idfm, $rank))
+												     {
+												         // Si existe el mensaje
+												         // Se recoge el mensaje
+												         $firstMsg = $gesBD->getObj();
+												         // Se recoge el post padre del mensaje encontrado
+												         if ($gesBD->selectPost($id_post, $id_user, $rank))
+												         {
+												             // Si existe el post
+												             // Se recoge el post
+												             $post = $gesBD->getObj();
+												             /***** Formateando el título del post *****/
+																     $post_title = $post->getTitle();
+														         if (ereg($key, $post_title))
+																     {												          	
+																					$pos = strpos($post_title, $key);	
+																					$post_title = str_replace($key, "<SPAN class='texto_resaltado'>".$key."</SPAN>", $post_title);
+																					$post_title = replaceCharsToHTML2($post_title);
+																					$post->setTitle($post_title);																									
+																		 }																     													 											      	
+																     /*********************************************/
+																     // Se guardan los mensajes en una lista de mensajes
+												             $msgs[0] = $firstMsg;
+												             $msgs[1] = $foundMsg;
+												             // Y se guardan en el post
+												             $post->setMsgs($msgs);
+												             if ($can_read == "1")
+																	   {
+																	        // Si el usuario tiene permisos de lectura
+																	        // Se recoge el título y la id de la categoria padre del tema padre del post en función del permiso de acceso del usuario
+																				  if ($rank == -3)
+																					{
+																					    $query = "SELECT title, id_cat FROM phpforum_themes WHERE id_theme LIKE ".$post->getId_theme()." AND visibility LIKE -3";
+																					}
+																					else if ($rank == -2)
+																					{
+																					    $query = "SELECT title, id_cat FROM phpforum_themes WHERE id_theme LIKE ".$post->getId_theme();
+																					}
+																					else if ($rank == -1)
+																					{
+																					    $query = "SELECT title, id_cat FROM phpforum_themes WHERE id_theme LIKE ".$post->getId_theme()." AND visibility NOT LIKE -2";
+																					}
+																					else if ($rank == 1)
+																					{
+																					    $query = "SELECT title, id_cat FROM phpforum_themes WHERE id_theme LIKE ".$post->getId_theme()." AND (visibility LIKE 1 OR visibility LIKE -3)";
+																					}
+																					else
+																					{
+																					    $query = "SELECT title, id_cat FROM phpforum_themes WHERE id_theme LIKE ".$post->getId_theme()." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3)";
+																					}		
+																				 
+																				 $variables = array("title", "id_cat");
+																				 // Se ejecuta el SELECT
+														             if ($gesBD->selectMore($query, $variables))
+														             {
+														                 // Si el usuario tiene permiso
+														                 // Se recogen los datos de la categoría
+														                 $filasc = $gesBD->getObj();
+														                 $filac = $filasc[0];
+														                 $theme_title = $filac[0];
+														                 
+														                 if ($can_read == "1")
+																					   {
+																					        // Si el usuario tiene permisos de lectura
+																					        // Se recoge el título del tema padre del post en función de los permisos de acceso del usuario
+																			            if ($rank == -3)
+																									{
+																									    $query = "SELECT title FROM phpforum_categories WHERE id_cat LIKE ".$filac[1]." AND visibility LIKE -3";
+																									}
+																									else if ($rank == -2)
+																									{
+																									    $query = "SELECT title FROM phpforum_categories WHERE id_cat LIKE ".$filac[1];
+																									}
+																									else if ($rank == -1)
+																									{
+																									    $query = "SELECT title FROM phpforum_categories WHERE id_cat LIKE ".$filac[1]." AND visibility NOT LIKE -2";
+																									}
+																									else if ($rank == 1)
+																									{
+																									    $query = "SELECT title FROM phpforum_categories WHERE id_cat LIKE ".$filac[1]." AND (visibility LIKE 1 OR visibility LIKE -3)";
+																									}
+																									else
+																									{
+																									    $query = "SELECT title FROM phpforum_categories WHERE id_cat LIKE ".$filac[1]." AND (visibility LIKE ".$rank." OR visibility LIKE 1 OR visibility LIKE -3)";
+																									}	 
+																								 
+																								 // Se ejecuta el SELECT
+																                 if ($gesBD->selectOne($query, "title"))
+																                 {
+																                     // Si existe el tema
+																                     // Se recogen los datos del tema
+																                     $cat_title = $gesBD->getObj();
+																                     // Se guarda todo en un objeto Busqueda
+																                     $bus = new Busqueda($cat_title, $theme_title, $post);
+																                     // Se guarda la busqueda en una lista en el modelo
+																                     $this->modelo[$contModelo] = $bus;
+																                     $contModelo++;
+																                     // Y se indica que todo ha ido bien
+																                     $val = true;
+																								 }
+																						 }
+																				 }	
+																		 }	
+																 }
+														 }
+												 }
+										 }
+								 }						     										 
+						 }
+						 
+						 if (!$val)						 
+						 {
+						     // Si no se han encontrado coincidencias
+						     // Se indica mediante un mensaje de error
+						     $this->error = "No hay resultados que coincidan con su criterio de b&uacute;squeda.";
+						 }
+				 }
+				 else
+				 {
+				      // Si el patrón de búsqueda no tiene ningún valor
+				      // Se indica mediante un mensaje de error
+				     	$this->error = "Debe introducir alg&uacute;n patr&oacute;n de b&uacute;squeda.";
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>

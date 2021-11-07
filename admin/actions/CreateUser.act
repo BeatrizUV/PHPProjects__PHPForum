@@ -1,0 +1,200 @@
+<?  
+  /**
+   * Clase que se encarga de agregar usuarios al foro.
+   * By Beatriz Urbano Vega [Masane].
+   */ 
+	class CreateUser
+	{
+	    // Variable que guarda el modelo
+			var $modelo;
+			// Variable que guarda la vista
+			var $vista = "admin_createUser.str";
+			// Variable que guarda el error
+			var $error;		
+			// Variable que guarda el email de contacto del foro
+			var $a_email;
+			// Variable que guarda el título del foro
+			var $f_title;
+			// Variable que guarda el path del foro
+			var $f_path;
+			
+			// Constructor de la clase
+			function CreateUser($a_email, $f_title, $f_path)
+			{
+			    // Se asigna valor al email de contacto del foro
+				  $this->a_email = $a_email;
+				  // Se asigna valor al título del foro
+				  $this->f_title = $f_title;
+				  // Se asigna valor al path del foro
+				  $this->f_path = $f_path;
+			}
+			
+			// Función que ejecuta el código de la acción requerida
+			function ejecutar($gesBD)		
+			{			  
+			    // Se recogen los datos enviados 
+					$login = $_POST["login"];
+					$passwd = $_POST["passwd"];
+					$passwd2 = $_POST["passwd2"];
+					$rank = $_POST["rank"];
+					$email = $_POST["email"];
+					$flag = true;
+					
+					if (isset($_SESSION["haySesionAdmin"]))
+					{					    
+					    // Si hay sesión de administrador
+					    // Se validan los datos
+					    $this->error = valFormCreateUserAdmin($login, $passwd, $passwd2, $email);				    
+					
+							if ($this->error == null)
+							{							    					    
+							    // Si se validan correctamente
+							    // Se comprueba que el login esté libre
+							    $query = "SELECT login FROM phpforum_users WHERE login LIKE '".$login."'";
+							    if (!$gesBD->selectOne($query, "login"))
+							    {   
+							        // Si el login está libre
+							        // Se comprueba que el email esté libre
+							        $query = "SELECT email FROM phpforum_users WHERE email LIKE '".$email."'";
+							        if (!$gesBD->selectOne($query, "email"))
+							        {
+							            // Si el email está libre
+							            // Se inserta el nuevo usuario
+							            $query = "INSERT INTO phpforum_users (login, passwd, email, rank, fecha) VALUES ('".$login."', '".md5($passwd)."', '".$email."', ".$rank.", (SELECT NOW()))";
+											    if ($gesBD->insert($query))
+											    {
+											        // Si se inserta correctamente
+											        // Se recoge la id del nuevo usuario
+                              $query = "SELECT id_user FROM phpforum_users WHERE login LIKE '".$login."'";
+															if ($gesBD->selectOne($query, "id_user"))
+															{			
+															    // Si existe el usuario
+																	// Se recoge su id												
+																	$id_user = $gesBD->getObj();					   
+													        
+													        // Insertar registros con status = 0 en phpforum_reads_control
+													        $query = "SELECT id_post FROM phpforum_posts";
+		                              $variables[0] = "id_post";															        
+													        if ($gesBD->selectMore($query, $variables))
+													        {
+													            $listaPosts = $gesBD->getObj();
+													            $size = count($listaPosts);
+													            $cont = 0;
+													            
+													            for ($cont = 0; $cont < $size; $cont++)
+													            {
+													                $post = $listaPosts[$cont];
+													                $id_post = $post[0];
+													                $query = "INSERT INTO phpforum_reads_control (id_user, id_post, status) VALUES (".$id_user.", ".$id_post.", 0)";															                
+													                $gesBD->insert($query);
+									                    }
+		                               }       
+		                              // Se manda el email 
+                                  // url del host														 			
+														      $forum_path = $this->f_path."index.php?accion=ShowUser&id=".$id_user;
+														      
+													 	 	 		// Se manda un email con sus datos al usuario creado por defecto																						 	 	 		
+																	$from = $this->f_title." <".$this->a_email.">";					 	 	 		
+																	$subject = "Bienvenido a \"".$this->f_title."\""; 
+																	$clave = $passwd;
+																	$admin_email = $this->a_email;
+																	$forum_title = $this->f_title;
+																	$link = "<A HREF='".$forum_path."' class='link_texto' target='_blank'>perfil</A>";
+																	########################################
+																	##### Se forma el cuerpo del email #####
+																	########################################
+																	if (eregi("gmail", $email))
+																	{
+																	    include("../includes/mailToNewRegisteredUserNoHTML.inc");
+																	}
+																	else
+																	{
+																	    include("../includes/mailToNewRegisteredUser.inc");
+																	}																			
+							                    ########################################           
+							                    ########################################
+																					 				      
+														      // Se manda el email
+														      if (sendMail($email, $from, $subject, $body))
+														      {
+														          // Si se manda el email
+														          // Se eliminan los datos relacionados con la creación de este nuevo usuario de la sesión
+														          unset($_SESSION["grupos"]);
+																	}
+																	
+																	// Se indica el éxito de la operación mediante un mensaje emergente y se redirige al usuario a la página de crear usuarios
+																	echo "<SCRIPT>";
+																  echo "alert('Usuario \"".$login."\" registrado correctamente.');";
+																  echo "location.href='index.php?accion=ShowGroups&pagina=admin_createUser'";
+																  echo "</SCRIPT>";															    								    
+															}
+															else
+															{
+															    // Si no existe el usuario
+															    // Se redirige al usuario a la página de error
+															    header("Location: error.php");	
+															}	  
+													}
+													else
+													{		
+													    // Si no se inserta correctamente
+													    // Se redirige al usuario a la página de error
+													    header("Location: error.php");	
+													}
+											}		
+											else
+											{
+											    // Si el email no está libre
+											    // Se indica mediante un mensaje de error
+											    $this->error = "El <B>E-MAIL</B> indicado ya existe.<BR>Ingrese otro e-mail distinto para registrarse.";	
+													$flag = false;		
+											}
+									}		
+									else
+									{
+									    // Si el login no está libre
+									    // Se indica mediante un mensaje de error
+									    $this->error = "El <B>LOGIN</B> indicado ya existe.<BR>Ingrese otro login distinto para registrarse.";	
+											$flag = false;
+									}					    																    
+							}
+							else
+							{
+							    // Si los datos no se validan correctamente
+							    // Se indica
+							    $flag = false;
+							}
+					}
+					else
+					{
+					    // Si no hay sesión de administrador
+					    // Se redirige al usuario a la página de inicio del foro
+					    header("Location: ../index.php");													
+					}
+				
+					return $flag; 
+			}
+			
+			// Función que devuelve el modelo
+			function getModelo()
+			{
+				  return $this->modelo;
+			}
+			
+			// Función que devuelve la vista
+			function getVista()
+			{
+				  return $this->vista;
+			}
+			
+			// Función que devuevle el error
+			function getError()
+			{
+				  return $this->error;
+			}
+			
+			// Función que devuelve la acción realizada
+			function getAct() {
+			}
+	}
+?>

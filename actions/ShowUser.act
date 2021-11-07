@@ -1,0 +1,117 @@
+<?
+  /**
+   * Clase que se encarga de mostrar el perfil de un usuario del foro.
+   * By Beatriz Urbano Vega [Masane].
+   */
+	class ShowUser
+	{	 	 
+	   // Variable que guarda el modelo
+	 	 var $modelo;
+	 	 // Variable que guarda la vista
+	 	 var $vista = "main_profile.str";
+	 	 // Variable que guarda el error
+	 	 var $error;
+	 	 // Variable que guarda la acción realizada
+	 	 var $act;	 	 
+					
+		 // Constructor de la clase			
+	   function ShowUser() {	
+		 }
+		 
+		 // Función que ejecuta el código de la acción requerida
+		 function ejecutar($gesBD)
+		 {
+		     $val = false;
+		     
+		     if (!empty($_GET["pagina"]))
+		     {
+		         // Si la página tiene algún valor
+		         if (isset($_SESSION["haySesion"]))
+		         {
+		             // Si hay sesión, se establece la nueva vista
+		             $this->vista = $_GET["pagina"].".str";
+						 }		         
+						 // Si no, se carga la vista por defecto
+				 }
+		 	  
+		 	   // Se recogen las variables enviadas
+		 	   $id = $_GET["id"];
+		 	   if (empty($id))
+		 	   {
+		 	       // Si el id no tiene ningún valor
+		 	       if (isset($_SESSION["haySesion"]))
+		 	       {
+		 	           // Si hay sesión 
+		 	           // Se recoge el usuario de la sesión
+		 	           $user = unserialize($_SESSION["userlog"]);
+		 	           // Se establece el valor de id_user con el id del usuario conectado
+		 	           $id_user = $user->getId_user();		 	   
+								 // Y si indica que todo ha ido bien	        
+		 	           $val = true;
+						 }						 				 	 	       
+				 }
+				 else
+				 {
+				     // Si el id tiene algún valor
+				     // Se establece el valor de id_user con el id enviado
+				     $id_user = $id;
+				     // Y se indica que todo ha ido bien
+				     $val = true;
+				 }
+				 
+				 if ($val)
+				 {
+				     // Si todo ha ido bien
+				     $val = false;				     
+				     $query = "SELECT * FROM phpforum_users WHERE id_user LIKE ".$id_user." AND id_user NOT LIKE -1";				     
+				     if ($gesBD->selectUser($query))
+						 {
+						     // Si existe el usuario indicado en el id_user
+						     // Se recoge el usuario de la base de datos
+						     $user = $gesBD->getObj();
+						     $query = "SELECT MAX(fecha) FROM phpforum_logs WHERE id_user LIKE ".$id_user;
+						     if ($gesBD->selectOne($query, "MAX(fecha)"))
+						     {						        
+						        // Y se recoge el último click registrado en la base de datos
+						     		$user->setLastClick($gesBD->getObj());											
+										// Se guarda el usuario en el modelo 					     	
+						     		$this->modelo = $user;
+						     		// Y se indica, de nuevo, que todo ha ido bien
+										$val = true; 						     		
+								 }
+						 }
+				 }
+				 
+				 // Si no ha ido bien
+				 if (!$val)
+				 {
+				     // Se redirige al usuario a la página de inicio
+				     header("Location: index.php");
+				 }
+				   
+		     return $val;
+		 }
+		 
+		 // Función que devuelve la vista
+		 function getVista()
+		 {
+	 	    return $this->vista;
+		 }
+		 
+		 // Función que devuelve el modelo
+		 function getModelo()
+		 {
+		    return $this->modelo;
+		 }
+		 
+		 // Función que devuelve el error
+		 function getError()
+		 {
+		    return $this->error;
+		 }	
+		 
+		 // Función que devuelve la acción realizada
+		 function getAct() {
+		 }	 
+	}
+?>
